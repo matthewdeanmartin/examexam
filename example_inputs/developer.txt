@@ -1,0 +1,54 @@
+Amazon Athena
+Amazon Kinesis
+Amazon OpenSearch Service
+AWS AppSync
+Amazon EventBridge
+Amazon Simple Notification Service (Amazon SNS)
+Amazon Simple Queue Service (Amazon SQS)
+AWS Step Functions
+Amazon Elastic Compute Cloud (Amazon EC2)
+AWS Elastic Beanstalk
+AWS Lambda
+AWS Serverless Application Model (AWS SAM)
+AWS Copilot
+Amazon Elastic Container Registry (Amazon ECR)
+Amazon Elastic Container Service (Amazon ECS)
+Amazon Elastic Kubernetes Service (Amazon EKS)
+Amazon Aurora
+Amazon DynamoDB
+Amazon ElastiCache
+Amazon MemoryDB
+Amazon Relational Database Service (Amazon RDS)
+AWS Amplify
+AWS CloudShell
+AWS CodeArtifact
+AWS CodeBuild
+AWS CodeDeploy
+Amazon CodeGuru
+AWS CodePipeline
+AWS X-Ray
+AWS AppConfig
+AWS Cloud Development Kit (AWS CDK)
+AWS CloudFormation
+AWS CloudTrail
+Amazon CloudWatch
+Amazon CloudWatch Logs
+AWS Command Line Interface (AWS CLI)
+AWS Systems Manager
+Amazon API Gateway
+Amazon CloudFront
+Elastic Load Balancing (ELB)
+Amazon Route 53
+Amazon Virtual Private Cloud (Amazon VPC)
+AWS Certificate Manager (ACM)
+Amazon Cognito
+AWS Identity and Access Management (IAM)
+AWS Key Management Service (AWS KMS)
+AWS Private Certificate Authority
+AWS Secrets Manager
+AWS Security Token Service (AWS STS)
+AWS WAF
+Amazon Elastic Block Store (Amazon EBS)
+Amazon Elastic File System (Amazon EFS)
+Amazon Simple Storage Service (Amazon S3)
+Amazon S3 Glacier

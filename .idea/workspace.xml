@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="reduce min deps for cli tool audit">
+      <change beforePath="$PROJECT_DIR$/.github/workflows/tox.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/tox.yml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "matthewdeanmartin"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/matthewdeanmartin/examexam.git",
+    "accountId": "0beff49b-3650-407d-b353-7002a53d3c41"
+  }
+}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2v0XB2nh6nkRpOhXebrPCFFED4i" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python tests.Python tests in test_take_exam_again.py.executor": "Run",
+    "Python tests.Python tests in tests.executor": "Run",
+    "Python tests.pytest in tests.executor": "Run",
+    "Python.__main__.executor": "Run",
+    "Python.game.executor": "Run",
+    "Python.game2.executor": "Run",
+    "Python.generate_questions.executor": "Run",
+    "Python.read_schema.executor": "Debug",
+    "Python.take_exam.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHELLCHECK.PATH": "C:\\Users\\matth\\AppData\\Roaming\\JetBrains\\PyCharm2025.2\\plugins\\Shell Script\\shellcheck.exe",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/github/examexam",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.stylelint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.stylelint": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\github\examexam" />
+      <recent name="C:\github\examexam\tests" />
+      <recent name="C:\github\examexam\examexam" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\github\examexam\data\old_schema" />
+      <recent name="C:\github\examexam\data" />
+      <recent name="C:\github\examexam\dead_code" />
+      <recent name="C:\github\examexam\example_inputs" />
+      <recent name="C:\github\examexam" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="pytest in tests" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="examexam" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python tests.pytest in tests" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-PY-252.23892.515" />
+        <option value="bundled-python-sdk-7e47963ff851-f0eec537fc84-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.23892.515" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="" />
+      <created>1743282828652</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1743282828652</updated>
+      <workItem from="1743282830105" duration="11135000" />
+      <workItem from="1744897776206" duration="43000" />
+      <workItem from="1744897842505" duration="619000" />
+      <workItem from="1745016460692" duration="3923000" />
+      <workItem from="1745108072704" duration="1998000" />
+      <workItem from="1746891572077" duration="4000" />
+      <workItem from="1746891711933" duration="1811000" />
+      <workItem from="1746910121370" duration="1836000" />
+      <workItem from="1747320999874" duration="9952000" />
+      <workItem from="1748723539109" duration="40000" />
+      <workItem from="1749239805981" duration="2306000" />
+      <workItem from="1749899909083" duration="575000" />
+      <workItem from="1749912005192" duration="1161000" />
+      <workItem from="1750363278150" duration="1428000" />
+      <workItem from="1750366822473" duration="1220000" />
+      <workItem from="1750455561362" duration="1132000" />
+      <workItem from="1750599203398" duration="587000" />
+      <workItem from="1750601976485" duration="27000" />
+      <workItem from="1750602143112" duration="4000" />
+      <workItem from="1750725537312" duration="1784000" />
+      <workItem from="1750877925532" duration="19000" />
+      <workItem from="1755475554187" duration="14321000" />
+    </task>
+    <task id="LOCAL-00001" summary="Get ready for publication">
+      <option name="closed" value="true" />
+      <created>1755978546635</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1755978546635</updated>
+    </task>
+    <task id="LOCAL-00002" summary="checkpoint">
+      <option name="closed" value="true" />
+      <created>1756042030495</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1756042030495</updated>
+    </task>
+    <task id="LOCAL-00003" summary="ready for gh actions">
+      <option name="closed" value="true" />
+      <created>1756045062390</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1756045062390</updated>
+    </task>
+    <task id="LOCAL-00004" summary="just runner">
+      <option name="closed" value="true" />
+      <created>1756045446765</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1756045446765</updated>
+    </task>
+    <task id="LOCAL-00005" summary="reduce coverage">
+      <option name="closed" value="true" />
+      <created>1756045605805</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1756045605805</updated>
+    </task>
+    <task id="LOCAL-00006" summary="relax lint">
+      <option name="closed" value="true" />
+      <created>1756045773584</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1756045773584</updated>
+    </task>
+    <task id="LOCAL-00007" summary="no pydantic plugin">
+      <option name="closed" value="true" />
+      <created>1756046013741</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1756046013741</updated>
+    </task>
+    <task id="LOCAL-00008" summary="missed a dep">
+      <option name="closed" value="true" />
+      <created>1756046181826</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1756046181826</updated>
+    </task>
+    <task id="LOCAL-00009" summary="reduce min deps for cli tool audit">
+      <option name="closed" value="true" />
+      <created>1756046239948</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1756046239948</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Get ready for publication" />
+    <MESSAGE value="checkpoint" />
+    <MESSAGE value="ready for gh actions" />
+    <MESSAGE value="just runner" />
+    <MESSAGE value="reduce coverage" />
+    <MESSAGE value="relax lint" />
+    <MESSAGE value="no pydantic plugin" />
+    <MESSAGE value="missed a dep" />
+    <MESSAGE value="reduce min deps for cli tool audit" />
+    <option name="LAST_COMMIT_MESSAGE" value="reduce min deps for cli tool audit" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/examexam/take_exam.py</url>
+          <line>459</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/examexam$game2.coverage" NAME="game2 Coverage Results" MODIFIED="1745108300171" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/examexam$.coverage" NAME=" Coverage Results" MODIFIED="1756044671211" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/examexam$read_schema.coverage" NAME="read_schema Coverage Results" MODIFIED="1743341135888" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examexam" />
+    <SUITE FILE_PATH="coverage/examexam$__main__.coverage" NAME="__main__ Coverage Results" MODIFIED="1747513825833" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examexam" />
+    <SUITE FILE_PATH="coverage/examexam$take_exam.coverage" NAME="take_exam Coverage Results" MODIFIED="1747515781408" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examexam" />
+    <SUITE FILE_PATH="coverage/examexam$pytest_in_tests.coverage" NAME="pytest in tests Coverage Results" MODIFIED="1756044829792" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/examexam$game.coverage" NAME="game Coverage Results" MODIFIED="1745016476916" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/examexam$generate_questions.coverage" NAME="generate_questions Coverage Results" MODIFIED="1747514686373" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examexam" />
+  </component>
+</project>

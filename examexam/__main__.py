@@ -1,0 +1,128 @@
+from __future__ import annotations
+
+import argparse
+import logging
+import logging.config
+import sys
+from collections.abc import Sequence
+
+from examexam import logging_config
+from examexam.convert_to_pretty import run as convert_questions_run
+from examexam.generate_questions import generate_questions_now
+from examexam.take_exam import take_exam_now
+from examexam.validate_questions import validate_questions_now
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="examexam", description="A CLI for generating, taking, and managing exams.")
+    parser.add_argument("--verbose", action="store_true", required=False, help="Enable detailed logging.")
+    subparsers = parser.add_subparsers(dest="command", help="Available commands", required=True)
+
+    # --- Take Command ---
+    take_parser = subparsers.add_parser("take", help="Take an exam from a TOML file.")
+    take_parser.add_argument("--question-file", type=str, required=True, help="Path to the TOML question file.")
+
+    # --- Generate Command ---
+    generate_parser = subparsers.add_parser("generate", help="Generate new exam questions using an LLM.")
+    generate_parser.add_argument(
+        "--exam-name",
+        type=str,
+        required=True,
+        help="The official name of the exam (e.g., 'Certified Kubernetes Administrator').",
+    )
+    generate_parser.add_argument(
+        "--toc-file",
+        type=str,
+        required=True,
+        help="Path to a text file containing the table of contents or topics, one per line.",
+    )
+    generate_parser.add_argument(
+        "--output-file",
+        type=str,
+        required=True,
+        help="Path to the output TOML file where questions will be saved.",
+    )
+    generate_parser.add_argument(
+        "-n",
+        type=int,
+        default=5,
+        help="Number of questions to generate per topic (default: 5).",
+    )
+    generate_parser.add_argument(
+        "--model",
+        type=str,
+        default="gpt4",
+        help="Model to use for generating questions (e.g., 'gpt4', 'claude'). Default: gpt4",
+    )
+
+    # --- Validate Command ---
+    validate_parser = subparsers.add_parser("validate", help="Validate exam questions using an LLM.")
+    validate_parser.add_argument(
+        "--question-file",
+        type=str,
+        required=True,
+        help="Path to the TOML question file to validate.",
+    )
+    validate_parser.add_argument(
+        "--exam-name",
+        type=str,
+        required=True,
+        help="The official name of the exam, for context during validation.",
+    )
+    validate_parser.add_argument(
+        "--model", type=str, default="claude", help="Model to use for validation (default: claude)."
+    )
+
+    # --- Convert Command ---
+    convert_parser = subparsers.add_parser("convert", help="Convert a TOML question file to Markdown and HTML formats.")
+    convert_parser.add_argument(
+        "--input-file",
+        type=str,
+        required=True,
+        help="Path to the input TOML question file.",
+    )
+    convert_parser.add_argument(
+        "--output-base-name",
+        type=str,
+        required=True,
+        help="Base name for the output .md and .html files (e.g., 'my-exam').",
+    )
+
+    args = parser.parse_args(args=argv)
+
+    if args.verbose:
+        config = logging_config.generate_config()
+        logging.config.dictConfig(config)
+    else:
+        logging.basicConfig(level=logging.INFO, format="%(message)s")
+
+    if args.command == "take":
+        if hasattr(args, "question_file") and args.question_file:
+            take_exam_now(question_file = args.question_file)
+        else:
+            take_exam_now()
+    elif args.command == "generate":
+        generate_questions_now(
+            questions_per_toc_topic=args.n,
+            file_name=args.output_file,
+            toc_file=args.toc_file,
+            model=args.model,
+            system_prompt="You are a test maker.",
+        )
+    elif args.command == "validate":
+        validate_questions_now(file_name=args.question_file, exam_name=args.exam_name, model=args.model)
+    elif args.command == "convert":
+        md_path = f"{args.output_base_name}.md"
+        html_path = f"{args.output_base_name}.html"
+        convert_questions_run(
+            toml_file_path=args.input_file,
+            markdown_file_path=md_path,
+            html_file_path=html_path,
+        )
+    else:
+        parser.print_help()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

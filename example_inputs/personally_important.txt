@@ -1,0 +1,27 @@
+Amazon Athena
+Amazon Kinesis
+Amazon EventBridge
+Amazon Simple Notification Service (Amazon SNS)
+Amazon Simple Queue Service (Amazon SQS)
+AWS Step Functions
+Amazon Simple Email Service
+Amazon Elastic Container Registry (Amazon ECR)
+Amazon Aurora/Postgres
+Amazon DynamoDB
+AWS AppConfig
+AWS X-Ray
+AWS CDK
+AWS CloudFormation
+AWS CloudTrail
+Amazon CloudWatch
+AWS Config
+Amazon API Gateway
+Amazon CloudFront
+Amazon Route 53
+Amazon VPC
+Amazon Cognito
+AWS Key Management Service (AWS KMS)
+AWS Secrets Manager
+AWS WAF
+Amazon S3
+AWS Lambda
