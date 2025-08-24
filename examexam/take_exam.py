@@ -1,18 +1,18 @@
+import math
 import os
 import random
 import re
-import math
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, cast
-from datetime import datetime, timedelta
 
 import rtoml as toml
 from rich.align import Align
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.panel import Panel
+from rich.prompt import Confirm, Prompt
 from rich.table import Table
-from rich.prompt import Prompt, Confirm
 from scipy import stats
 
 from examexam.constants import BAD_QUESTION_TEXT
@@ -186,8 +186,9 @@ def find_select_pattern(input_string: str) -> str:
     return match.group(0) if match else ""
 
 
-def is_valid(answer: str, option_count: int, answer_count: int, last_is_bad_question_flag: bool = True) -> tuple[
-    bool, str]:
+def is_valid(
+    answer: str, option_count: int, answer_count: int, last_is_bad_question_flag: bool = True
+) -> tuple[bool, str]:
     if not answer:
         return False, "Please enter an answer."
 
@@ -212,7 +213,10 @@ def is_valid(answer: str, option_count: int, answer_count: int, last_is_bad_ques
 
     # Check answer count
     if len(answers) != answer_count:
-        return False, f"Please select exactly {answer_count} answer{'s' if answer_count != 1 else ''}, you selected {len(answers)}."
+        return (
+            False,
+            f"Please select exactly {answer_count} answer{'s' if answer_count != 1 else ''}, you selected {len(answers)}.",
+        )
 
     return True, ""
 
@@ -264,6 +268,7 @@ def ask_question(question: dict[str, Any], options_list: list[dict[str, Any]]) -
     ]
     return selected
 
+
 def calculate_confidence_interval(score: int, total: int, confidence: float = 0.95) -> tuple[float, float]:
     """Calculate confidence interval for population proportion"""
     if total == 0:
@@ -285,8 +290,13 @@ def calculate_confidence_interval(score: int, total: int, confidence: float = 0.
     return lower, upper
 
 
-def display_results(score: float, total: float, start_time: datetime, session: list[dict[str, Any]] = None,
-                    withhold_judgement: bool = False) -> None:
+def display_results(
+    score: float,
+    total: float,
+    start_time: datetime,
+    session: list[dict[str, Any]] = None,
+    withhold_judgement: bool = False,
+) -> None:
     percent = (score / total) * 100
     passed = "Passed" if percent >= 70 else "Failed"
 
@@ -338,11 +348,7 @@ def display_results(score: float, total: float, start_time: datetime, session: l
 
 def save_session_file(session_file: Path, state: list[dict[str, Any]], start_time: datetime) -> None:
     with open(session_file, "w", encoding="utf-8") as file:
-        data = {
-            "questions": state,
-            "start_time": start_time.isoformat(),
-            "last_updated": datetime.now().isoformat()
-        }
+        data = {"questions": state, "start_time": start_time.isoformat(), "last_updated": datetime.now().isoformat()}
         toml.dump(normalize_exam_for_toml(data), file)
 
 

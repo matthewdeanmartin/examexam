@@ -36,8 +36,6 @@ def _minimal_questions() -> dict[str, Any]:
     }
 
 
-
-
 # --------------------------
 # Small pure helpers
 # --------------------------
@@ -101,9 +99,6 @@ def test_ask_question_happy_path(monkeypatch: pytest.MonkeyPatch, capsys: pytest
     # Ensure BAD_QUESTION_TEXT was shown (not strictly necessary, but useful)
     out = capsys.readouterr().out + capsys.readouterr().err
     assert BAD_QUESTION_TEXT in out
-
-
-
 
 
 # --------------------

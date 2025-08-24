@@ -6,15 +6,24 @@ import logging.config
 import sys
 from collections.abc import Sequence
 
-from examexam import logging_config
+import argcomplete
+
+from examexam import __about__, logging_config
 from examexam.convert_to_pretty import run as convert_questions_run
 from examexam.generate_questions import generate_questions_now
 from examexam.take_exam import take_exam_now
+from examexam.utils.cli_suggestions import SmartParser
+from examexam.utils.update_checker import start_background_update_check
 from examexam.validate_questions import validate_questions_now
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="examexam", description="A CLI for generating, taking, and managing exams.")
+    start_background_update_check("examexam", __about__.__version__)
+    parser = SmartParser(
+        prog=__about__.__title__,
+        description="A CLI for generating, taking, and managing exams.",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
     parser.add_argument("--verbose", action="store_true", required=False, help="Enable detailed logging.")
     subparsers = parser.add_subparsers(dest="command", help="Available commands", required=True)
 
@@ -88,6 +97,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Base name for the output .md and .html files (e.g., 'my-exam').",
     )
 
+    argcomplete.autocomplete(parser)
+
     args = parser.parse_args(args=argv)
 
     if args.verbose:
@@ -98,7 +109,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.command == "take":
         if hasattr(args, "question_file") and args.question_file:
-            take_exam_now(question_file = args.question_file)
+            take_exam_now(question_file=args.question_file)
         else:
             take_exam_now()
     elif args.command == "generate":

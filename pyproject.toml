@@ -1,24 +1,33 @@
 [project]
 name = "examexam"
-version = "0.1.2"
+version = "0.1.3"
 description = "Let LLM generate tests, validate test, and then you take them. Useful for certs."
 authors = [{ name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "markdown",
+    # Core test taking
+    "rtoml>=0.1.0",
+    "toml>=0.10.2",
     "scipy",
+    # CLI & QoL
+    "argcomplete",
+    "packaging",
+    # UI
+    "textual>=1.0.0",
+    # make pretty
+    "markdown",
+    # APIs
     "anthropic>=0.19.2",
     "boto3>=1.34.44",
-    "colorlog>=6.8.2",
     "google-generativeai>=0.8.4",
     "mistralai>=1.6.0",
     "openai>0.28",
-    "python-dotenv>=1.0.1",
     "retry>=0.9.2",
-    "rtoml>=0.1.0",
-    "textual>=1.0.0",
-    "toml>=0.10.2",
+    # Diagnostics
+    "colorlog>=6.8.2",
+    # Key mgmt
+    "python-dotenv>=1.0.1",
 ]
 
 [project.scripts]
@@ -200,12 +209,12 @@ exclude_also = [
 ]
 
 [tool.cli-tools]
-python = {name = "python", version = ">=3.11.1", schema = "semver", tags = ["build"]}
+python = { name = "python", version = ">=3.11.1", schema = "semver", tags = ["build"] }
 # pipx = {name = "pipx", version = ">=1.0.0", version_switch = "--version", schema = "semver"}
-mypy = {name = "mypy", version = ">=1.0.0", schema = "semver", tags = ["build", "work"], install_command = "pipx install mypy", install_docs = "https://mypy.readthedocs.io/en/stable/getting_started.html"}
-pylint = {name = "pylint", version = ">=1.0.0", schema = "semver", tags = ["build", "work", "user"]}
-black = {name = "black", version = ">=1.0.0", schema = "semver"}
-ruff = {name = "ruff", version = ">=0.6.2", schema = "semver"}
+mypy = { name = "mypy", version = ">=1.0.0", schema = "semver", tags = ["build", "work"], install_command = "pipx install mypy", install_docs = "https://mypy.readthedocs.io/en/stable/getting_started.html" }
+pylint = { name = "pylint", version = ">=1.0.0", schema = "semver", tags = ["build", "work", "user"] }
+black = { name = "black", version = ">=1.0.0", schema = "semver" }
+ruff = { name = "ruff", version = ">=0.6.2", schema = "semver" }
 # vulture = {name = "vulture", version = "*", schema = "semver"}
 # poetry = {name = "poetry", version = ">=1.5.1", schema = "semver"}
 
