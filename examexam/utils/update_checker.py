@@ -32,9 +32,9 @@ import sys
 import tempfile
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from collections.abc import Callable
 from urllib import error, request
 
 from packaging import version as _version

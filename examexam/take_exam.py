@@ -1,3 +1,22 @@
+"""
+Example toml
+
+
+[[questions]]
+question = "What is the primary purpose of Amazon Athena?"
+id = "10fc5083-5528-4be1-a3cf-f377ae963dfc"
+
+[[questions.options]]
+text = "To perform ad-hoc querying on data stored in S3 using SQL."
+explanation = "Amazon Athena allows users to run SQL queries directly on data in S3 without needing to manage any infrastructure. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "To manage relational databases on EC2."
+explanation = "Amazon Athena is a serverless query service, and it does not manage databases on EC2. Incorrect."
+is_correct = false
+"""
+
 import math
 import os
 import random
