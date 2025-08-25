@@ -111,7 +111,7 @@ def test_ask_llm_happy_path(monkeypatch):
     monkeypatch.setattr(mod, "Conversation", _FakeConversation)
     monkeypatch.setattr(mod, "Router", lambda conv: fake_router)
 
-    out = mod.ask_llm("Q without (Select)", ["X", "Y", "Z"], ["X", "Y"], "claude", "sys")
+    out = mod.ask_llm("Q without (Select)", ["X", "Y", "Z"], ["X", "Y"], "fakebot", "sys")
     assert out == ["X", "Y"]
 
 
@@ -121,7 +121,7 @@ def test_ask_llm_none_returns_empty(monkeypatch):
     monkeypatch.setattr(mod, "Conversation", _FakeConversation)
     monkeypatch.setattr(mod, "Router", lambda conv: fake_router)
 
-    out = mod.ask_llm("Q", ["A"], ["A"], "claude", "sys")
+    out = mod.ask_llm("Q", ["A"], ["A"], "fakebot", "sys")
     assert out == []
 
 
@@ -132,7 +132,7 @@ def test_ask_llm_bad_format_raises(monkeypatch):
     monkeypatch.setattr(mod, "Router", lambda conv: fake_router)
 
     with pytest.raises(mod.ExamExamTypeError):
-        mod.ask_llm("Q", ["A"], ["A"], "claude", "sys")
+        mod.ask_llm("Q", ["A"], ["A"], "fakebot", "sys")
 
 
 def test_ask_if_bad_question_good_and_bad(monkeypatch):
@@ -141,14 +141,14 @@ def test_ask_if_bad_question_good_and_bad(monkeypatch):
     fake_router_g.set_response("Because reasons\n---\nGood")
     monkeypatch.setattr(mod, "Conversation", _FakeConversation)
     monkeypatch.setattr(mod, "Router", lambda conv: fake_router_g)
-    g, why = mod.ask_if_bad_question("Q", ["A"], ["A"], "claude")
+    g, why = mod.ask_if_bad_question("Q", ["A"], ["A"], "fakebot")
     assert g == "good" and "Because reasons" in why
 
     # None -> default "bad"
     fake_router_b = _FakeRouter(_FakeConversation(system="S"))
     fake_router_b.set_response(None)
     monkeypatch.setattr(mod, "Router", lambda conv: fake_router_b)
-    g2, why2 = mod.ask_if_bad_question("Q", ["A"], ["A"], "claude")
+    g2, why2 = mod.ask_if_bad_question("Q", ["A"], ["A"], "fakebot")
     assert g2 == "bad" and "Bot returned None" in why2
 
     # Unexpected format -> raises
@@ -156,7 +156,7 @@ def test_ask_if_bad_question_good_and_bad(monkeypatch):
     fake_router_u.set_response("No triple dash here")
     monkeypatch.setattr(mod, "Router", lambda conv: fake_router_u)
     with pytest.raises(mod.ExamExamTypeError):
-        mod.ask_if_bad_question("Q", ["A"], ["A"], "claude")
+        mod.ask_if_bad_question("Q", ["A"], ["A"], "fakebot")
 
 
 @pytest.mark.parametrize(
@@ -199,7 +199,7 @@ def test_grade_test_scores_and_writes(tmp_path):
     good_bad = [("good", "ok"), ("bad", "nope")]
     out_file = tmp_path / "graded.toml"
 
-    score = mod.grade_test(questions, responses, good_bad, out_file, model="claude")
+    score = mod.grade_test(questions, responses, good_bad, out_file, model="fakebot")
     assert score == 0.5
     assert out_file.exists()
 
@@ -207,13 +207,13 @@ def test_grade_test_scores_and_writes(tmp_path):
     assert "questions" in data and len(data["questions"]) == 2
     # incorrect question should have model answers recorded
     q2 = next(q for q in data["questions"] if q["id"] == "q2")
-    assert "claude_answers" in q2 and set(q2["claude_answers"]) == {"Z"}
+    assert "fakebot_answers" in q2 and set(q2["fakebot_answers"]) == {"Z"}
     # good/bad annotations present
     assert all("good_bad" in q and "good_bad_why" in q for q in data["questions"])
 
 
 def test_grade_test_zero_total(tmp_path):
-    out = mod.grade_test([], [], [], tmp_path / "out.toml", model="claude")
+    out = mod.grade_test([], [], [], tmp_path / "out.toml", model="fakebot")
     assert out == 0
 
 
@@ -231,7 +231,7 @@ def test_validate_questions_now_e2e_minimal(tmp_path, monkeypatch):
     monkeypatch.setattr(mod, "ask_llm", lambda q, opts, ans, m, system: ans)  # always returns true correct answers
     monkeypatch.setattr(mod, "ask_if_bad_question", lambda q, opts, ans, m: ("good", "ok"))
 
-    score = mod.validate_questions_now(str(f), model="claude")
+    score = mod.validate_questions_now(str(f), model="fakebot")
     assert score == 1.0
 
     # File updated with normalized content
