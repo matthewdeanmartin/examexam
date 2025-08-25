@@ -12,11 +12,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed for any bug fixes.
 - Security in case of vulnerabilities.
 
-## [0.1.3] - 2025-08-23
+## [0.1.4] - 2025-08-24
+
+### Fixed
+
+- TOML error in Validate fixed
+- Delay in update checker fixed.
 
 ### Added
 
-- argcomplete, update available checker, did-you-mean feature for CLI
+- version
+- Make more switches optional for `generate`
+- progress meter for `generate`
+
+## [0.1.3] - 2025-08-24
+
+### Added
+
+- argcomplete, update checker, did-you-mean feature for CLI
 
 ## [0.1.2] - 2025-08-23
 

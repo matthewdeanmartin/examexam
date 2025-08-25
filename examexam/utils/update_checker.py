@@ -27,10 +27,10 @@ from __future__ import annotations
 import atexit
 import json
 import logging
+import multiprocessing
 import os
 import sys
 import tempfile
-import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -48,7 +48,7 @@ __all__ = [
 ]
 
 # Global state for background checking
-_background_check_result: str | None = None
+_background_process: multiprocessing.Process | None = None
 _background_check_registered = False
 
 
@@ -381,36 +381,59 @@ def format_update_message(
 def _background_update_worker(
     package_name: str,
     current_version: str,
-    logger: logging.Logger | None,
     cache_ttl_seconds: int,
     include_prereleases: bool,
+    result_file: str,
 ) -> None:
-    """Background worker function to check for updates.
+    """Background worker function to check for updates in separate process.
 
-    This runs in a separate thread and stores the result globally.
+    This runs in a separate process and writes the result to a temp file.
     """
-    global _background_check_result
-
     try:
+        # We can't pass logger across process boundary easily, so use None
         result = check_for_updates(
             package_name=package_name,
             current_version=current_version,
-            logger=logger,
+            logger=None,
             cache_ttl_seconds=cache_ttl_seconds,
             include_prereleases=include_prereleases,
         )
-        _background_check_result = result
+
+        # Write result to temp file
+        if result:
+            try:
+                with open(result_file, "w", encoding="utf-8") as f:
+                    f.write(result)
+            except (OSError, PermissionError):
+                pass
+
     except Exception:
         # Silently fail - we don't want background checks to cause issues
-        _background_check_result = None
+        pass  # nosec
 
 
 def _exit_handler() -> None:
     """Exit handler to display update message if available."""
-    global _background_check_result
+    global _background_process
 
-    if _background_check_result:
-        print(f"\n{_background_check_result}", file=sys.stderr)
+    # Clean up background process if still running
+    if _background_process and _background_process.is_alive():
+        # Give it a moment to finish
+        _background_process.join(timeout=0.1)
+        if _background_process.is_alive():
+            _background_process.terminate()
+
+    # Check for result file
+    result_file = Path(tempfile.gettempdir()) / "python_update_checker" / "background_result.txt"
+    try:
+        if result_file.exists():
+            result = result_file.read_text(encoding="utf-8").strip()
+            if result:
+                print(f"\n{result}", file=sys.stderr)
+            # Clean up result file
+            result_file.unlink(missing_ok=True)
+    except (OSError, PermissionError):
+        pass
 
 
 def start_background_update_check(
@@ -424,17 +447,17 @@ def start_background_update_check(
     """Start a background update check that displays results on program exit.
 
     This function returns immediately (zero cost to user) and starts a background
-    thread to check for updates. If an update is available, it will be shown when
+    process to check for updates. If an update is available, it will be shown when
     the program exits.
 
     Args:
         package_name: The PyPI package name to check.
         current_version: The currently installed version string.
-        logger: Optional logger for warnings.
+        logger: Optional logger for warnings (ignored in background process).
         cache_ttl_seconds: Cache time-to-live in seconds.
         include_prereleases: Whether to consider prereleases newer.
     """
-    global _background_check_registered
+    global _background_check_registered, _background_process
 
     # Check if we already have a fresh cached result
     cache_dir, cache_file = cache_paths(package_name)
@@ -446,14 +469,27 @@ def start_background_update_check(
         atexit.register(_exit_handler)
         _background_check_registered = True
 
-    # Start background thread (daemon so it doesn't prevent program exit)
-    worker_thread = threading.Thread(
+    # Clean up any existing background process
+    if _background_process and _background_process.is_alive():
+        _background_process.terminate()
+        _background_process.join(timeout=0.1)
+
+    # Create result file path
+    result_dir = Path(tempfile.gettempdir()) / "python_update_checker"
+    result_dir.mkdir(parents=True, exist_ok=True)
+    result_file = result_dir / "background_result.txt"
+
+    # Clean up any existing result file
+    result_file.unlink(missing_ok=True)
+
+    # Start background process
+    _background_process = multiprocessing.Process(
         target=_background_update_worker,
-        args=(package_name, current_version, logger, cache_ttl_seconds, include_prereleases),
-        daemon=True,
+        args=(package_name, current_version, cache_ttl_seconds, include_prereleases, str(result_file)),
         name=f"UpdateChecker-{package_name}",
+        daemon=True,  # Dies when parent dies
     )
-    worker_thread.start()
+    _background_process.start()
 
 
 def check_for_updates(
@@ -514,7 +550,7 @@ def check_for_updates(
 # Example usage:
 # if __name__ == "__main__":
 #     # Zero-cost background check - returns immediately
-#     start_background_update_check("examexam", "0.0.0")
+#     start_background_update_check("bash2gitlab", "0.0.0")
 #
 #     # Your app code here...
 #     print("App is running...")

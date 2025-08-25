@@ -17,6 +17,8 @@ explanation = "Amazon Athena is a serverless query service, and it does not mana
 is_correct = false
 """
 
+from __future__ import annotations
+
 import math
 import os
 import random
@@ -25,6 +27,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, cast
 
+import dotenv
 import rtoml as toml
 from rich.align import Align
 from rich.console import Console
@@ -36,6 +39,9 @@ from scipy import stats
 
 from examexam.constants import BAD_QUESTION_TEXT
 from examexam.utils.toml_normalize import normalize_exam_for_toml
+
+# Load environment variables (e.g., OPENAI_API_KEY)
+dotenv.load_dotenv()
 
 console = Console()
 
@@ -59,7 +65,7 @@ def get_available_tests() -> list[str]:
     data_dir = Path("data")
     if not data_dir.exists():
         console.print("[bold red]Error: /data/ folder not found![/bold red]")
-        return []
+        data_dir = Path(".")
 
     test_files = list(data_dir.glob("*.toml"))
     return [f.stem for f in test_files]
@@ -397,7 +403,11 @@ def take_exam_now(question_file: str = None) -> None:
         if not test_name:
             return
 
-        test_file = Path("data") / f"{test_name}.toml"
+        if (Path("data") / f"{test_name}.toml").exists():
+            test_file = Path("data") / f"{test_name}.toml"
+        else:
+            test_file = f"{test_name}.toml"
+
         session_path = get_session_path(test_name)
 
         # Check for existing session

@@ -1,6 +1,6 @@
 [project]
 name = "examexam"
-version = "0.1.3"
+version = "0.1.4"
 description = "Let LLM generate tests, validate test, and then you take them. Useful for certs."
 authors = [{ name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" }]
 readme = "README.md"

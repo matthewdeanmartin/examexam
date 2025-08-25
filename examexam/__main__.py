@@ -7,6 +7,7 @@ import sys
 from collections.abc import Sequence
 
 import argcomplete
+import dotenv
 
 from examexam import __about__, logging_config
 from examexam.convert_to_pretty import run as convert_questions_run
@@ -16,6 +17,9 @@ from examexam.utils.cli_suggestions import SmartParser
 from examexam.utils.update_checker import start_background_update_check
 from examexam.validate_questions import validate_questions_now
 
+# Load environment variables (e.g., OPENAI_API_KEY)
+dotenv.load_dotenv()
+
 
 def main(argv: Sequence[str] | None = None) -> int:
     start_background_update_check("examexam", __about__.__version__)
@@ -24,21 +28,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         description="A CLI for generating, taking, and managing exams.",
         formatter_class=argparse.RawTextHelpFormatter,
     )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__about__.__version__}")
+
     parser.add_argument("--verbose", action="store_true", required=False, help="Enable detailed logging.")
     subparsers = parser.add_subparsers(dest="command", help="Available commands", required=True)
 
     # --- Take Command ---
     take_parser = subparsers.add_parser("take", help="Take an exam from a TOML file.")
-    take_parser.add_argument("--question-file", type=str, required=True, help="Path to the TOML question file.")
+    take_parser.add_argument(
+        "--question-file", type=str, default="", required=False, help="Path to the TOML question file."
+    )
 
     # --- Generate Command ---
     generate_parser = subparsers.add_parser("generate", help="Generate new exam questions using an LLM.")
-    generate_parser.add_argument(
-        "--exam-name",
-        type=str,
-        required=True,
-        help="The official name of the exam (e.g., 'Certified Kubernetes Administrator').",
-    )
+
     generate_parser.add_argument(
         "--toc-file",
         type=str,
@@ -48,7 +51,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     generate_parser.add_argument(
         "--output-file",
         type=str,
-        required=True,
+        required=False,
         help="Path to the output TOML file where questions will be saved.",
     )
     generate_parser.add_argument(
@@ -71,12 +74,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         type=str,
         required=True,
         help="Path to the TOML question file to validate.",
-    )
-    validate_parser.add_argument(
-        "--exam-name",
-        type=str,
-        required=True,
-        help="The official name of the exam, for context during validation.",
     )
     validate_parser.add_argument(
         "--model", type=str, default="claude", help="Model to use for validation (default: claude)."
@@ -113,15 +110,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             take_exam_now()
     elif args.command == "generate":
+        toc_file = args.toc_file
+        if not toc_file.endswith(".txt"):
+            toc_file_base = toc_file + ".txt"
+        else:
+            toc_file_base = toc_file
         generate_questions_now(
             questions_per_toc_topic=args.n,
-            file_name=args.output_file,
+            file_name=args.output_file or toc_file_base.replace(".txt", ".toml"),
             toc_file=args.toc_file,
             model=args.model,
             system_prompt="You are a test maker.",
         )
     elif args.command == "validate":
-        validate_questions_now(file_name=args.question_file, exam_name=args.exam_name, model=args.model)
+        validate_questions_now(file_name=args.question_file, model=args.model)
     elif args.command == "convert":
         md_path = f"{args.output_base_name}.md"
         html_path = f"{args.output_base_name}.html"

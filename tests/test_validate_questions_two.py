@@ -86,8 +86,8 @@ def test_parse_answer_unknown_returns_empty():
 
 
 class _FakeConversation:
-    def __init__(self, system: str, mode: str, model: str):
-        self.system, self.mode, self.model = system, mode, model
+    def __init__(self, system: str):
+        self.system = system
 
 
 class _FakeRouter:
@@ -104,7 +104,7 @@ class _FakeRouter:
 
 def test_ask_llm_happy_path(monkeypatch):
     # Monkeypatch the Router symbol in the module under test
-    fake_router = _FakeRouter(_FakeConversation(system="S", mode="full", model="claude"))
+    fake_router = _FakeRouter(_FakeConversation(system="S"))
     fake_router.set_response('Answers: ["X" | "Y"]')
 
     # Replace both Conversation and Router with fakes (Router is what matters)
@@ -116,7 +116,7 @@ def test_ask_llm_happy_path(monkeypatch):
 
 
 def test_ask_llm_none_returns_empty(monkeypatch):
-    fake_router = _FakeRouter(_FakeConversation(system="S", mode="full", model="claude"))
+    fake_router = _FakeRouter(_FakeConversation(system="S"))
     fake_router.set_response(None)
     monkeypatch.setattr(mod, "Conversation", _FakeConversation)
     monkeypatch.setattr(mod, "Router", lambda conv: fake_router)
@@ -126,7 +126,7 @@ def test_ask_llm_none_returns_empty(monkeypatch):
 
 
 def test_ask_llm_bad_format_raises(monkeypatch):
-    fake_router = _FakeRouter(_FakeConversation(system="S", mode="full", model="claude"))
+    fake_router = _FakeRouter(_FakeConversation(system="S"))
     fake_router.set_response("No prefix here")
     monkeypatch.setattr(mod, "Conversation", _FakeConversation)
     monkeypatch.setattr(mod, "Router", lambda conv: fake_router)
@@ -137,26 +137,26 @@ def test_ask_llm_bad_format_raises(monkeypatch):
 
 def test_ask_if_bad_question_good_and_bad(monkeypatch):
     # Good path
-    fake_router_g = _FakeRouter(_FakeConversation(system="S", mode="full", model="claude"))
+    fake_router_g = _FakeRouter(_FakeConversation(system="S"))
     fake_router_g.set_response("Because reasons\n---\nGood")
     monkeypatch.setattr(mod, "Conversation", _FakeConversation)
     monkeypatch.setattr(mod, "Router", lambda conv: fake_router_g)
-    g, why = mod.ask_if_bad_question("Q", ["A"], ["A"], "claude", "Exam")
+    g, why = mod.ask_if_bad_question("Q", ["A"], ["A"], "claude")
     assert g == "good" and "Because reasons" in why
 
     # None -> default "bad"
-    fake_router_b = _FakeRouter(_FakeConversation(system="S", mode="full", model="claude"))
+    fake_router_b = _FakeRouter(_FakeConversation(system="S"))
     fake_router_b.set_response(None)
     monkeypatch.setattr(mod, "Router", lambda conv: fake_router_b)
-    g2, why2 = mod.ask_if_bad_question("Q", ["A"], ["A"], "claude", "Exam")
+    g2, why2 = mod.ask_if_bad_question("Q", ["A"], ["A"], "claude")
     assert g2 == "bad" and "Bot returned None" in why2
 
     # Unexpected format -> raises
-    fake_router_u = _FakeRouter(_FakeConversation(system="S", mode="full", model="claude"))
+    fake_router_u = _FakeRouter(_FakeConversation(system="S"))
     fake_router_u.set_response("No triple dash here")
     monkeypatch.setattr(mod, "Router", lambda conv: fake_router_u)
     with pytest.raises(mod.ExamExamTypeError):
-        mod.ask_if_bad_question("Q", ["A"], ["A"], "claude", "Exam")
+        mod.ask_if_bad_question("Q", ["A"], ["A"], "claude")
 
 
 @pytest.mark.parametrize(
@@ -229,9 +229,9 @@ def test_validate_questions_now_e2e_minimal(tmp_path, monkeypatch):
 
     # Monkeypatch ask_llm / ask_if_bad_question only (keeps parsing/grading real)
     monkeypatch.setattr(mod, "ask_llm", lambda q, opts, ans, m, system: ans)  # always returns true correct answers
-    monkeypatch.setattr(mod, "ask_if_bad_question", lambda q, opts, ans, m, exam_name: ("good", "ok"))
+    monkeypatch.setattr(mod, "ask_if_bad_question", lambda q, opts, ans, m: ("good", "ok"))
 
-    score = mod.validate_questions_now(str(f), exam_name="MyExam", model="claude")
+    score = mod.validate_questions_now(str(f), model="claude")
     assert score == 1.0
 
     # File updated with normalized content
