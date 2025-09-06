@@ -509,7 +509,7 @@ wheels = [
 
 [[package]]
 name = "examexam"
-version = "0.1.6"
+version = "0.1.7"
 source = { editable = "." }
 dependencies = [
     { name = "anthropic" },
@@ -517,6 +517,7 @@ dependencies = [
     { name = "boto3" },
     { name = "colorlog" },
     { name = "google-generativeai" },
+    { name = "jinja2" },
     { name = "markdown" },
     { name = "mistralai" },
     { name = "openai" },
@@ -576,6 +577,7 @@ requires-dist = [
     { name = "boto3", specifier = ">=1.34.44" },
     { name = "colorlog", specifier = ">=6.8.2" },
     { name = "google-generativeai", specifier = ">=0.8.4" },
+    { name = "jinja2" },
     { name = "markdown" },
     { name = "mistralai", specifier = ">=1.6.0" },
     { name = "openai", specifier = ">0.28" },

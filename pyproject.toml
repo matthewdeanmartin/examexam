@@ -1,11 +1,13 @@
 [project]
 name = "examexam"
-version = "0.1.6"
+version = "0.1.7"
 description = "Let LLM generate tests, validate test, and then you take them. Useful for certs."
 authors = [{ name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    # customize prompts,
+    "Jinja2",
     # Core test taking
     "rtoml>=0.1.0",
     "toml>=0.10.2",

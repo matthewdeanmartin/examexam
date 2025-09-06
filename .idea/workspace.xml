@@ -4,13 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="0.1.5 passes the integration test, I think it is ready">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="0.1.6 Fix wheel was empty.">
       <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/__about__.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/__about__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/utils/secure_random.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/utils/secure_random.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -258,7 +253,7 @@
       <workItem from="1750877925532" duration="19000" />
       <workItem from="1755475554187" duration="14321000" />
       <workItem from="1756751256365" duration="1584000" />
-      <workItem from="1756850544618" duration="34509000" />
+      <workItem from="1756850544618" duration="35296000" />
     </task>
     <task id="LOCAL-00001" summary="Get ready for publication">
       <option name="closed" value="true" />
@@ -404,7 +399,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757189336405</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="0.1.6 Fix wheel was empty.">
+      <option name="closed" value="true" />
+      <created>1757194068112</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1757194068112</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -441,7 +444,8 @@
     <MESSAGE value="0.1.5 config" />
     <MESSAGE value="0.1.5 tests" />
     <MESSAGE value="0.1.5 passes the integration test, I think it is ready" />
-    <option name="LAST_COMMIT_MESSAGE" value="0.1.5 passes the integration test, I think it is ready" />
+    <MESSAGE value="0.1.6 Fix wheel was empty." />
+    <option name="LAST_COMMIT_MESSAGE" value="0.1.6 Fix wheel was empty." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
