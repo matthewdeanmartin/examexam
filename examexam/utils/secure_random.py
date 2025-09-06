@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 import secrets
-from typing import Any
 from collections.abc import Sequence
+from typing import Any
 
 
 class SecureRandom:

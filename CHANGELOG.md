@@ -12,7 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed for any bug fixes.
 - Security in case of vulnerabilities.
 
-## [0.1.4] - 2025-08-24
+## [0.1.6] - 2025-09-06
+
+### Fixed
+
+- 0.1.5's wheel was corrupt and sdist had too much junk
+
+## [0.1.5] - 2025-09-06
 
 ### Fixed
 
@@ -23,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- version
+- init, conig
 
 
 ## [0.1.4] - 2025-08-24

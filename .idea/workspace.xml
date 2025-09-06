@@ -4,20 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="0.1.5 tests">
-      <change afterPath="$PROJECT_DIR$/examexam/utils/secure_random.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_generate_guides.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_jinja_management.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_take_exam_3.py" afterDir="false" />
+    <list default="true" id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="0.1.5 passes the integration test, I think it is ready">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/__main__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/apis/conversation_and_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/apis/conversation_and_router.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/generate_topic_research.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/generate_topic_research.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/py.typed.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/py.typed" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/take_exam.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/take_exam.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/integration_tests/go.sh" beforeDir="false" afterPath="$PROJECT_DIR$/integration_tests/go.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/__about__.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/__about__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/utils/secure_random.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/utils/secure_random.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -265,7 +258,7 @@
       <workItem from="1750877925532" duration="19000" />
       <workItem from="1755475554187" duration="14321000" />
       <workItem from="1756751256365" duration="1584000" />
-      <workItem from="1756850544618" duration="31438000" />
+      <workItem from="1756850544618" duration="34509000" />
     </task>
     <task id="LOCAL-00001" summary="Get ready for publication">
       <option name="closed" value="true" />
@@ -403,7 +396,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757179644645</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="0.1.5 passes the integration test, I think it is ready">
+      <option name="closed" value="true" />
+      <created>1757189336405</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1757189336405</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -439,7 +440,8 @@
     <MESSAGE value="0.1.5 Jinja templates" />
     <MESSAGE value="0.1.5 config" />
     <MESSAGE value="0.1.5 tests" />
-    <option name="LAST_COMMIT_MESSAGE" value="0.1.5 tests" />
+    <MESSAGE value="0.1.5 passes the integration test, I think it is ready" />
+    <option name="LAST_COMMIT_MESSAGE" value="0.1.5 passes the integration test, I think it is ready" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
