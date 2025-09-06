@@ -1,3 +1,12 @@
+- support "35" to mean "3,5" - number of answers less than 10, so no ambiguity
+- generate with a self check phase
+- show predicted total time!
+- allow user to reject question AFTER seeing the answer
+- show exam results on control-c
+- session file should use test name
+- BUG: reports model company name (gpt4) instead of company/family
+- Can't see logging when it is failing
+
 # Refactor generations
 - Bot must indicate the explanation along with the possible answer. It too often generats the answer list and expression list in different order
 

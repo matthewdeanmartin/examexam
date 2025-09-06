@@ -422,7 +422,6 @@ def take_exam_now(question_file: str = None) -> None:
             session = questions.copy()
             start_time = datetime.now()
             save_session_file(session_path, session, start_time)
-
     try:
         interactive_question_and_answer(questions, session, session_path, start_time)
         save_session_file(session_path, session, start_time)
@@ -454,7 +453,11 @@ def interactive_question_and_answer(questions, session, session_path: Path, star
 
         options_list = list(question["options"])
         random.shuffle(options_list)
-        selected = ask_question(question, options_list)
+        try:
+            selected = ask_question(question, options_list)
+        except KeyboardInterrupt:
+            display_results(score, len(questions), start_time, session)
+            raise
 
         # Record completion time
         session_question["completion_time"] = datetime.now().isoformat()
@@ -514,6 +517,7 @@ def interactive_question_and_answer(questions, session, session_path: Path, star
     clear_screen()
     display_results(score, len(questions), start_time, session)
     save_session_file(session_path, session, start_time)
+    return score
 
 
 def find_question(question: dict[str, Any], session: list[dict[str, Any]]) -> dict[str, Any]:

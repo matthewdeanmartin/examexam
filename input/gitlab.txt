@@ -1,0 +1,20 @@
+Gitlab Pipelines: Pipeline fundamentals: how .gitlab-ci.yml defines jobs, stages, and execution order
+Gitlab Pipelines: Stages and dependencies: controlling parallelism and sequencing with stages, needs, and dependencies
+Gitlab Pipelines: Runners: shared, group, project, and self-hosted runners with different executors
+Gitlab Pipelines: Job execution environment: variables, caching, artifacts, and runner isolation
+Gitlab Pipelines: Pipeline triggers: push, merge request, schedules, API triggers, and manual jobs
+Gitlab Pipelines: Artifacts vs. cache: differences in use cases, lifetime, and scoping
+Gitlab Pipelines: Includes and templates: reusing CI/CD definitions with include and extends
+Gitlab Pipelines: YAML syntax rules: anchors, aliases, variable interpolation, and extends
+Gitlab Pipelines: CI/CD variables: precedence, masking, protection, and scoping of variables
+Gitlab Pipelines: Security considerations: protecting secrets, branch restrictions, and runner access
+Gitlab Pipelines: Pipeline visualization: DAG vs. stage view and diagnosing execution order
+Gitlab Pipelines: Conditional job execution: rules, only/except, and workflow policies
+Gitlab Pipelines: Matrix builds: generating multiple job variants with parallel:matrix
+Gitlab Pipelines: Pipeline efficiency: caching strategies, selective execution, and artifact minimization
+Gitlab Pipelines: Multi-project pipelines: using trigger, parent-child, and downstream pipelines
+Gitlab Pipelines: Testing and deployment environments: environments, review apps, and cleanup policies
+Gitlab Pipelines: Compliance and approvals: required checks, merge approvals, and compliance jobs
+Gitlab Pipelines: Monitoring and debugging: logs, retries, timeouts, and error diagnosis
+Gitlab Pipelines: Security scanning integration: SAST, DAST, dependency scanning in pipelines
+Gitlab Pipelines: Advanced pipeline features: dynamic child pipelines, include:rules, and monorepo strategies

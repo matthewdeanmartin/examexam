@@ -10,6 +10,8 @@ dependencies = [
     "rtoml>=0.1.0",
     "toml>=0.10.2",
     "scipy",
+    # go faster
+    "orjson",
     # CLI & QoL
     "argcomplete",
     "packaging",
@@ -42,6 +44,7 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
+    "scipy-stubs",
     "cli-tool-audit",
     "git2md; python_version >= '3.10'",
     "pyclean; python_version >= '3.12'",

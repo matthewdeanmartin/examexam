@@ -4,8 +4,34 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="reduce min deps for cli tool audit">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/tox.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/tox.yml" afterDir="false" />
+    <list default="true" id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="0.1.4 fix test">
+      <change afterPath="$PROJECT_DIR$/examexam/config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/generate_topic_research.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/prompts/answer_question.md.j2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/prompts/evaluate_question.md.j2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/prompts/generate.md.j2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/utils/toml_reader.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/utils/urllib3_helper.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/input/aws.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/input/gitlab.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/TODO.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/TODO.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/__main__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/apis/conversation_and_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/apis/conversation_and_router.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/apis/third_party_apis.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/apis/third_party_apis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/apis/types.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/apis/types.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/apis/utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/apis/utilities.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/generate_questions.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/generate_questions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/take_exam.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/take_exam.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/utils/benchmark_utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/utils/custom_exceptions.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/utils/custom_exceptions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/utils/env_loader.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/utils/update_checker.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/utils/update_checker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/validate_questions.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/validate_questions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/make_source.sh" beforeDir="false" afterPath="$PROJECT_DIR$/make_source.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,20 +46,25 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="backup/main-10-43-52" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "matthewdeanmartin"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;matthewdeanmartin&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/matthewdeanmartin/examexam.git",
-    "accountId": "0beff49b-3650-407d-b353-7002a53d3c41"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/matthewdeanmartin/examexam.git&quot;,
+    &quot;accountId&quot;: &quot;0beff49b-3650-407d-b353-7002a53d3c41&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 3
@@ -50,18 +81,25 @@
   "keyToString": {
     "Python tests.Python tests in test_take_exam_again.py.executor": "Run",
     "Python tests.Python tests in tests.executor": "Run",
+    "Python tests.pytest for tests.test_validate_questions_two.test_grade_test_scores_and_writes.executor": "Run",
+    "Python tests.pytest for tests.test_validate_questions_two.test_parse_answer_variants.executor": "Run",
+    "Python tests.pytest for tests.test_validate_questions_two.test_parse_quote_lists.executor": "Run",
+    "Python tests.pytest in test_take_exam_2.py.executor": "Run",
+    "Python tests.pytest in test_validate_questions_two.py.executor": "Run",
     "Python tests.pytest in tests.executor": "Run",
     "Python.__main__.executor": "Run",
     "Python.game.executor": "Run",
     "Python.game2.executor": "Run",
     "Python.generate_questions.executor": "Run",
+    "Python.randomish.executor": "Run",
     "Python.read_schema.executor": "Debug",
     "Python.take_exam.executor": "Run",
+    "Python.update_checker.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHELLCHECK.PATH": "C:\\Users\\matth\\AppData\\Roaming\\JetBrains\\PyCharm2025.2\\plugins\\Shell Script\\shellcheck.exe",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/github/examexam",
+    "last_opened_file_path": "C:/github/examexam/examexam/utils",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.stylelint": "true",
     "node.js.detected.package.tslint": "true",
@@ -75,19 +113,97 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\github\examexam\examexam\utils" />
       <recent name="C:\github\examexam" />
       <recent name="C:\github\examexam\tests" />
       <recent name="C:\github\examexam\examexam" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\github\examexam\data\aws_architecture_gpt4_mini" />
+      <recent name="C:\github\examexam" />
       <recent name="C:\github\examexam\data\old_schema" />
       <recent name="C:\github\examexam\data" />
       <recent name="C:\github\examexam\dead_code" />
-      <recent name="C:\github\examexam\example_inputs" />
-      <recent name="C:\github\examexam" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.update_checker">
+    <configuration name="update_checker" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="examexam" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examexam/utils" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examexam/utils/update_checker.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for tests.test_validate_questions_two.test_grade_test_scores_and_writes" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="examexam" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_validate_questions_two.test_grade_test_scores_and_writes&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for tests.test_validate_questions_two.test_parse_answer_variants" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="examexam" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_validate_questions_two.test_parse_answer_variants&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for tests.test_validate_questions_two.test_parse_quote_lists" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="examexam" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_validate_questions_two.test_parse_quote_lists&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <configuration name="pytest in tests" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="examexam" />
       <option name="ENV_FILES" value="" />
@@ -108,7 +224,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.update_checker" />
+        <item itemvalue="Python tests.pytest for tests.test_validate_questions_two.test_grade_test_scores_and_writes" />
         <item itemvalue="Python tests.pytest in tests" />
+        <item itemvalue="Python tests.pytest for tests.test_validate_questions_two.test_parse_answer_variants" />
+        <item itemvalue="Python tests.pytest for tests.test_validate_questions_two.test_parse_quote_lists" />
       </list>
     </recent_temporary>
   </component>
@@ -150,6 +270,8 @@
       <workItem from="1750725537312" duration="1784000" />
       <workItem from="1750877925532" duration="19000" />
       <workItem from="1755475554187" duration="14321000" />
+      <workItem from="1756751256365" duration="1584000" />
+      <workItem from="1756850544618" duration="15904000" />
     </task>
     <task id="LOCAL-00001" summary="Get ready for publication">
       <option name="closed" value="true" />
@@ -223,7 +345,55 @@
       <option name="project" value="LOCAL" />
       <updated>1756046239948</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="fix readme">
+      <option name="closed" value="true" />
+      <created>1756048241282</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1756048241282</updated>
+    </task>
+    <task id="LOCAL-00011" summary="fix cli">
+      <option name="closed" value="true" />
+      <created>1756048459895</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1756048459895</updated>
+    </task>
+    <task id="LOCAL-00012" summary="0.1.3">
+      <option name="closed" value="true" />
+      <created>1756057462327</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1756057462327</updated>
+    </task>
+    <task id="LOCAL-00013" summary="0.1.3 more tests">
+      <option name="closed" value="true" />
+      <created>1756060722653</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1756060722653</updated>
+    </task>
+    <task id="LOCAL-00014" summary="0.1.4 fix cli, fix toml bug in validate">
+      <option name="closed" value="true" />
+      <created>1756080345403</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1756080345403</updated>
+    </task>
+    <task id="LOCAL-00015" summary="0.1.4 fix test">
+      <option name="closed" value="true" />
+      <created>1756084634682</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1756084634682</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -250,27 +420,40 @@
     <MESSAGE value="no pydantic plugin" />
     <MESSAGE value="missed a dep" />
     <MESSAGE value="reduce min deps for cli tool audit" />
-    <option name="LAST_COMMIT_MESSAGE" value="reduce min deps for cli tool audit" />
+    <MESSAGE value="fix readme" />
+    <MESSAGE value="fix cli" />
+    <MESSAGE value="0.1.3" />
+    <MESSAGE value="0.1.3 more tests" />
+    <MESSAGE value="0.1.4 fix cli, fix toml bug in validate" />
+    <MESSAGE value="0.1.4 fix test" />
+    <option name="LAST_COMMIT_MESSAGE" value="0.1.4 fix test" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/examexam/take_exam.py</url>
-          <line>459</line>
+          <line>497</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/examexam$game2.coverage" NAME="game2 Coverage Results" MODIFIED="1745108300171" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/examexam$.coverage" NAME=" Coverage Results" MODIFIED="1756044671211" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/examexam$read_schema.coverage" NAME="read_schema Coverage Results" MODIFIED="1743341135888" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examexam" />
+    <SUITE FILE_PATH="coverage/examexam$pytest_in_test_take_exam_2_py.coverage" NAME="pytest in test_take_exam_2.py Coverage Results" MODIFIED="1756060137086" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/examexam$__main__.coverage" NAME="__main__ Coverage Results" MODIFIED="1747513825833" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examexam" />
-    <SUITE FILE_PATH="coverage/examexam$take_exam.coverage" NAME="take_exam Coverage Results" MODIFIED="1747515781408" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examexam" />
-    <SUITE FILE_PATH="coverage/examexam$pytest_in_tests.coverage" NAME="pytest in tests Coverage Results" MODIFIED="1756044829792" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/examexam$pytest_in_tests.coverage" NAME="pytest in tests Coverage Results" MODIFIED="1756083575057" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/examexam$game.coverage" NAME="game Coverage Results" MODIFIED="1745016476916" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/examexam$generate_questions.coverage" NAME="generate_questions Coverage Results" MODIFIED="1747514686373" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examexam" />
+    <SUITE FILE_PATH="coverage/examexam$pytest_for_tests_test_validate_questions_two_test_parse_answer_variants.coverage" NAME="pytest for tests.test_validate_questions_two.test_parse_answer_variants Coverage Results" MODIFIED="1756060642105" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/examexam$pytest_for_tests_test_validate_questions_two_test_parse_quote_lists.coverage" NAME="pytest for tests.test_validate_questions_two.test_parse_quote_lists Coverage Results" MODIFIED="1756060389399" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/examexam$game2.coverage" NAME="game2 Coverage Results" MODIFIED="1745108300171" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/examexam$pytest_for_tests_test_validate_questions_two_test_grade_test_scores_and_writes.coverage" NAME="pytest for tests.test_validate_questions_two.test_grade_test_scores_and_writes Coverage Results" MODIFIED="1756083655836" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/examexam$take_exam.coverage" NAME="take_exam Coverage Results" MODIFIED="1747515781408" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examexam" />
+    <SUITE FILE_PATH="coverage/examexam$pytest_in_test_validate_questions_two_py.coverage" NAME="pytest in test_validate_questions_two.py Coverage Results" MODIFIED="1756060356667" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/examexam$update_checker.coverage" NAME="update_checker Coverage Results" MODIFIED="1757166300266" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/examexam/utils" />
+    <SUITE FILE_PATH="coverage/examexam$randomish.coverage" NAME="randomish Coverage Results" MODIFIED="1756058197281" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

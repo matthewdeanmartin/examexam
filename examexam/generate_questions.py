@@ -11,6 +11,7 @@ from time import perf_counter, sleep
 
 import dotenv
 import rtoml as toml
+from jinja2 import Environment, FileSystemLoader, PackageLoader
 
 # --- Rich UI for users ---
 from rich.console import Console
@@ -45,6 +46,31 @@ if not logger.handlers:
 console = Console()
 
 
+# ---------- Jinja2 Template Loading ----------
+def get_jinja_env() -> Environment:
+    """
+    Initializes and returns a Jinja2 Environment.
+    It checks for a local 'prompts' directory for development,
+    otherwise it assumes the package is installed and uses the package loader.
+    """
+    # Dev mode: Check if a 'prompts' directory exists relative to this project's root
+    dev_prompts_path = Path(__file__).parent.parent / "prompts"
+    if dev_prompts_path.is_dir():
+        # Running from source tree
+        logger.debug("Loading Jinja2 templates from filesystem: %s", dev_prompts_path)
+        loader = FileSystemLoader(dev_prompts_path)
+        return Environment(loader=loader, autoescape=False)  # nosec
+    else:
+        # Installed package
+        logger.debug("Loading Jinja2 templates from installed package 'examexam.prompts'")
+        # The package name is 'examexam' and the templates are in a 'prompts' subdir
+        return Environment(loader=PackageLoader("examexam", "prompts"), autoescape=False)  # nosec  # nosec
+
+
+# Create a single environment instance to be used by the module
+jinja_env = get_jinja_env()
+
+
 # ---------- Helpers ----------
 @dataclass
 class GenStats:
@@ -75,7 +101,7 @@ def _fatal_if_misconfigured(model: str) -> None:
 def _is_fatal_message(msg: str) -> bool:
     msg_lower = msg.lower()
     fatal_markers = [
-        "api_key client option must be set",
+        "unknown model" "api_key client option must be set",
         "no api key",
         "invalid api key",
         "unauthorized",
@@ -84,21 +110,6 @@ def _is_fatal_message(msg: str) -> bool:
         "access denied",
     ]
     return any(m in msg_lower for m in fatal_markers)
-
-
-TOML_SCHEMA = """[[questions]]
-question = "Question for user here"
-
-[[questions.options]]
-text = "Some Correct answer. Must be first."
-explanation = "Explanation. Must be before is_correct. Correct."
-is_correct = true
-
-[[questions.options]]
-text = "Wrong Answer. Must be first."
-explanation = "Explanation. Must be before is_correct. Incorrect."
-is_correct = false
-"""
 
 
 def extract_toml(markdown_content: str) -> str | None:
@@ -133,22 +144,13 @@ def generate_questions(
     logger.info("Generating %d questions with prompt: %s", n, prompt)
     _fatal_if_misconfigured(model)
 
-    user_prompt = f"""Generate {n} medium difficulty certification exam questions. {prompt}.
-Follow the following TOML format:
-
-```toml
-{TOML_SCHEMA}
-```
-One or more can be correct!
-Five options.
-Each explanation must end in  "Correct" or "Incorrect", e.g. "Instance storage is ephemeral. Correct".
-Do not use numbers or letters to represent the answers.
-   [[questions.options]]
-   text = "A. Answer"  # never do this.
-   [[questions.options]]
-   text = "1. Answer"  # never do this.
-Do not use "All of the above" or the like as an answer.
-"""
+    # Render the prompt from the Jinja2 template
+    try:
+        template = jinja_env.get_template("generate.md.j2")
+        user_prompt = template.render(n=n, prompt=prompt)
+    except Exception as e:
+        logger.error("Failed to load or render Jinja2 template 'generate.md.j2': %s", e)
+        raise
 
     router = Router(conversation)
 
@@ -271,6 +273,7 @@ def generate_questions_now(
 
     stats = GenStats()
 
+    absolute_failures = 0
     with progress:
         overall_task = progress.add_task("Overall", total=total_topics)
 
@@ -291,9 +294,13 @@ def generate_questions_now(
             dt = perf_counter() - t0
 
             if not questions:
+                absolute_failures += 1
                 progress.update(topic_task, description=f"{idx}/{total_topics} {service} [red](failed)[/]")
                 progress.advance(topic_task)
                 progress.advance(overall_task)
+                if absolute_failures > 3:
+                    print("Three times bot absolutely failed to generate any proper questions")
+                    return 0
                 continue
 
             for question in questions.get("questions", []):
@@ -328,6 +335,6 @@ if __name__ == "__main__":
         questions_per_toc_topic=10,
         file_name="personal_multiple_choice_tests.toml",
         toc_file="../example_inputs/personally_important.txt",
-        model="gpt4",
+        model="openai",
         system_prompt="We are writing multiple choice tests.",
     )

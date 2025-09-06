@@ -34,6 +34,7 @@ from typing import Any
 
 import dotenv
 import rtoml as toml
+from jinja2 import Environment, FileSystemLoader, PackageLoader
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.panel import Panel
@@ -66,6 +67,33 @@ if not logger.handlers:
     )
 
 console = Console()
+
+
+# ----------------------------------------------------------------------------
+# Jinja2 Template Loading
+# ----------------------------------------------------------------------------
+def get_jinja_env() -> Environment:
+    """
+    Initializes and returns a Jinja2 Environment.
+    It checks for a local 'prompts' directory for development,
+    otherwise it assumes the package is installed and uses the package loader.
+    """
+    # Dev mode: Check if a 'prompts' directory exists relative to this project's root
+    dev_prompts_path = Path(__file__).parent.parent / "prompts"
+    if dev_prompts_path.is_dir():
+        # Running from source tree
+        logger.debug("Loading Jinja2 templates from filesystem: %s", dev_prompts_path)
+        loader = FileSystemLoader(dev_prompts_path)
+        return Environment(loader=loader, autoescape=False)  # nosec
+    else:
+        # Installed package
+        logger.debug("Loading Jinja2 templates from installed package 'examexam.prompts'")
+        # The package name is 'examexam' and the templates are in a 'prompts' subdir
+        return Environment(loader=PackageLoader("examexam", "prompts"), autoescape=False)  # nosec  # nosec
+
+
+# Create a single environment instance to be used by the module
+jinja_env = get_jinja_env()
 
 
 # ----------------------------------------------------------------------------
@@ -192,11 +220,12 @@ def ask_llm(question: str, options: list[str], answers: list[str], model: str, s
     if "(Select" not in question:
         question = f"{question} (Select {len(answers)})"
 
-    prompt = (
-        "Answer the following question in the format 'Answers: [option1 | option2 | ...]'.\n"
-        f"Question: {question}\n"
-        f"Options: {options}\n"
-    )
+    try:
+        template = jinja_env.get_template("answer_question.md.j2")
+        prompt = template.render(question=question, options=options)
+    except Exception as e:
+        logger.error("Failed to load or render Jinja2 template 'answer_question.md.j2': %s", e)
+        raise
 
     content = _llm_call(prompt, model=model, system=system)
     if content is None:
@@ -214,15 +243,12 @@ def ask_llm(question: str, options: list[str], answers: list[str], model: str, s
 
 def ask_if_bad_question(question: str, options: list[str], answers: list[str], model: str) -> tuple[str, str]:
     """Asks the LLM to evaluate if a question is Good or Bad."""
-    prompt = (
-        "Tell me if the following question is Good or Bad, e.g. would it be unfair to ask this on a test.\n"
-        "It is good if it has an answer, if it not every single option is an answer, if it is not opinion based, if it does not have weasel words such as best, optimal, primary which would "
-        "make many of the answers arguably true on some continuum of truth or opinion, or if the question is about *numerical* ephemeral truths, such as system limitations (max GB, etc) and UI defaults.\n\n"
-        f"Question: {question}\n"
-        f"Options: {options}\n"
-        f"Answers: {answers}\n\n"
-        "Think about the answer then write `---\nGood` or `---\nBad`\n"
-    )
+    try:
+        template = jinja_env.get_template("evaluate_question.md.j2")
+        prompt = template.render(question=question, options=options, answers=answers)
+    except Exception as e:
+        logger.error("Failed to load or render Jinja2 template 'evaluate_question.md.j2': %s", e)
+        raise
 
     system = "You are a test reviewer and are validating questions."
     content = _llm_call(prompt, model=model, system=system)

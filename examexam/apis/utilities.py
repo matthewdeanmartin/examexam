@@ -1,12 +1,15 @@
 # utilities.py
+from __future__ import annotations
 
 import logging
 import time
 from collections.abc import Callable
+from datetime import datetime
 from functools import wraps
+from pathlib import Path
 from typing import Any
 
-from examexam.apis.types import FailureToHaltError
+from examexam.apis.types import Conversation, FailureToHaltError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -87,5 +90,39 @@ def format_conversation_to_markdown(
         elif not content.strip():
             content = f"**** {label} returned whitespace ****"
 
-        markdown_lines.append(f"{label}: {content}")
+        markdown_lines.append(f"## {label}")
+        markdown_lines.append("```")
+        markdown_lines.append(str(content))
+        markdown_lines.append("```")
     return "\n".join(markdown_lines)
+
+
+def log_conversation_to_file(conversation: Conversation, model_name: str, request: str) -> None:
+    """Logs the full conversation history to a timestamped markdown file."""
+    log_dir = Path("conversations")
+    try:
+        log_dir.mkdir(exist_ok=True)
+    except OSError as e:
+        LOGGER.error(f"Could not create conversations directory: {e}")
+        return
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    # Sanitize model name for filename
+    safe_model_name = model_name.replace(":", "_").replace("/", "_")
+    filename = log_dir / f"{timestamp}_{safe_model_name}.md"
+
+    # Create header for the markdown file
+    header = "# Conversation Log\n\n"
+    header += f"**Model:** `{model_name}`\n"
+    header += f"**Timestamp:** `{datetime.now().isoformat()}`\n\n---\n\n"
+
+    # Format the conversation
+    markdown_content = format_conversation_to_markdown(conversation.conversation)
+
+    try:
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(header)
+            f.write(markdown_content)
+        LOGGER.debug(f"Conversation logged to {filename}")
+    except OSError as e:
+        LOGGER.error(f"Could not write to conversation log file {filename}: {e}")

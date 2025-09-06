@@ -1,0 +1,25 @@
+Designing highly available multi-AZ architectures with automatic failover.
+Implementing disaster recovery strategies (backup/restore, pilot light, warm standby, multi-site).
+Choosing the right database service based on workload (relational, NoSQL, graph, analytics).
+Designing for cost optimization using Reserved Instances, Savings Plans, and Spot Instances.
+Securing workloads with IAM policies, roles, and cross-account access patterns.
+Implementing network segmentation with VPCs, subnets, and security groups.
+Designing hybrid architectures with VPN, Direct Connect, or AWS Outposts.
+Using caching layers (CloudFront, ElastiCache, DynamoDB Accelerator) for performance.
+Applying event-driven design with decoupled services (SQS, SNS, EventBridge).
+Building resilient storage architectures with replication and lifecycle policies.
+Migrating monolithic applications into microservices using containers and serverless.
+Applying the Well-Architected Framework pillars: operational excellence, security, reliability, performance, cost.
+Implementing observability with logging, metrics, and tracing across distributed systems.
+Designing architectures that scale horizontally vs vertically depending on workload.
+Planning multi-region architectures for global performance and compliance.
+Designing governance with service control policies, tagging, and account organization.
+Applying encryption at rest and in transit, and managing keys with KMS.
+Integrating CI/CD pipelines into infrastructure deployment with IaC tools.
+Handling schema and data migration in cloud-native databases.
+Using edge computing patterns with CloudFront Functions and Lambda@Edge.
+Designing for operational resilience with chaos engineering and fault injection.
+Evaluating tradeoffs between managed services vs self-managed compute.
+Architecting for sustainability by choosing efficient instance families and scaling policies.
+Managing secrets and sensitive data with dedicated services and rotation strategies.
+Designing secure multi-tenant architectures in SaaS environments.

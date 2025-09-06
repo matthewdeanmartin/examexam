@@ -10,6 +10,7 @@ import argcomplete
 import dotenv
 
 from examexam import __about__, logging_config
+from examexam.apis.conversation_and_router import FRONTIER_MODELS
 from examexam.convert_to_pretty import run as convert_questions_run
 from examexam.generate_questions import generate_questions_now
 from examexam.take_exam import take_exam_now
@@ -60,11 +61,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         default=5,
         help="Number of questions to generate per topic (default: 5).",
     )
+
+    models = list(_ for _ in FRONTIER_MODELS.keys())
+    models_string = ", ".join(models)
     generate_parser.add_argument(
         "--model",
         type=str,
-        default="gpt4",
-        help="Model to use for generating questions (e.g., 'gpt4', 'claude'). Default: gpt4",
+        default="openai",
+        help=f"Model to use for generating questions (e.g., {models_string}). Default: openai",
     )
 
     # --- Validate Command ---
@@ -76,7 +80,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Path to the TOML question file to validate.",
     )
     validate_parser.add_argument(
-        "--model", type=str, default="claude", help="Model to use for validation (default: claude)."
+        "--model",
+        type=str,
+        default="openai",
+        help=f"Model to use for validation, e.g. {models_string} (default: openai).",
     )
 
     # --- Convert Command ---

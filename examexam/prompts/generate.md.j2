@@ -1,0 +1,26 @@
+Generate {{ n }} medium difficulty certification exam questions. {{ prompt }}.
+Follow the following TOML format:
+
+```toml
+[[questions]]
+question = "Question for user here"
+
+[[questions.options]]
+text = "Some Correct answer. Must be first."
+explanation = "Explanation. Must be before is_correct. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Wrong Answer. Must be first."
+explanation = "Explanation. Must be before is_correct. Incorrect."
+is_correct = false
+```
+One or more can be correct!
+Five options.
+Each explanation must end in  "Correct" or "Incorrect", e.g. "Instance storage is ephemeral. Correct".
+Do not use numbers or letters to represent the answers.
+   [[questions.options]]
+   text = "A. Answer"  # never do this.
+   [[questions.options]]
+   text = "1. Answer"  # never do this.
+Do not use "All of the above" or the like as an answer.

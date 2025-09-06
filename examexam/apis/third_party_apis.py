@@ -1,4 +1,5 @@
 # third_party_apis.py
+from __future__ import annotations
 
 import logging
 import os
@@ -46,7 +47,7 @@ class OpenAICaller(BaseLLMCaller):
         if OpenAICaller._client is None:
             OpenAICaller._client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         self.client = OpenAICaller._client
-        self.supported_models = ["gpt-4o-mini"]
+        self.supported_models = ["gpt-5", "gpt-4o-mini"]
 
     @call_limit(500)
     def completion(self, prompt: str) -> str:

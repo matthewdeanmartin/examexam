@@ -11,25 +11,25 @@
 # --- CONFIGURABLE VARIABLES ---
 
 # The full, official name of the exam. Used in prompts.
-EXAM_NAME = "Certified Kubernetes Administrator"
+EXAM_NAME = "Gitlab Pipelines"
 
 # The path to the text file containing topics, one per line.
 # Example: Create a file named 'k8s_topics.txt' with contents like:
 # Services & Networking
 # Pods
 # Storage
-TOPIC_FILE = "k8s_topics.txt"
+TOPIC_FILE = "input/gitlab.txt"
 
 # A short base name for all generated files (e.g., 'k8s_exam').
-BASE_NAME = "k8s_exam"
-
+BASE_NAME = "gitlab_pipelines"
+MODEL = "openai"
 # Number of questions to generate per topic from the TOPIC_FILE.
 QUESTIONS_PER_TOPIC = 5
 
 # --- AUTOMATIC VARIABLES (Do not edit) ---
 
 # The Python interpreter to use. Assumes `examexam` is in the environment.
-PYTHON = python3 -m
+PYTHON = uv run python -m
 PACKAGE_NAME = examexam
 
 # Generated file names based on the BASE_NAME.
@@ -50,10 +50,10 @@ all: generate validate convert
 generate:
 	@echo ">>> Generating $(QUESTION_FILE) with $(QUESTIONS_PER_TOPIC) questions per topic..."
 	$(PYTHON) $(PACKAGE_NAME) generate \
-		--exam-name "$(EXAM_NAME)" \
 		--toc-file "$(TOPIC_FILE)" \
 		--output-file "$(QUESTION_FILE)" \
-		-n $(QUESTIONS_PER_TOPIC)
+		-n $(QUESTIONS_PER_TOPIC) \
+		--model $(MODEL)
 
 # Step 2: Validate the generated questions using an LLM.
 validate: $(QUESTION_FILE)
@@ -70,7 +70,7 @@ convert: $(QUESTION_FILE)
 		--output-base-name "$(BASE_NAME)"
 
 # Standalone Step: Take the exam.
-take: $(QUESTION_FILE)
+take:
 	@echo ">>> Starting exam from $(QUESTION_FILE)..."
 	$(PYTHON) $(PACKAGE_NAME) take --question-file "$(QUESTION_FILE)"
 

@@ -1,6 +1,10 @@
-class ExamExamValueError(ValueError):
+class ExamExamError(Exception):
+    """ExamExam threw this error"""
+
+
+class ExamExamValueError(ExamExamError):
     """ExamExam does not like that value"""
 
 
-class ExamExamTypeError(TypeError):
+class ExamExamTypeError(ExamExamError):
     """ExamExam does not like that"""
