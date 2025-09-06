@@ -163,3 +163,5 @@ cython_debug/
 
 session.toml
 .mypy_cache
+/conversations/
+/study_guide/

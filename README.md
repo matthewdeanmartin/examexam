@@ -29,7 +29,7 @@ ANTHROPIC_API_KEY=...
 GEMINI_API_KEY=...
 
 # Optional: default model name your setup understands
-EXAMEXAM_DEFAULT_MODEL=gpt4
+EXAMEXAM_DEFAULT_MODEL=openai
 ```
 
 > You’ll select a model with `--model` on commands that talk to an LLM (e.g., `gpt4`, `claude`, `gemini-1.5-pro`).

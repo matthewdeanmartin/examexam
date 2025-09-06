@@ -60,7 +60,7 @@ def test_get_available_tests_when_present(tmp_path, monkeypatch):
     assert set(names) == {"athena", "other"}
 
 
-def test_get_available_tests_when_missing(tmp_path, monkeypatch, capsys):
+def test_get_available_tests_when_missing(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     names = take_exam.get_available_tests()
     # Should print an error and return []
@@ -221,7 +221,7 @@ def test_save_session_file_writes_toml(tmp_path, monkeypatch):
     assert "questions" in data and isinstance(data["questions"], list)
 
 
-def test_display_results_does_not_crash(capsys):
+def test_display_results_does_not_crash():
     # Smoke test: ensure printing/rendering doesn't raise
     start_time = datetime.now() - timedelta(seconds=30)
     take_exam.display_results(score=1, total=2, start_time=start_time, session=None, withhold_judgement=True)
@@ -232,7 +232,7 @@ def test_find_question_found_and_missing():
     q = take_exam.find_question({"id": "b"}, session)
     assert q == {"id": "b"}
     q2 = take_exam.find_question({"id": "zzz"}, session)
-    assert q2 == {}
+    assert not q2
 
 
 def test_clear_screen_calls_system(monkeypatch):

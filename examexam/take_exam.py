@@ -94,8 +94,7 @@ def select_test() -> str | None:
             test_idx = int(choice) - 1
             if 0 <= test_idx < len(tests):
                 return tests[test_idx]
-            else:
-                console.print("[bold red]Invalid choice. Please try again.[/bold red]")
+            console.print("[bold red]Invalid choice. Please try again.[/bold red]")
         except ValueError:
             console.print("[bold red]Please enter a valid number.[/bold red]")
 
@@ -135,10 +134,9 @@ def check_resume_session(test_name: str) -> tuple[bool, list[dict[str, Any]] | N
         resume = Confirm.ask("Do you want to resume this session?")
         if resume:
             return True, session_data, start_dt
-        else:
-            # User wants to start fresh
-            session_path.unlink()  # Delete old session
-            return False, None, None
+        # User wants to start fresh
+        session_path.unlink()  # Delete old session
+        return False, None, None
 
     except Exception as e:
         console.print(f"[bold red]Error reading session file: {e}[/bold red]")

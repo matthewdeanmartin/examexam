@@ -82,7 +82,7 @@ def loads_from_string(s: str) -> Mapping[str, Any]:
     try:
         if BACKEND == "rtoml":
             return LOADER.loads(s)  # type: ignore[attr-defined]
-        elif BACKEND == "tomllib":
+        if BACKEND == "tomllib":
             return LOADER.loads(s.encode("utf-8"))  # type: ignore[attr-defined]
         else:  # tomli
             return LOADER.loads(s)  # type: ignore[attr-defined]

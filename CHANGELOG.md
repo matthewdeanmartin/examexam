@@ -16,6 +16,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Stops if question generation fails
+- Hack to fix code from failing to stop on fatal errors
+- `research` and `study-plan` commands. 
+- Jinja templates.
+
+### Added
+
+- version
+
+
+## [0.1.4] - 2025-08-24
+
+### Fixed
+
 - TOML error in Validate fixed
 - Delay in update checker fixed.
 

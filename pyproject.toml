@@ -1,6 +1,6 @@
 [project]
 name = "examexam"
-version = "0.1.4"
+version = "0.1.5"
 description = "Let LLM generate tests, validate test, and then you take them. Useful for certs."
 authors = [{ name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" }]
 readme = "README.md"
@@ -41,6 +41,15 @@ build-backend = "hatchling.build"
 #
 # contract
 # griffe = ">=0.38.1"
+[tool.hatch.build.targets.wheel]
+packages = ["bash2gitlab"]
+include = [
+    "examexam/**/*.py",
+    "examexam/promptjs/**/*.j2",
+    "examexam/promptjs/**/*.md.j2",
+    "examexam/py.typed",
+    "/README.md", "LICENSE",
+]
 
 [dependency-groups]
 dev = [

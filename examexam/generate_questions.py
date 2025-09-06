@@ -11,7 +11,6 @@ from time import perf_counter, sleep
 
 import dotenv
 import rtoml as toml
-from jinja2 import Environment, FileSystemLoader, PackageLoader
 
 # --- Rich UI for users ---
 from rich.console import Console
@@ -28,6 +27,7 @@ from rich.progress import (
 )
 
 from examexam.apis.conversation_and_router import Conversation, Router
+from examexam.jinja_management import jinja_env
 
 # Load environment variables (e.g., OPENAI_API_KEY)
 dotenv.load_dotenv()
@@ -44,31 +44,6 @@ if not logger.handlers:
     )
 
 console = Console()
-
-
-# ---------- Jinja2 Template Loading ----------
-def get_jinja_env() -> Environment:
-    """
-    Initializes and returns a Jinja2 Environment.
-    It checks for a local 'prompts' directory for development,
-    otherwise it assumes the package is installed and uses the package loader.
-    """
-    # Dev mode: Check if a 'prompts' directory exists relative to this project's root
-    dev_prompts_path = Path(__file__).parent.parent / "prompts"
-    if dev_prompts_path.is_dir():
-        # Running from source tree
-        logger.debug("Loading Jinja2 templates from filesystem: %s", dev_prompts_path)
-        loader = FileSystemLoader(dev_prompts_path)
-        return Environment(loader=loader, autoescape=False)  # nosec
-    else:
-        # Installed package
-        logger.debug("Loading Jinja2 templates from installed package 'examexam.prompts'")
-        # The package name is 'examexam' and the templates are in a 'prompts' subdir
-        return Environment(loader=PackageLoader("examexam", "prompts"), autoescape=False)  # nosec  # nosec
-
-
-# Create a single environment instance to be used by the module
-jinja_env = get_jinja_env()
 
 
 # ---------- Helpers ----------
