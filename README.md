@@ -1,6 +1,6 @@
 # examexam
 
-A CLI for **creating**, **validating**, **converting**, and **taking** multiple‑choice practice exams. Keep everything local as TOML question banks, generate new questions with an LLM, sanity‑check them, and study in a `rich` terminal UI.
+A CLI for **creating**, **validating**, **studying for**, and **taking** multiple-choice practice exams. Keep everything local as TOML question banks, generate new questions with an LLM, sanity-check them, generate study guides, and test your knowledge in a `rich` terminal UI.
 
 ---
 
@@ -10,121 +10,184 @@ A CLI for **creating**, **validating**, **converting**, and **taking** multiple�
 
 ```bash
 pipx install examexam
-```
+````
 
 > `pipx` keeps tools isolated and on your path. If you don’t use pipx, you can install with `python -m pip install examexam` or `uv tool install examexam`.
 
----
+-----
 
-## Set up keys & environment
+## Quick Start: AWS Practice Exam Workflow
 
-`examexam` reads a `.env` file (via `python-dotenv`) so you can keep secrets out of your shell history.
+Here’s a typical workflow for creating and studying for an AWS exam.
 
-Create a `.env` next to where you run the commands:
+1.  **Initialize a new project**
 
-```dotenv
-# Use whichever providers you have
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=...
-GEMINI_API_KEY=...
+    This creates a default `examexam.toml` configuration file in your current directory.
 
-# Optional: default model name your setup understands
-EXAMEXAM_DEFAULT_MODEL=openai
-```
+    ```bash
+    examexam init
+    ```
 
-> You’ll select a model with `--model` on commands that talk to an LLM (e.g., `gpt4`, `claude`, `gemini-1.5-pro`).
+2.  **Create a topics file**
 
----
+    Make a simple text file with one topic per line. Let's call it `aws_topics.txt`:
 
-## Quick start
+    ```text
+    AWS VPC
+    AWS S3
+    AWS IAM
+    AWS Security Groups vs NACLs
+    ```
 
-1. **Make a topics file** (one topic per line):
+3.  **Generate a study plan**
 
-```
-VPC
-S3
-ECS
-IAM
-RDS
-```
+    Get a head start by generating a Markdown study guide for all your topics.
 
-2. **Generate questions** into a TOML bank (adds/extends the file):
+    ```bash
+    examexam study-plan --toc-file aws_topics.txt
+    ```
+
+    > This creates a `study_guide/aws_topics_study_plan.md` file.
+
+4.  **Generate questions**
+
+    Create 5 questions for each topic and save them to a TOML file. We'll use a fast, cheap model for this.
+
+    ```bash
+    examexam generate \
+      --toc-file aws_topics.txt \
+      --output-file aws_exam.toml \
+      -n 5 \
+      --model-provider openai \
+      --model-class fast
+    ```
+
+5.  **Validate the questions**
+
+    Have a different LLM answer each question and flag potentially "bad" or unfair questions. The results are saved back into `aws_exam.toml`.
+
+    ```bash
+    examexam validate \
+      --question-file aws_exam.toml \
+      --model-provider anthropic
+    ```
+
+6.  **Drill down on a tough topic**
+
+    Generate a detailed research guide for a specific topic you want to focus on.
+
+    ```bash
+    examexam research --topic "AWS Security Groups vs NACLs"
+    ```
+
+    > This creates a `study_guide/aws_security_groups_vs_nacls.md` file.
+
+7.  **Take the exam**
+
+    Launch the interactive terminal UI to take your test. Progress is saved automatically.
+
+    ```bash
+    examexam take --question-file aws_exam.toml
+    ```
+
+8.  **(Optional) Customize the prompts**
+
+    If you want to change how questions or study guides are generated, you can deploy the default Jinja2 templates to your local directory for editing.
+
+    ```bash
+    examexam customize
+    ```
+
+    > This creates a `prompts/` folder. `examexam` will automatically use these local templates instead of the built-in ones.
+
+-----
+
+## Configuration
+
+`examexam` is configured via a TOML file and environment variables.
+
+### `examexam.toml`
+
+Run `examexam init` to create a default `examexam.toml` file. This file allows you to set default values for command-line arguments and general behavior, such as your preferred models.
+
+### Environment Variables
+
+Any setting in the TOML file can be overridden by an environment variable. The format is `EXAMEXAM_SECTION_KEY`. For example, to override the default number of questions:
 
 ```bash
-examexam generate \
-  --exam-name "AWS Associate Practice" \
-  --toc-file topics.txt \
-  --output-file data/aws-practice.toml \
-  -n 10 \
-  --model gpt4
+export EXAMEXAM_GENERAL_DEFAULT_N=10
+examexam generate --toc-file ...
 ```
 
-3. **Validate** questions (model answers + Good/Bad triage):
+### Precedence Order
 
-```bash
-examexam validate \
-  --question-file data/aws-practice.toml \
-  --exam-name "AWS Associate Practice" \
-  --model claude
-```
+1.  Command-line arguments (e.g., `--model ...`)
+2.  Environment variables (e.g., `EXAMEXAM_GENERATE_MODEL=...`)
+3.  Values in `examexam.toml`
+4.  Hardcoded application defaults
 
-4. **Take the exam** in your terminal (resume supported):
+-----
 
-```bash
-examexam take --question-file data/aws-practice.toml
-```
+## Model Selection
 
-Optional: **convert** to pretty Markdown + HTML study notes:
+You can control which LLM is used with three flags, in order of priority:
 
-```bash
-examexam convert \
-  --input-file data/aws-practice.toml \
-  --output-base-name aws-practice
-```
+1.  `--model`: Specifies an exact model ID (e.g., `gpt-4.1-mini`). This overrides all other settings.
+2.  `--model-provider`: Chooses a provider like `openai`, `anthropic`, `google`, etc.
+3.  `--model-class`: Use either `fast` (default, for cheaper, quicker models) or `frontier` (for more powerful, expensive models). Used in combination with `--model-provider`.
 
----
+**Examples:**
 
-## What each command does (at a glance)
+  * `--model-provider google --model-class frontier` -\> Uses Google's best model.
+  * `--model-provider openai` -\> Uses OpenAI's default "fast" model.
+  * `--model gpt-5` -\> Uses exactly `gpt-5`, ignoring provider and class flags.
 
-* **generate** — creates new multiple‑choice questions for your topics and appends them to a TOML question bank.
-* **validate** — asks a model to answer each question and flags questions as Good/Bad with a short rationale, then saves that info back into the same file.
-* **take** — launches a clean, keyboard‑only test UI with shuffling, per‑option explanations, progress, time stats, and resume.
-* **convert** — turns a question bank into Markdown and HTML for easy reading.
+-----
 
----
-
-## Where files go
-
-* **Question banks (TOML):** store them wherever you like; many people use a `data/` folder (e.g., `data/aws-practice.toml`).
-* **Session files:** saved automatically to `.session/<test-name>.toml` so you can quit and resume later.
-* **Converted outputs:** `convert` writes `<base>.md` and `<base>.html` alongside your working directory.
-
-> You don’t need to know the internal TOML schema—just point commands at your `.toml` files.
-
----
-
-## Command reference
+## Command Reference
 
 ```text
-examexam generate --exam-name <str> --toc-file <path> --output-file <path> [-n 5] [--model <name>]
-examexam validate --question-file <path> --exam-name <str> [--model <name>]
-examexam convert  --input-file <path> --output-base-name <str>
-examexam take     --question-file <path>
+# General
+examexam --help
+examexam --version
+examexam --verbose      # Enable detailed logging for any command
 
-# Global
---verbose   Enable detailed logging
+# Setup and Customization
+examexam init
+examexam customize [--target-dir <path>] [--force]
+
+# Core Workflow
+examexam generate --toc-file <path> [-n 5] [--output-file <path>] [--model-provider ...]
+examexam validate --question-file <path> [--model-provider ...]
+examexam take [--question-file <path>]
+examexam convert --input-file <path> --output-base-name <str>
+
+# Study Tools
+examexam research --topic <str> [--model-provider ...]
+examexam study-plan --toc-file <path> [--model-provider ...]
 ```
 
----
+### Command Details
 
-## Tips & FAQ
+  * **`init`**: Creates a default `examexam.toml` configuration file in the current directory.
+  * **`generate`**: Creates new multiple-choice questions for topics in a `--toc-file` and appends them to a TOML question bank.
+  * **`validate`**: Asks an LLM to answer each question and flags questions as "Good" or "Bad" with a rationale, saving results back to the file.
+  * **`take`**: Launches a clean, keyboard-only test UI. Supports automatic session saving and resuming. Can also be run in a non-interactive "machine mode" for testing (`--machine --strategy <name>`).
+  * **`convert`**: Turns a TOML question bank into pretty Markdown and HTML files for studying.
+  * **`research`**: Generates a detailed, single-topic study guide with concepts, examples, and suggested search queries.
+  * **`study-plan`**: Generates a consolidated Markdown study guide covering all topics from a `--toc-file`.
+  * **`customize`**: Deploys the built-in Jinja2 prompt templates to a local `prompts/` directory so you can edit them.
 
-* **Keys not picked up?** Ensure your `.env` sits in the directory where you run `examexam` and contains the correct provider key for the `--model` you chose.
-* **Appending more questions:** Re‑run `generate` with the same `--output-file`.
-* **Stuck session?** Delete `.session/<test-name>.toml` to start fresh.
-* **Model naming:** Use names your environment supports (e.g., `gpt4`, `claude`, `gemini-1.5-pro`).
+-----
 
----
+## File Locations
+
+  * **Configuration:** `examexam.toml` in your project's root directory.
+  * **Question Banks (TOML):** You decide where to store them. We recommend a `data/` folder (e.g., `data/aws_exam.toml`).
+  * **Topic Files (TXT):** Plain text files with one topic per line.
+  * **Session Files:** Saved automatically to `.session/<test-name>.toml` to allow resuming tests.
+  * **Study Guides:** Saved to `study_guide/` in your project directory.
+  * **Custom Prompts:** If you run `customize`, templates are deployed to `prompts/`.
 
 ## Credits
 

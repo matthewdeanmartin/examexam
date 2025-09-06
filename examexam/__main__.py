@@ -11,7 +11,7 @@ import argcomplete
 import dotenv
 
 from examexam import __about__, logging_config
-from examexam.apis.conversation_and_router import FRONTIER_MODELS
+from examexam.apis.conversation_and_router import FRONTIER_MODELS, pick_model
 from examexam.convert_to_pretty import run as convert_questions_run
 from examexam.generate_questions import generate_questions_now
 from examexam.generate_study_plan import generate_study_plan_now
@@ -26,6 +26,31 @@ from examexam.validate_questions import validate_questions_now
 dotenv.load_dotenv()
 
 
+def add_model_args(parser) -> None:
+    models = list(_ for _ in FRONTIER_MODELS.keys())
+    models_string = ", ".join(models)
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="",
+        help="Exact model is to use. Default: blank meaning use provider/class",
+    )
+
+    parser.add_argument(
+        "--model-provider",
+        type=str,
+        default="openai",
+        help=f"Model provider to use for generating questions (e.g., {models_string}). Default: openai",
+    )
+
+    parser.add_argument(
+        "--model-class",
+        type=str,
+        default="fast",
+        help="'frontier' or 'fast' model Default: fast",
+    )
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     """Main function for the command-line interface."""
     start_background_update_check("examexam", __about__.__version__)
@@ -33,6 +58,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         prog=__about__.__title__,
         description="A CLI for generating, taking, and managing exams.",
         formatter_class=argparse.RawTextHelpFormatter,
+        allow_abbrev=False,
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__about__.__version__}")
 
@@ -67,14 +93,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Number of questions to generate per topic (default: 5).",
     )
 
-    models = list(_ for _ in FRONTIER_MODELS.keys())
-    models_string = ", ".join(models)
-    generate_parser.add_argument(
-        "--model",
-        type=str,
-        default="openai",
-        help=f"Model to use for generating questions (e.g., {models_string}). Default: openai",
-    )
+    add_model_args(generate_parser)
 
     # --- Validate Command ---
     validate_parser = subparsers.add_parser("validate", help="Validate exam questions using an LLM.")
@@ -84,12 +103,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         required=True,
         help="Path to the TOML question file to validate.",
     )
-    validate_parser.add_argument(
-        "--model",
-        type=str,
-        default="openai",
-        help=f"Model to use for validation, e.g. {models_string} (default: openai).",
-    )
+    add_model_args(validate_parser)
 
     # --- Convert Command ---
     convert_parser = subparsers.add_parser("convert", help="Convert a TOML question file to Markdown and HTML formats.")
@@ -114,12 +128,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         required=True,
         help="The topic to generate a study guide for.",
     )
-    research_parser.add_argument(
-        "--model",
-        type=str,
-        default="openai",
-        help=f"Model to use for generating the study guide (e.g., {models_string}). Default: openai",
-    )
+    add_model_args(research_parser)
 
     # --- Study Plan Command ---
     study_plan_parser = subparsers.add_parser(
@@ -131,12 +140,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         required=True,
         help="Path to a text file containing the topics, one per line.",
     )
-    study_plan_parser.add_argument(
-        "--model",
-        type=str,
-        default="openai",
-        help=f"Model to use for generating the study plan (e.g., {models_string}). Default: openai",
-    )
+    add_model_args(study_plan_parser)
 
     # --- Customize Command (New) ---
     customize_parser = subparsers.add_parser(
@@ -176,19 +180,24 @@ def main(argv: Sequence[str] | None = None) -> int:
             toc_file_base = toc_file + ".txt"
         else:
             toc_file_base = toc_file
+        model = pick_model(args.model, args.model_provider, args.model_class)
+
         generate_questions_now(
             questions_per_toc_topic=args.n,
             file_name=args.output_file or toc_file_base.replace(".txt", ".toml"),
             toc_file=args.toc_file,
-            model=args.model,
+            model=model,
             system_prompt="You are a test maker.",
         )
     elif args.command == "validate":
-        validate_questions_now(file_name=args.question_file, model=args.model)
+        model = pick_model(args.model, args.model_provider, args.model_class)
+        validate_questions_now(file_name=args.question_file, model=model)
     elif args.command == "research":
-        generate_topic_research_now(topic=args.topic, model=args.model)
+        model = pick_model(args.model, args.model_provider, args.model_class)
+        generate_topic_research_now(topic=args.topic, model=model)
     elif args.command == "study-plan":
-        generate_study_plan_now(toc_file=args.toc_file, model=args.model)
+        model = pick_model(args.model, args.model_provider, args.model_class)
+        generate_study_plan_now(toc_file=args.toc_file, model=model)
     elif args.command == "convert":
         md_path = f"{args.output_base_name}.md"
         html_path = f"{args.output_base_name}.html"

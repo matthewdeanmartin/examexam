@@ -132,7 +132,8 @@ def generate_topic_research_now(topic: str, model: str = "openai") -> None:
 
     if guide_content:
         save_and_display_guide(guide_content, topic)
-        Confirm.ask("Press Enter to exit", default=True, show_default=False)
+        if not os.environ.get("EXAMEXAM_NONINTERACTIVE"):
+            Confirm.ask("Press Enter to exit", default=True, show_default=False)
     else:
         console.print("[bold red]Could not generate the study guide.[/bold red]")
 

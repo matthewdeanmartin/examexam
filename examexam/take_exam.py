@@ -25,7 +25,7 @@ import random
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Literal, Protocol, cast
 
 import dotenv
 import rtoml as toml
@@ -38,12 +38,69 @@ from rich.table import Table
 from scipy import stats
 
 from examexam.constants import BAD_QUESTION_TEXT
+from examexam.utils.secure_random import SecureRandom
 from examexam.utils.toml_normalize import normalize_exam_for_toml
 
 # Load environment variables (e.g., OPENAI_API_KEY)
 dotenv.load_dotenv()
 
 console = Console()
+
+# ----------------- NEW: answer provider protocol & strategies -----------------
+
+
+class AnswerProvider(Protocol):
+    def __call__(self, question: dict[str, Any], options_list: list[dict[str, Any]]) -> list[dict[str, Any]]: ...
+
+
+MachineStrategy = Literal["oracle", "random", "first", "none"]
+
+
+def build_machine_answer_provider(strategy: MachineStrategy = "oracle", *, seed: int | None = 42) -> AnswerProvider:
+    """Return a function that selects answers without user input.
+
+    Strategies:
+      - 'oracle': choose exactly the options with is_correct=True
+      - 'random': choose a random valid set of size 'answer_count'
+      - 'first': choose the first 'answer_count' options
+      - 'none': choose an incorrect set on purpose, if possible
+    """
+    rng = SecureRandom(seed)  # nosec
+
+    def provider(question: dict[str, Any], options_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        answer_count = sum(1 for o in question["options"] if o.get("is_correct"))
+        if strategy == "oracle":
+            return [o for o in options_list if o.get("is_correct")]
+        if strategy == "first":
+            # Skip the "bad question" sentinel; we never include it in machine mode
+            return options_list[:answer_count]
+        if strategy == "random":
+            # sample from actual options (exclude bad-question sentinel)
+            population = list(options_list)
+            if answer_count <= 0:
+                return []
+            if answer_count >= len(population):
+                return population
+            picks = rng.sample(range(len(population)), k=answer_count)
+            return [population[i] for i in picks]
+        if strategy == "none":
+            # Try to pick a *different* set than the correct one
+            correct = {id(o) for o in options_list if o.get("is_correct")}
+            population = list(range(len(options_list)))
+            if not correct:
+                # If there is no correct answer, pick one anyway (e.g., trick Q)
+                return [options_list[0]] if options_list else []
+            # Greedy: start from first 'answer_count' indices; ensure it differs
+            attempt = population[:answer_count]
+            if {id(options_list[i]) for i in attempt} == correct and len(population) > answer_count:
+                attempt[-1] = population[-1]
+            return [options_list[i] for i in attempt]
+        raise ValueError(f"Unknown strategy: {strategy!r}")
+
+    return provider
+
+
+# ----------------- existing helpers unchanged above this line -----------------
 
 
 def load_questions(file_path: str) -> list[dict[str, Any]]:
@@ -375,8 +432,19 @@ def save_session_file(session_file: Path, state: list[dict[str, Any]], start_tim
         toml.dump(normalize_exam_for_toml(data), file)
 
 
-def take_exam_now(question_file: str = None) -> None:
-    """Main function to run the quiz"""
+def take_exam_now(
+    question_file: str = None,
+    *,
+    machine: bool = False,
+    strategy: MachineStrategy = "oracle",
+    seed: int | None = 42,
+    quiet: bool = False,
+) -> None:
+    """Main function to run the quiz (interactive by default, or machine mode if requested)."""
+    if (machine and question_file) or (os.environ.get("EXAMEXAM_MACHINE_TAKES_EXAM")):
+        _ = take_exam_machine(question_file, strategy=strategy, seed=seed, quiet=quiet, persist_session=True)
+        return
+
     if question_file:
         # Legacy API - use provided file path
         test_path = Path(question_file)
@@ -428,7 +496,169 @@ def take_exam_now(question_file: str = None) -> None:
         console.print("[bold red]Exiting the exam...[/bold red]")
 
 
-def interactive_question_and_answer(questions, session, session_path: Path, start_time: datetime):
+# def interactive_question_and_answer(questions, session, session_path: Path, start_time: datetime):
+#     score = 0
+#     so_far = 0
+#
+#     # Count already completed questions
+#     for question in session:
+#         if question.get("user_score") == 1:
+#             score += 1
+#             so_far += 1
+#
+#     random.shuffle(questions)
+#     for question in questions:
+#         session_question = find_question(question, session)
+#
+#         if session_question.get("user_score") == 1:
+#             continue
+#
+#         # Record when this question started
+#         question_start_time = datetime.now()
+#         session_question["start_time"] = question_start_time.isoformat()
+#
+#         options_list = list(question["options"])
+#         random.shuffle(options_list)
+#         try:
+#             selected = ask_question(question, options_list)
+#         except KeyboardInterrupt:
+#             display_results(score, len(questions), start_time, session)
+#             raise
+#
+#         # Record completion time
+#         session_question["completion_time"] = datetime.now().isoformat()
+#
+#         correct = {option["text"] for option in options_list if option.get("is_correct", False)}
+#         user_answers = {option["text"] for option in selected}
+#
+#         # Only show comparison if answers differ
+#         if user_answers == correct:
+#             console.print(
+#                 Panel(
+#                     "[bold green]✓ Correct![/bold green]",
+#                     title="Answer Review",
+#                     style="green",
+#                 )
+#             )
+#         else:
+#             console.print(
+#                 Panel(
+#                     f"[bold cyan]Correct Answer(s): {', '.join(correct)}\nYour Answer(s): {', '.join(user_answers)}[/bold cyan]",
+#                     title="Answer Review",
+#                     style="blue",
+#                 )
+#             )
+#
+#         # Create numbered explanations matching the original option order
+#         colored_explanations = []
+#         for idx, option in enumerate(options_list, 1):
+#             if option.get("is_correct", False):
+#                 colored_explanations.append(f"{idx}. [bold green]{option['explanation']}[/bold green]")
+#             else:
+#                 colored_explanations.append(f"{idx}. [bold red]{option['explanation']}[/bold red]")
+#
+#         console.print(Panel("\n".join(colored_explanations), title="Explanation"))
+#
+#         session_question["user_answers"] = list(user_answers)
+#         if user_answers == correct:
+#             play_sound("correct.mp3")
+#             score += 1
+#             session_question["user_score"] = 1
+#         else:
+#             console.print("[bold red]Incorrect.[/bold red]", style="bold red")
+#             play_sound("incorrect.mp3")
+#             session_question["user_score"] = 0
+#
+#         so_far += 1
+#         display_results(score, so_far, start_time, session, withhold_judgement=True)
+#
+#         go_on = None
+#         while go_on not in ("", "bad"):
+#             go_on = console.input("[bold yellow]Press Enter to continue to the next question...[/bold yellow]")
+#
+#         if go_on == "bad":
+#             session_question["defective"] = True
+#             save_session_file(session_path, session, start_time)
+#
+#     clear_screen()
+#     display_results(score, len(questions), start_time, session)
+#     save_session_file(session_path, session, start_time)
+#     return score
+
+
+def find_question(question: dict[str, Any], session: list[dict[str, Any]]) -> dict[str, Any]:
+    session_question = {}
+    for q in session:
+        if q["id"] == question["id"]:
+            session_question = q
+            break
+    return session_question
+
+
+def ask_question_interactive(question: dict[str, Any], options_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    clear_screen()
+    question_text = question["question"]
+
+    pattern = find_select_pattern(question_text)
+    answer_count = len([o for o in question["options"] if o.get("is_correct")])
+
+    if pattern:
+        correct_select = f"(Select {answer_count})"
+        if correct_select not in question_text:
+            question_text = question_text.replace(pattern, correct_select)
+
+    if "(Select" not in question_text:
+        question_text = f"{question_text} (Select {answer_count})"
+
+    if "(Select n)" in question_text:
+        question_text = question_text.replace("(Select n)", f"(Select {answer_count})")
+
+    question_panel = Align.center(Panel(Markdown(question_text)), vertical="middle")
+    console.print(question_panel)
+
+    table = Table(title="Options", style="green")
+    table.add_column("Option Number", justify="center")
+    table.add_column("Option Text", justify="left")
+
+    for idx, option in enumerate(options_list, 1):
+        table.add_row(str(idx), option["text"])
+
+    table.add_row(str(len(options_list) + 1), BAD_QUESTION_TEXT)
+    console.print(Align.center(table))
+
+    option_count = len(options_list) + 1
+    while True:
+        answer = console.input(
+            "[bold yellow]Enter your answer(s) as a comma-separated list (e.g., 1,2): [/bold yellow]"
+        )
+        is_valid_answer, error_msg = is_valid(answer, option_count, answer_count)
+        if is_valid_answer:
+            break
+        console.print(f"[bold red]{error_msg}[/bold red]")
+
+    selected = [
+        options_list[int(idx) - 1] for idx in answer.split(",") if idx.isdigit() and 1 <= int(idx) <= len(options_list)
+    ]
+    return selected
+
+
+def ask_question_machine(
+    provider: AnswerProvider, question: dict[str, Any], options_list: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    # No terminal I/O, no BAD_QUESTION sentinel ever chosen by the machine
+    return provider(question, options_list)
+
+
+def interactive_question_and_answer(
+    questions: list[dict[str, Any]],
+    session: list[dict[str, Any]],
+    session_path: Path,
+    start_time: datetime,
+    *,
+    answer_provider: AnswerProvider | None = None,
+    quiet: bool = False,
+) -> int:
+    """Run through questions using either interactive or machine answer provider."""
     score = 0
     so_far = 0
 
@@ -441,90 +671,129 @@ def interactive_question_and_answer(questions, session, session_path: Path, star
     random.shuffle(questions)
     for question in questions:
         session_question = find_question(question, session)
-
         if session_question.get("user_score") == 1:
             continue
 
-        # Record when this question started
+        # Record start time
         question_start_time = datetime.now()
         session_question["start_time"] = question_start_time.isoformat()
 
         options_list = list(question["options"])
         random.shuffle(options_list)
+
         try:
-            selected = ask_question(question, options_list)
+            if answer_provider is None:
+                selected = ask_question_interactive(question, options_list)
+            else:
+                selected = ask_question_machine(answer_provider, question, options_list)
         except KeyboardInterrupt:
-            display_results(score, len(questions), start_time, session)
+            if not quiet:
+                display_results(score, len(questions), start_time, session)
             raise
 
         # Record completion time
         session_question["completion_time"] = datetime.now().isoformat()
 
-        correct = {option["text"] for option in options_list if option.get("is_correct", False)}
-        user_answers = {option["text"] for option in selected}
+        correct = {o["text"] for o in options_list if o.get("is_correct", False)}
+        user_answers = {o["text"] for o in selected}
 
-        # Only show comparison if answers differ
-        if user_answers == correct:
-            console.print(
-                Panel(
-                    "[bold green]✓ Correct![/bold green]",
-                    title="Answer Review",
-                    style="green",
-                )
-            )
-        else:
-            console.print(
-                Panel(
-                    f"[bold cyan]Correct Answer(s): {', '.join(correct)}\nYour Answer(s): {', '.join(user_answers)}[/bold cyan]",
-                    title="Answer Review",
-                    style="blue",
-                )
-            )
-
-        # Create numbered explanations matching the original option order
-        colored_explanations = []
-        for idx, option in enumerate(options_list, 1):
-            if option.get("is_correct", False):
-                colored_explanations.append(f"{idx}. [bold green]{option['explanation']}[/bold green]")
+        # Feedback (skip in quiet mode)
+        if not quiet:
+            if user_answers == correct:
+                console.print(Panel("[bold green]✓ Correct![/bold green]", title="Answer Review", style="green"))
             else:
-                colored_explanations.append(f"{idx}. [bold red]{option['explanation']}[/bold red]")
-
-        console.print(Panel("\n".join(colored_explanations), title="Explanation"))
+                console.print(
+                    Panel(
+                        f"[bold cyan]Correct Answer(s): {', '.join(correct)}\nYour Answer(s): {', '.join(user_answers)}[/bold cyan]",
+                        title="Answer Review",
+                        style="blue",
+                    )
+                )
+            colored_explanations = []
+            for idx, option in enumerate(options_list, 1):
+                if option.get("is_correct", False):
+                    colored_explanations.append(f"{idx}. [bold green]{option['explanation']}[/bold green]")
+                else:
+                    colored_explanations.append(f"{idx}. [bold red]{option['explanation']}[/bold red]")
+            console.print(Panel("\n".join(colored_explanations), title="Explanation"))
 
         session_question["user_answers"] = list(user_answers)
         if user_answers == correct:
-            play_sound("correct.mp3")
+            if not quiet:
+                play_sound("correct.mp3")
             score += 1
             session_question["user_score"] = 1
         else:
-            console.print("[bold red]Incorrect.[/bold red]", style="bold red")
-            play_sound("incorrect.mp3")
+            if not quiet:
+                console.print("[bold red]Incorrect.[/bold red]", style="bold red")
+                play_sound("incorrect.mp3")
             session_question["user_score"] = 0
 
         so_far += 1
-        display_results(score, so_far, start_time, session, withhold_judgement=True)
+        if not quiet:
+            display_results(score, so_far, start_time, session, withhold_judgement=True)
 
-        go_on = None
-        while go_on not in ("", "bad"):
-            go_on = console.input("[bold yellow]Press Enter to continue to the next question...[/bold yellow]")
+        if answer_provider is None:
+            go_on = None
+            while go_on not in ("", "bad"):
+                go_on = console.input("[bold yellow]Press Enter to continue to the next question...[/bold yellow]")
+            if go_on == "bad":
+                session_question["defective"] = True
+                save_session_file(session_path, session, start_time)
 
-        if go_on == "bad":
-            session_question["defective"] = True
-            save_session_file(session_path, session, start_time)
-
-    clear_screen()
-    display_results(score, len(questions), start_time, session)
+    if not quiet:
+        clear_screen()
+        display_results(score, len(questions), start_time, session)
     save_session_file(session_path, session, start_time)
     return score
 
 
-def find_question(question: dict[str, Any], session: list[dict[str, Any]]) -> dict[str, Any]:
-    session_question = {}
-    for q in session:
-        if q["id"] == question["id"]:
-            session_question = q
-            break
-    return session_question
+def take_exam_machine(
+    question_file: str,
+    *,
+    strategy: MachineStrategy = "oracle",
+    seed: int | None = 42,
+    quiet: bool = True,
+    persist_session: bool = False,
+) -> dict[str, Any]:
+    """Non-interactive exam runner for integration tests.
+
+    Returns:
+      dict with keys: score, total, percent, session_path, session, start_time
+    """
+    test_path = Path(question_file)
+    test_name = test_path.stem
+    questions = load_questions(str(test_path))
+
+    # Fresh session each time unless you deliberately persist
+    session_path = get_session_path(test_name)
+    if not persist_session and session_path.exists():
+        session_path.unlink(missing_ok=True)
+
+    session = questions.copy()
+    start_time = datetime.now()
+    save_session_file(session_path, session, start_time)
+
+    score = interactive_question_and_answer(
+        questions,
+        session,
+        session_path,
+        start_time,
+        answer_provider=build_machine_answer_provider(strategy=strategy, seed=seed),
+        quiet=quiet,
+    )
+
+    total = len(questions)
+    percent = (score / total * 100) if total else 0.0
+
+    return {
+        "score": score,
+        "total": total,
+        "percent": percent,
+        "session_path": session_path,
+        "session": session,
+        "start_time": start_time,
+    }
 
 
 if __name__ == "__main__":

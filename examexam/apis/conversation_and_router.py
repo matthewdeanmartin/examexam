@@ -20,31 +20,18 @@ from examexam.apis.utilities import log_conversation_to_file, log_duration
 LOGGER = logging.getLogger(__name__)
 
 # Map bot class to specific bot model
-# DEFAULT_BOT_MODELS = {
-#     "gpt4": "gpt-5",  # "gpt-4o-mini",
-#     "claude": "claude-3-haiku-20240307",
-#     "gemini-pro": "gemini-1.0-pro-001",
-#     "fakebot": "fakebot",
-#     # Bedrock models are mapped directly
-#     "mixtral": "mistral.mixtral-8x7b-instruct-v0:1",
-#     "titan": "amazon.titan-text-express-v1",
-#     "llama": "meta.llama2-70b-chat-v1",
-#     "jurassic": "ai21.j2-ultra-v1",
-#     "cohere": "cohere.command-text-v14",
-# }
-# FRONTIER_MODELS = {
-#     "fakebot":"fakebot",
-#     "openai": "gpt-5",                        # Aug 2025, current flagship
-#     "anthropic": "claude-opus-4-1-20250805",  # Aug 2025, strongest Claude
-#     "google": "gemini-2.5-pro",               # June 2025, top Gemini
-#     "meta": "llama-3.1-405b-instruct",        # July 2025, Meta’s largest model
-#     "mistral": "mixtral-8x22b-instruct-v0.1", # 2025 frontier release
-#     "cohere": "command-r-plus-08-2025",       # Cohere’s reasoning-tuned flagship
-#     "ai21": "jamba-1.5-large",                # AI21’s strongest hybrid model
-#     "amazon": "amazon.nova-pro-v1",           # Amazon’s own top Bedrock model
-# }
-# GOOD_FAST_CHEAP_MODELS
 FRONTIER_MODELS = {
+    "fakebot": "fakebot",
+    "openai": "gpt-5",  # Aug 2025, current flagship
+    "anthropic": "claude-opus-4-1-20250805",  # Aug 2025, strongest Claude
+    "google": "gemini-2.5-pro",  # June 2025, top Gemini
+    "meta": "llama-3.1-405b-instruct",  # July 2025, Meta’s largest model
+    "mistral": "mixtral-8x22b-instruct-v0.1",  # 2025 frontier release
+    "cohere": "command-r-plus-08-2025",  # Cohere’s reasoning-tuned flagship
+    "ai21": "jamba-1.5-large",  # AI21’s strongest hybrid model
+    "amazon": "amazon.nova-pro-v1",  # Amazon’s own top Bedrock model
+}
+GOOD_FAST_CHEAP_MODELS = {
     "openai": "gpt-4.1-mini",  # lightweight, fast, inexpensive
     "anthropic": "claude-3.7-sonnet",  # Feb 2025, balance of speed/cost
     "google": "gemini-2.5-flash",  # optimized for speed/cheap inference
@@ -54,6 +41,14 @@ FRONTIER_MODELS = {
     "ai21": "jamba-1.5-mini",  # fast, smaller Jamba
     "amazon": "amazon.nova-lite-v1",  # Amazon’s cost-optimized Bedrock model
 }
+
+
+def pick_model(model: str, provider: str, model_class: str):
+    if model:
+        return model
+    if model_class == "frontier":
+        return FRONTIER_MODELS[provider]
+    return GOOD_FAST_CHEAP_MODELS[provider]
 
 
 class Router:
@@ -93,18 +88,18 @@ class Router:
         self.most_recent_just_code = None
         self.most_recent_exception = None
 
-    def _get_caller(self, model_key: str) -> Any:
+    def _get_caller(self, model_provider: str, model_id: str) -> Any:
         """Lazily initializes and returns the appropriate API caller."""
-        caller_class = self._caller_map.get(model_key)
+        caller_class = self._caller_map.get(model_provider)
         if not caller_class:
-            print(f"unkown model {model_key}")
+            print(f"unkown model provider {model_provider}")
             sys.exit(-100)
             # raise FatalConversationError(f"Unknown model {model_key}")
 
         # Use the class name as the key to store only one instance per caller type
         caller_key = caller_class.__name__
         if caller_key not in self.callers:
-            model_id = FRONTIER_MODELS[model_key]
+            # model_id = FRONTIER_MODELS[model_key]
             if caller_class == AnthropicCaller:
                 self.callers[caller_key] = AnthropicCaller(
                     model=model_id, conversation=self.standard_conversation, tokens=4096
@@ -114,7 +109,7 @@ class Router:
 
         # For callers like Bedrock that handle multiple models, update the model ID
         caller_instance = self.callers[caller_key]
-        caller_instance.model = FRONTIER_MODELS[model_key]
+        caller_instance.model = model_id  #  FRONTIER_MODELS[model_key]
 
         return caller_instance
 
@@ -141,9 +136,22 @@ class Router:
         self.reset()
         LOGGER.info(f"Calling {model} with request of length {len(request)}")
 
+        # deal with legacy behavior
+        model_provider = ""
+        for key, value in FRONTIER_MODELS.items():
+            if value == model:
+                model_provider = key
+
+        for key, value in GOOD_FAST_CHEAP_MODELS.items():
+            if value == model:
+                model_provider = key
+
+        if not model_provider:
+            raise TypeError(f"Can't identify model provider for model {model}")
+
         caller = None
         try:
-            caller = self._get_caller(model)
+            caller = self._get_caller(model_provider, model)
             answer = caller.completion(request)
         except (FatalConversationError, FakeBotException) as e:
             self.most_recent_exception = e
