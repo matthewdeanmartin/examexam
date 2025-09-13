@@ -165,3 +165,6 @@ session.toml
 .mypy_cache
 /conversations/
 /study_guide/
+integration_tests/.session
+.session
+tests/conversations
