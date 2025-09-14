@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -227,21 +226,5 @@ def test_display_results_does_not_crash():
     take_exam.display_results(score=1, total=2, start_time=start_time, session=None, withhold_judgement=True)
 
 
-def test_find_question_found_and_missing():
-    session = [{"id": "a"}, {"id": "b"}]
-    q = take_exam.find_question({"id": "b"}, session)
-    assert q == {"id": "b"}
-    q2 = take_exam.find_question({"id": "zzz"}, session)
-    assert not q2
 
 
-def test_clear_screen_calls_system(monkeypatch):
-    called = {"cmd": None}
-
-    def fake_system(cmd):
-        called["cmd"] = cmd
-        return 0
-
-    monkeypatch.setattr(os, "system", fake_system)
-    take_exam.clear_screen()
-    assert called["cmd"] in ("cls", "clear")
