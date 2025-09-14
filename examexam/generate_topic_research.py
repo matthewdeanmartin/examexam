@@ -72,11 +72,7 @@ def generate_study_guide(topic: str, model: str) -> str | None:
     """
     console.print(f"Generating study guide for topic: [bold cyan]{topic}[/] using model [italic]{model}[/]...")
 
-    system_prompt = (
-        "You are an expert tutor and research assistant. Your goal is to create a concise, "
-        "well-structured study guide on a given topic. The guide should be in Markdown format. "
-        "It must include a section with suggested search engine queries to help the user learn more."
-    )
+    system_prompt = "You are an expert tutor and research assistant. Your goal is to create a concise, well-structured study guide on a given topic. The guide should be in Markdown format. It must include a section with suggested search engine queries to help the user learn more."
     conversation = Conversation(system=system_prompt)
     router = Router(conversation)
 

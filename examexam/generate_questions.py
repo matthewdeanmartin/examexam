@@ -2,12 +2,11 @@ from __future__ import annotations
 
 import logging
 import os
-import re
 import uuid
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 from time import perf_counter, sleep
+from typing import Any
 
 import dotenv
 import rtoml as toml
@@ -27,6 +26,7 @@ from rich.progress import (
 )
 
 from examexam.apis.conversation_and_router import Conversation, Router
+from examexam.find_the_toml import extract_questions_toml as extract_toml
 from examexam.jinja_management import jinja_env
 
 # Load environment variables (e.g., OPENAI_API_KEY)
@@ -46,6 +46,15 @@ if not logger.handlers:
 console = Console()
 
 
+# ---------- Custom Exceptions ----------
+class SchemaValidationError(Exception):
+    """Custom exception for schema validation errors."""
+
+
+class FatalLLMError(Exception):
+    """Errors that should not be retried (e.g., missing API key)."""
+
+
 # ---------- Helpers ----------
 @dataclass
 class GenStats:
@@ -56,14 +65,55 @@ class GenStats:
     last_call_seconds: float | None = None
 
 
+def _validate_schema(data: dict[str, Any]) -> None:
+    """
+    Validates the structure of the parsed TOML data.
+    Raises SchemaValidationError on failure.
+    """
+    if not isinstance(data, dict):
+        raise SchemaValidationError("TOML content is not a dictionary.")
+
+    questions = data.get("questions")
+    if not isinstance(questions, list) or not questions:
+        raise SchemaValidationError("TOML must contain a non-empty `[[questions]]` array of tables.")
+
+    for i, q in enumerate(questions):
+        if not isinstance(q, dict):
+            raise SchemaValidationError(f"Question {i + 1} is not a valid table/dictionary.")
+        if "question" not in q or not isinstance(q["question"], str) or not q["question"]:
+            raise SchemaValidationError(f"Question {i + 1} is missing a non-empty 'question' string.")
+
+        options = q.get("options")
+        if not isinstance(options, list) or not options:
+            raise SchemaValidationError(
+                f"Question {i + 1} '{q.get('question', '')[:30]}...' is missing a non-empty `[[questions.options]]` array."
+            )
+
+        saw_true = False
+        for j, opt in enumerate(options):
+            if not isinstance(opt, dict):
+                raise SchemaValidationError(f"Option {j + 1} for question {i + 1} is not a valid table/dictionary.")
+            if not isinstance(opt.get("text"), str) or not opt.get("text"):
+                raise SchemaValidationError(f"Option {j + 1} for question {i + 1} is missing a 'text' string.")
+            if not isinstance(opt.get("explanation"), str) or not opt.get("explanation"):
+                raise SchemaValidationError(f"Option {j + 1} for question {i + 1} is missing an 'explanation' string.")
+            if not isinstance(opt.get("is_correct"), bool):
+                raise SchemaValidationError(
+                    f"Option {j + 1} for question {i + 1} is missing an 'is_correct' boolean flag."
+                )
+            if opt["is_correct"]:
+                saw_true = True
+
+        if not saw_true:
+            raise SchemaValidationError(
+                f"Question {i + 1} '{q.get('question', '')[:30]}...' must have at least one option with is_correct = true."
+            )
+
+
 def create_new_conversation(system_prompt: str) -> Conversation:
     logger.debug("Creating new Conversation with system prompt length=%d", len(system_prompt))
     conversation = Conversation(system=system_prompt)
     return conversation
-
-
-class FatalLLMError(Exception):
-    """Errors that should not be retried (e.g., missing API key)."""
 
 
 def _fatal_if_misconfigured(model: str) -> None:
@@ -76,7 +126,7 @@ def _fatal_if_misconfigured(model: str) -> None:
 def _is_fatal_message(msg: str) -> bool:
     msg_lower = msg.lower()
     fatal_markers = [
-        "unknown model" "api_key client option must be set",
+        "unknown modelapi_key client option must be set",
         "no api key",
         "invalid api key",
         "unauthorized",
@@ -87,17 +137,17 @@ def _is_fatal_message(msg: str) -> bool:
     return any(m in msg_lower for m in fatal_markers)
 
 
-def extract_toml(markdown_content: str) -> str | None:
-    """Extract TOML fenced block from markdown content."""
-    if not markdown_content:
-        logger.debug("No content returned from router.call; skipping TOML extract")
-        return None
-    match = re.search(r"```toml\n(.*?)\n```", markdown_content, re.DOTALL)
-    if match:
-        logger.info("TOML content found in response.")
-        return match.group(1)
-    logger.debug("TOML fenced block not found in content (len=%d)", len(markdown_content))
-    return None
+# def extract_toml(markdown_content: str) -> str | None:
+#     """Extract TOML fenced block from markdown content."""
+#     if not markdown_content:
+#         logger.debug("No content returned from router.call; skipping TOML extract")
+#         return None
+#     match = re.search(r"```toml\n(.*?)\n```", markdown_content, re.DOTALL)
+#     if match:
+#         logger.info("TOML content found in response.")
+#         return match.group(1)
+#     logger.debug("TOML fenced block not found in content (len=%d)", len(markdown_content))
+#     return None
 
 
 def generate_questions(
@@ -110,97 +160,126 @@ def generate_questions(
     max_retries: int = 2,
     retry_delay_seconds: float = 1.5,
     stats: GenStats | None = None,
-) -> dict[str, list[dict[str, str]]] | None:
-    """Request questions from an LLM and return parsed TOML as a dict.
-
-    - Avoids looping on fatal errors (API key missing, auth, model not found).
-    - Retries a couple times on transient failures.
+) -> dict[str, list[dict[str, Any]]] | None:
     """
-    logger.info("Generating %d questions with prompt: %s", n, prompt)
+    Request questions from an LLM, validates the response, and retries with
+    corrective feedback if parsing or schema validation fails.
+    """
+    logger.info("Generating %d questions for topic: %s", n, prompt)
     _fatal_if_misconfigured(model)
 
     # Render the prompt from the Jinja2 template
     try:
         template = jinja_env.get_template("generate.md.j2")
-        user_prompt = template.render(n=n, prompt=prompt)
+        original_user_prompt = template.render(n=n, prompt=prompt)
     except Exception as e:
         logger.error("Failed to load or render Jinja2 template 'generate.md.j2': %s", e)
         raise
 
     router = Router(conversation)
-
-    attempts = 0
+    current_user_prompt = original_user_prompt
     first_started = perf_counter()
 
-    while True:
-        attempts += 1
+    for attempt in range(max_retries + 1):
+        logger.info(f"Generation attempt {attempt + 1}/{max_retries + 1}...")
+
+        # --- 1. Call LLM ---
         try:
             started = perf_counter()
-            content = router.call(user_prompt, model)
+            content = router.call(current_user_prompt, model)
             duration = perf_counter() - started
-            if stats is not None:
+            if stats:
                 stats.calls += 1
                 stats.last_call_seconds = duration
             logger.debug("router.call returned content length=%d in %.2fs", len(content or ""), duration)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             msg = str(e)
-            logger.error("Error calling %s: %s", model, msg)
+            logger.error("API Error on attempt %d: %s", attempt + 1, msg)
             if _is_fatal_message(msg):
-                logger.error("Fatal error detected; will not retry.")
+                logger.error("Fatal API error detected; aborting generation for this topic.")
                 return None
-            if attempts > max_retries:
-                logger.error("Exceeded max retries (%d); giving up.", max_retries)
-                return None
+            sleep(retry_delay_seconds * (attempt + 1))  # exponential backoff
+            continue
+
+        # --- 2. Extract TOML ---
+        if not content:
+            logger.warning("Attempt %d: Model returned empty content.", attempt + 1)
+            current_user_prompt = (
+                "Your previous response was empty. Please follow the instructions and generate the TOML content as requested.\n\n"
+                + original_user_prompt
+            )
             sleep(retry_delay_seconds)
             continue
 
         toml_content = extract_toml(content)
         if toml_content is None:
-            logger.debug(
-                "Attempt %d: TOML not found; %s", attempts, "retrying" if attempts <= max_retries else "giving up"
+            logger.warning("Attempt %d: Failed to find TOML in model response.", attempt + 1)
+            current_user_prompt = (
+                "Your previous response did not contain a valid TOML code block. Please respond with ONLY the TOML content inside a ```toml ... ``` block, without any introductory text.\n\n"
+                + original_user_prompt
             )
-            if attempts > max_retries:
-                return None
             sleep(retry_delay_seconds)
             continue
 
-        # Try to parse TOML
+        # --- 3. Parse TOML ---
         try:
-            parsed = toml.loads(toml_content)
-            logger.debug("Parsed TOML successfully with %d questions", len(parsed.get("questions", [])))
-            logger.info(
-                "Time taken to generate questions: %s",
-                datetime.now() - datetime.fromtimestamp(first_started),
+            parsed_data = toml.loads(toml_content)
+        except toml.TOMLDecodeError as e:
+            logger.warning("Attempt %d: Failed to parse TOML. Error: %s", attempt + 1, e)
+            current_user_prompt = (
+                f"Your previous TOML response had a syntax error: {e}. Please correct the syntax and provide the full, valid TOML again.\n\n"
+                + original_user_prompt
             )
-            return parsed
-        except Exception as e:  # noqa: BLE001
-            logger.error("Error loading TOML content: %s", e)
-            if attempts > max_retries:
-                return None
             sleep(retry_delay_seconds)
+            continue
+
+        # --- 4. Validate Schema ---
+        try:
+            _validate_schema(parsed_data)
+            logger.info(
+                "Successfully generated and validated %d questions in %.2fs",
+                len(parsed_data.get("questions", [])),
+                perf_counter() - first_started,
+            )
+            return parsed_data
+        except SchemaValidationError as e:
+            logger.warning("Attempt %d: Schema validation failed. Error: %s", attempt + 1, e)
+            current_user_prompt = (
+                f"Your previous TOML response was syntactically correct but failed schema validation: {e}. Please fix the structure and provide the full, valid TOML again.\n\n"
+                + original_user_prompt
+            )
+            sleep(retry_delay_seconds)
+            continue
+
+    logger.error("Exceeded max retries (%d) for topic '%s'. Giving up.", max_retries, prompt)
+    return None
 
 
 def save_toml_to_file(toml_content: str, file_name: str) -> None:
     """Save TOML to file, appending to existing [[questions]]."""
     path = Path(file_name)
     logger.debug("Saving TOML to %s (exists=%s)", path, path.exists())
-    if path.exists():
-        with path.open(encoding="utf-8") as file:
-            existing_content = toml.load(file)
-        existing_content.setdefault("questions", [])
-        new_questions = toml.loads(toml_content).get("questions", [])
-        logger.debug(
-            "Extending existing %d questions with %d new questions",
-            len(existing_content["questions"]),
-            len(new_questions),
-        )
-        existing_content["questions"].extend(new_questions)
-        with path.open("w", encoding="utf-8") as file:
-            toml.dump(existing_content, file)
-    else:
-        with path.open("w", encoding="utf-8") as file:
-            file.write(toml_content)
-    console.print(f"[bold green]TOML content saved to[/] {file_name}")
+    try:
+        if path.exists():
+            with path.open(encoding="utf-8") as file:
+                existing_content = toml.load(file)
+            existing_content.setdefault("questions", [])
+            new_questions = toml.loads(toml_content).get("questions", [])
+            logger.debug(
+                "Extending existing %d questions with %d new questions",
+                len(existing_content["questions"]),
+                len(new_questions),
+            )
+            existing_content["questions"].extend(new_questions)
+            with path.open("w", encoding="utf-8") as file:
+                toml.dump(existing_content, file)
+        else:
+            with path.open("w", encoding="utf-8") as file:
+                file.write(toml_content)
+        console.print(f"[bold green]TOML content saved to[/] {file_name}")
+    except (toml.TomlParsingError, OSError) as e:
+        logger.error(f"Failed to save TOML to {file_name}: {e}")
+        console.print(f"[bold red]Error saving TOML to {file_name}. Check file permissions and content.[/bold red]")
 
 
 def generate_questions_now(
@@ -271,26 +350,27 @@ def generate_questions_now(
             if not questions:
                 absolute_failures += 1
                 progress.update(topic_task, description=f"{idx}/{total_topics} {service} [red](failed)[/]")
-                progress.advance(topic_task)
-                progress.advance(overall_task)
-                if absolute_failures > 3:
-                    print("Three times bot absolutely failed to generate any proper questions")
-                    return 0
-                continue
+                if absolute_failures >= 3:
+                    console.print(
+                        "\n[bold red]Stopping due to 3 consecutive topic failures. Check API keys, model access, and network.[/bold red]"
+                    )
+                    break  # Exit the loop
+            else:
+                absolute_failures = 0  # Reset counter on success
+                for question in questions.get("questions", []):
+                    question["id"] = str(uuid.uuid4())
 
-            for question in questions.get("questions", []):
-                question["id"] = str(uuid.uuid4())
+                total_so_far += len(questions.get("questions", []))
+                logger.info("Total questions so far: %d", total_so_far)
 
-            total_so_far += len(questions.get("questions", []))
-            logger.info("Total questions so far: %d", total_so_far)
+                toml_content = toml.dumps(questions)
+                save_toml_to_file(toml_content, file_name)
 
-            toml_content = toml.dumps(questions)
-            save_toml_to_file(toml_content, file_name)
+                progress.update(
+                    topic_task,
+                    description=f"{idx}/{total_topics} {service} [green](ok in {dt:.2f}s)[/]",
+                )
 
-            progress.update(
-                topic_task,
-                description=f"{idx}/{total_topics} {service} [green](ok in {dt:.2f}s)[/]",
-            )
             progress.advance(topic_task)
             progress.advance(overall_task)
 

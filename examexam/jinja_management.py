@@ -147,8 +147,8 @@ def get_jinja_env() -> Environment:
     # 3. Fallback to installed package prompts
     logger.debug("Loading Jinja2 templates from installed package 'examexam.prompts'")
     try:
-        loader = PackageLoader("examexam", "prompts")
-        return Environment(loader=loader, autoescape=False)  # nosec
+        alt_loader = PackageLoader("examexam", "prompts")
+        return Environment(loader=alt_loader, autoescape=False)  # nosec
     except ModuleNotFoundError:
         logger.error("Could not find the 'examexam' package to load templates.")
         raise

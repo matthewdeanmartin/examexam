@@ -1,6 +1,6 @@
 [project]
 name = "examexam"
-version = "0.1.7"
+version = "0.1.8"
 description = "Let LLM generate tests, validate test, and then you take them. Useful for certs."
 authors = [{ name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" }]
 readme = "README.md"
@@ -33,6 +33,15 @@ dependencies = [
     # Key mgmt
     "python-dotenv>=1.0.1",
 ]
+classifiers = [
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
+]
+
 
 [project.scripts]
 examexam = "examexam.__main__:main"
@@ -67,6 +76,8 @@ include = [
 
 [dependency-groups]
 dev = [
+    "troml",
+    "bitrab",
     "scipy-stubs",
     "cli-tool-audit",
     "git2md; python_version >= '3.10'",
@@ -79,6 +90,8 @@ dev = [
     # plugin finder
     "packaging; python_version >= '3.8'",
     # mpy
+    "types-retry",
+    "types-Markdown",
     "mypy; python_version >= '3.8'",
     "types-toml; python_version >= '3.8'",
     # reports

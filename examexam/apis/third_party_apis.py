@@ -58,8 +58,7 @@ class OpenAICaller(BaseLLMCaller):
         )
         if response.usage:
             LOGGER.info(
-                f"Tokens used (prompt/completion/total): {response.usage.prompt_tokens}/"
-                f"{response.usage.completion_tokens}/{response.usage.total_tokens}"
+                f"Tokens used (prompt/completion/total): {response.usage.prompt_tokens}/{response.usage.completion_tokens}/{response.usage.total_tokens}"
             )
         core_response = response.choices[0].message.content or ""
         role = response.choices[0].message.role or ""

@@ -114,10 +114,7 @@ def generate_study_plan_now(toc_file: str, model: str = "openai") -> None:
         with output_path.open("w", encoding="utf-8") as f:
             f.write("".join(all_guides_content))
 
-        summary_message = (
-            f"Successfully generated study guides for [bold green]{total_topics - failures}[/] topics. "
-            f"Saved to:\n[bold cyan]{output_path}[/]"
-        )
+        summary_message = f"Successfully generated study guides for [bold green]{total_topics - failures}[/] topics. Saved to:\n[bold cyan]{output_path}[/]"
         if failures > 0:
             summary_message += f"\n[bold red]{failures}[/] topics failed."
 
