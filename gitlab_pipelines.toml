@@ -1,0 +1,2899 @@
+[[questions]]
+question = "In a .gitlab-ci.yml file, how do stages influence the execution order of jobs in GitLab pipelines?"
+id = "dcb30e99-db68-4ebd-8a19-f73bf0c96580"
+
+[[questions.options]]
+text = "Jobs assigned to earlier stages run before jobs in later stages, defining the pipeline's sequential order."
+explanation = "Stages define the order in which groups of jobs run, with jobs in earlier stages completing before later ones start. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Stages determine the parallel execution of jobs within the same stage, but do not affect the order between stages."
+explanation = "While jobs within the same stage run concurrently, stages themselves define the sequential order. This option ignores the sequential order across stages. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "All jobs run independently regardless of stages, since stages are just for display in the pipeline UI."
+explanation = "Stages are a key part of execution order, not merely UI elements. Jobs run according to stage order. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "If a job has no stage assigned, it executes after all jobs with defined stages."
+explanation = "Jobs without a stage default to the 'test' stage unless stages are customized, so this depends on pipeline configuration. Generally incorrect as stated. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Stages can be defined in any order in the stages keyword, and that order controls job execution order."
+explanation = "The sequence listed in the 'stages' keyword explicitly controls the order of job execution between stages. Correct."
+is_correct = true
+
+[[questions]]
+question = "What happens if two jobs in a .gitlab-ci.yml file are assigned the same stage but have different dependencies?"
+id = "9bf13d68-efa4-4ec1-a4df-ad4e5a857a70"
+
+[[questions.options]]
+text = "Both jobs run in parallel because jobs in the same stage run concurrently regardless of dependencies."
+explanation = "Jobs in the same stage normally run in parallel, but declared dependencies can influence when artifacts are downloaded, not the execution order. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "The job with fewer dependencies executes before the job with more dependencies."
+explanation = "Job execution order within the same stage is generally parallel and not controlled by dependency count. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Dependencies force jobs to always run sequentially, even within the same stage."
+explanation = "Dependencies allow artifact sharing, but do not strictly enforce sequential execution in the same stage. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Stages with multiple jobs execute those jobs one at a time based on declared dependencies."
+explanation = "Jobs in the same stage run parallel by default, and dependencies do not serialize their execution. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Jobs in the same stage cannot specify dependencies as it causes a pipeline error."
+explanation = "Displaying dependencies between jobs in the same stage is valid and often used for artifact sharing. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "How is a job defined in .gitlab-ci.yml that should run only after all other jobs in previous stages succeed?"
+id = "f3f05381-9a3a-4fbe-87f9-4ae177431c78"
+
+[[questions.options]]
+text = "By assigning the job to a stage listed at the end of the stages list."
+explanation = "GitLab runs stages sequentially; placing a job in the last stage ensures it runs after all earlier stages succeed. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "By including the 'when: delayed' parameter on the job."
+explanation = "The 'when: delayed' schedules a job to run after a delay, not necessarily after other stages complete. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By using the 'needs' keyword to specify all jobs in previous stages."
+explanation = "Needs allows jobs to run earlier by expressing dependencies, but does not inherently delay execution until all previous stages finish. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By not assigning any stage to the job."
+explanation = "Not assigning a stage defaults the job to the test stage, which does not guarantee it runs last. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By placing the job under 'after_script' in the .gitlab-ci.yml file."
+explanation = "'after_script' defines commands that run after a job completes, not a stage or job execution order. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is the effect of the 'default' stage configuration in a .gitlab-ci.yml file?"
+id = "eb2d2346-0a8b-4b99-8c4e-a7b106c0e86c"
+
+[[questions.options]]
+text = "It sets the stage all jobs are assigned to unless they explicitly specify a different stage."
+explanation = "The 'default' section can specify a default stage for jobs that don't override the stage setting. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "It forces all jobs to run in parallel regardless of their assigned stages."
+explanation = "The default stage configuration does not affect the concurrency of job execution but sets the default stage name. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It disables the stages sequence and makes jobs run sequentially in the order they appear."
+explanation = "Stages sequence cannot be disabled by 'default' stage; jobs respect stage order. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It makes jobs without a defined stage fail the pipeline."
+explanation = "Jobs without specified stages will use the default stage if defined, they do not fail. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It assigns all jobs to the first stage listed in the stages keyword."
+explanation = "This is only true if the default stage matches the first stage name; generally the default stage name sets the assignment, not position in stages list. Correct."
+is_correct = true
+
+[[questions]]
+question = "In the context of .gitlab-ci.yml, what is the relationship between 'stages' and job definitions?"
+id = "e44ce47f-9f04-48cf-8cc8-4c4a544b4d49"
+
+[[questions.options]]
+text = "The 'stages' keyword defines an ordered list of stages, which jobs reference via their 'stage' field to determine execution order."
+explanation = "Jobs use the 'stage' attribute to specify which stage they belong to, and stages determine sequence; this is the fundamental relationship. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Jobs implicitly define stages if the 'stages' keyword is not present, using their 'stage' names directly."
+explanation = "When no stages keyword is defined, GitLab uses a default set of stages; jobs must still use valid stage names. Partially true but does not define stages implicitly. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "The 'stages' keyword controls job parallelism without affecting execution order."
+explanation = "Stages primarily define execution order, not parallelism control between stages; jobs within a stage run in parallel. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Jobs are executed based on their order of appearance in the .gitlab-ci.yml file, regardless of stages."
+explanation = "Execution order depends on stages, not job listing order in the YAML file. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Jobs define their own stages internally; the 'stages' keyword is optional and used for documentation."
+explanation = "The 'stages' keyword is required to order stages explicitly; jobs assign which stage they belong to. It's not optional for ordering. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "In GitLab Pipelines, what is the primary purpose of using the 'needs' keyword in a job definition?"
+id = "95029b1a-0834-4a56-aebd-bc789d2490f8"
+
+[[questions.options]]
+text = "'needs' explicitly defines job dependencies allowing jobs to run in parallel when possible."
+explanation = "'needs' helps define which jobs must complete before the current job runs. This allows for parallel execution by skipping the implicit stage order. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "'needs' sets the order of stages in the pipeline."
+explanation = "'needs' defines job dependencies at the job level, not stage order. Stage order is controlled by the 'stages' keyword. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "'needs' is used to specify artifacts to be passed between jobs."
+explanation = "Artifacts are passed automatically between jobs defined in 'needs', but 'needs' itself defines dependencies, not artifact transfer. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "'needs' disables all parallelism and enforces sequential execution."
+explanation = "'needs' typically enables more parallelism by relaxing strict stage ordering. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "'needs' can be used to retry failed jobs automatically."
+explanation = "'needs' controls job dependencies, not retry policies. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "How can you ensure a job runs only after all jobs in a previous stage complete when using GitLab pipelines?"
+id = "640f95fe-b5b8-48c4-922b-d88278743bd0"
+
+[[questions.options]]
+text = "By assigning the jobs to different stages and relying on stage sequencing."
+explanation = "Stages run sequentially by default, so assigning jobs to different stages enforces order. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "By using 'needs' to list all jobs from the previous stage explicitly."
+explanation = "While 'needs' can enforce explicit dependencies, relying on stages automatically manages sequencing without needing all jobs listed. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By setting 'dependencies' to include all previous jobs."
+explanation = "'dependencies' controls artifact download, not job execution ordering. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By setting 'parallel' to 1 for all jobs."
+explanation = "'parallel' controls job scaling for matrix builds, not execution order. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By enabling 'allow_failure' for all dependent jobs."
+explanation = "'allow_failure' allows jobs to fail without failing the pipeline, but doesn’t control sequencing. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What impact does defining explicit 'needs' dependencies have on the execution order of jobs within the same stage?"
+id = "30ad63b1-ee94-4423-9c79-01b2b1e32ab3"
+
+[[questions.options]]
+text = "'needs' overrides the implicit stage-based order, allowing jobs within the same stage to run in a customized order."
+explanation = "'needs' explicitly sets dependencies, so jobs can run in parallel or ordered regardless of stage defaults. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "'needs' causes all jobs in the stage to run sequentially in the order they are listed."
+explanation = "'needs' defines dependencies, but does not reorder jobs based on listing order alone. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "'needs' forces all jobs in the same stage to wait for jobs in later stages."
+explanation = "'needs' dependencies must reference previous or same stage jobs, not later stages. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "'needs' is ignored if stages are defined."
+explanation = "'needs' is evaluated alongside stages to create a more flexible DAG, it is not ignored. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "'needs' automatically downloads all artifacts from dependent jobs."
+explanation = "'needs' enables artifact downloading from the specified jobs by default unless overridden. Correct."
+is_correct = true
+
+[[questions]]
+question = "In a GitLab pipeline, what role does the 'dependencies' keyword play compared to 'needs'?"
+id = "62c47ebe-5e23-4f75-a491-2ea1b1ab487e"
+
+[[questions.options]]
+text = "'dependencies' lists jobs from which to download artifacts, but does not control execution order."
+explanation = "'dependencies' controls which job artifacts to download; execution order is managed by 'needs' or stages. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "'dependencies' defines which jobs must complete before the current job starts."
+explanation = "Execution order depends on 'needs' or stages, not 'dependencies'. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "'dependencies' cancels jobs that do not produce required artifacts."
+explanation = "'dependencies' does not cancel jobs; it only specifies artifact download sources. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "'dependencies' replaces the need to use stages entirely."
+explanation = "'dependencies' does not control job execution or pipeline stages. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "'dependencies' automatically triggers dependent jobs when artifacts change."
+explanation = "'dependencies' only handles artifact download, not triggering logic. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which statements correctly describe controlling parallelism in GitLab pipelines through stages and needs?"
+id = "83c939a2-ce47-440f-8c19-199eddfe9bbf"
+
+[[questions.options]]
+text = "Stages run sequentially, but jobs within the same stage run in parallel by default."
+explanation = "By default, jobs inside a stage run in parallel, while stages execute sequentially. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Using 'needs' to specify dependencies can reduce unnecessary waits and increase parallelism."
+explanation = "'needs' enables jobs to start as soon as dependencies finish, improving parallelism. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "'dependencies' keyword is used to control the order of job execution to force parallelism."
+explanation = "'dependencies' only controls artifact download, not execution order or parallelism. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "All jobs in a stage must wait for all jobs in the previous stage unless 'needs' is specified."
+explanation = "Without 'needs', stage sequencing forces jobs to wait for the entire previous stage. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "'needs' can only define dependencies within the same stage."
+explanation = "'needs' can define dependencies on jobs from previous stages as well, not limited to the same stage. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is a key advantage of using shared runners in GitLab Pipelines?"
+id = "0a623ae4-7eff-4543-a65a-beda936bcf50"
+
+[[questions.options]]
+text = "Shared runners provide automatic availability for all projects without explicit configuration."
+explanation = "Shared runners are maintained by GitLab or the administrator to be available to multiple projects by default. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Shared runners can only be configured to run Docker executors."
+explanation = "Shared runners support multiple executor types including Docker, Shell, and others. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Shared runners do not support running jobs on self-hosted infrastructure."
+explanation = "Shared runners can be self-hosted or GitLab-hosted; the key is shared access, not hosting location. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Shared runners exclusively run on the same machine as the GitLab server."
+explanation = "Runners can be registered on different machines or environments, not limited to GitLab server machines. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Shared runners allow manual selection of a specific runner per job."
+explanation = "Jobs generally pick any available shared runner; manual selection of a specific shared runner is not standard. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "When would you choose to use a group runner instead of a project runner in GitLab?"
+id = "0e484591-db98-4c77-b530-823831026cac"
+
+[[questions.options]]
+text = "When you want to allow multiple projects within a group to share the same runner configuration."
+explanation = "Group runners provide shared runner resources scoped to all projects in a group for convenience and consistency. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "When you want to isolate runner usage to only a single project."
+explanation = "Project runners are used for single projects; group runners are for multiple projects. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "When you want to delegate runner management to individual developers."
+explanation = "Runner management is usually done by admins; group runners are controlled at group level, not by individual developers. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "When jobs require different executor types within the same project."
+explanation = "Runner executor types are determined at runner registration, unrelated to group vs project scope. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "When you want jobs to run exclusively on cloud hosted runners."
+explanation = "Runner location is independent of group vs project scope; group runners can be self-hosted or cloud hosted. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is a significant consideration when using self-hosted runners with Docker and Shell executors?"
+id = "c23fa80b-b81a-4a67-877c-54cbca1f87c8"
+
+[[questions.options]]
+text = "Docker executors run each job in isolated containers, while Shell executors run directly on the host system."
+explanation = "Docker executors use container isolation, improving security and environment reproducibility compared to Shell executors. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Shell executors provide better resource isolation than Docker executors."
+explanation = "Shell executors run directly on the host which may lead to less isolation than containerized Docker executors. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Self-hosted runners can only use Docker executors due to security restrictions."
+explanation = "Self-hosted runners support various executors including Shell, Docker, Kubernetes, no such restriction exists. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Using Docker executors requires manual Docker installation on GitLab.com hosted runners."
+explanation = "GitLab.com manages shared runners with Docker preconfigured; manual installation is needed only on self-hosted runners. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "The choice of executor has no impact on pipeline job execution speed."
+explanation = "Executor choice affects startup time and environment setup, impacting job execution speed. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What distinguishes a project runner from a shared runner in GitLab CI/CD?"
+id = "682b114c-fc05-4e80-8c7d-0f6296355011"
+
+[[questions.options]]
+text = "Project runners are dedicated exclusively to the project they are registered with."
+explanation = "Project runners run only jobs for their specific project, providing isolation and custom configuration. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Project runners are available for all projects within the same group."
+explanation = "That is the behavior of group runners; project runners are limited to one project. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Project runners must always use the Shell executor."
+explanation = "Project runners can use any supported executor depending on configuration. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Project runners cannot be self-hosted."
+explanation = "Project runners can be self-hosted or GitLab-hosted, no limitation exists. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Project runners can automatically scale up and down based on job demand."
+explanation = "Auto-scaling is related to specific runner configurations, not inherently a project runner trait. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "How can you restrict a group runner to run jobs only for certain projects within that group?"
+id = "8545a02a-5dfe-451a-bedd-f7d1ca24df46"
+
+[[questions.options]]
+text = "By using tags on the runner and specifying matching tags in the job definition."
+explanation = "Runner tags allow selective job assignment, restricting which jobs a runner can pick up. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "By assigning the runner only to those projects directly."
+explanation = "Group runners are assigned at the group level; restricting by project requires tags, not reassignment. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By configuring the runner to use a custom executor only available to certain projects."
+explanation = "Executor type does not restrict runner availability across projects. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By disabling the runner on other projects manually in their CI/CD settings."
+explanation = "Group runners cannot be disabled per project through settings, but job tags manage execution. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By configuring per-project access tokens linked to the runner."
+explanation = "Access tokens do not inherently restrict runner job assignment, tags control job routing. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "In GitLab CI/CD, what is the primary difference between job variables defined in the 'variables' keyword and those defined in a runner's configuration?"
+id = "2dfc1342-8820-4b0c-bb9f-8a8e3a1ae18d"
+
+[[questions.options]]
+text = "Variables defined in the 'variables' keyword are job-specific, while runner-configured variables are available to all jobs executed by that runner."
+explanation = "Job variables set inside the pipeline are scoped per job, whereas runner variables apply to all jobs run by that runner. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Variables defined in the 'variables' keyword do not support masking, but runner variables can be masked."
+explanation = "Masking is supported for variables configured via the GitLab UI or CI/CD settings, regardless of where they're defined. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Runner-configured variables are encrypted and not exposed in job logs by default."
+explanation = "Runner variables are not inherently encrypted; masking depends on how variables are set in GitLab, not runner configuration. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Variables defined in 'variables' inside the .gitlab-ci.yml cannot be overridden by pipeline-level variables."
+explanation = "Pipeline-level variables override the variables defined in the .gitlab-ci.yml 'variables' block. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Runner variables take precedence over project-level variables."
+explanation = "Project-level variables generally override runner-level variables for better control and security. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "How does caching differ from artifacts in GitLab Pipelines regarding job execution and persistence?"
+id = "c563c79c-788d-4ef3-86a5-2b12a4ae280a"
+
+[[questions.options]]
+text = "Cache is primarily used to speed up job execution by reusing files between jobs, and it is shared with jobs in other pipelines if configured."
+explanation = "Cache improves speed by sharing files between jobs or pipelines based on key configurations. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Artifacts are used for transferring build results between jobs and are always available indefinitely."
+explanation = "Artifacts have expiration policies and are meant for temporary transfer, not permanent storage. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Cache contents are uploaded to the GitLab server per job and are always unique to the branch."
+explanation = "Caching keys determine scope; caches can be shared or unique depending on the key, not strictly by branch. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Artifacts are stored only on the runner and are not uploaded to GitLab."
+explanation = "Artifacts are uploaded to GitLab to be accessible in the UI and for other jobs, runner storage is ephemeral. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Cache cannot be selectively cleared and persists indefinitely unless manually deleted."
+explanation = "Cache automatically expires based on configured expiration or can be cleared via the UI or API. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which statements correctly describe how runner isolation impacts the execution environment of jobs in GitLab pipelines?"
+id = "44518670-ade8-4392-a1f8-35a4c51f1e4b"
+
+[[questions.options]]
+text = "Runner isolation ensures that each job runs in a clean, separate environment to avoid side effects between concurrent jobs."
+explanation = "Isolation provides a fresh environment, preventing contamination from previous jobs. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Shared runners always run jobs in Docker containers which guarantees environment isolation."
+explanation = "Shared runners use various executors; not all guarantee container-based isolation. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Runner isolation prevents environment variables from being inherited from previous jobs."
+explanation = "Each job gets its own variables and environment; variables do not persist across jobs. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Runner isolation disables caching since the environment resets between jobs."
+explanation = "Caching works by uploading and downloading files outside the execution environment, so it is compatible with isolation. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Runner isolation ensures that artifacts from one job are automatically available to all other jobs."
+explanation = "Artifacts must be explicitly passed between jobs using dependencies or needs; isolation doesn’t share artifacts automatically. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "When configuring caching in GitLab pipelines, which behaviors are true regarding cache keys and policy?"
+id = "c7ebd146-16d9-447c-b5a5-1834f7642044"
+
+[[questions.options]]
+text = "Cache keys can be customized to control when cache is restored or updated between jobs."
+explanation = "Custom cache keys influence cache hits and how the cache is reused. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "The default cache policy 'pull-push' restores and uploads the cache only if the job fails."
+explanation = "'pull-push' means cache is downloaded before and uploaded after a successful job, not on failure. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "The 'policy: pull' setting allows a job to restore the cache but prevents uploading new cache."
+explanation = "'pull' policy downloads cache but does not update it after job completion. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Invalidating cache keys causes runners to delete all previous cache storage immediately."
+explanation = "Invalidating a cache key causes runners to not use previous caches matching old keys but does not delete caches immediately. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Cache is always shared between different branches by default to optimize storage."
+explanation = "Cache sharing depends on cache key; it is not shared across all branches unless keys overlap. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which of the following correctly describe the handling of artifacts in GitLab CI regarding their storage and access?"
+id = "d22d6817-5a86-41a4-b5b7-d1caf8d82ea3"
+
+[[questions.options]]
+text = "Artifacts are uploaded to and stored by GitLab after the job finishes, making them accessible via the UI or API."
+explanation = "Artifacts are managed by GitLab itself, allowing users to download or use them in subsequent jobs. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Artifact expiration can be configured to automatically delete artifacts after a time period."
+explanation = "Expiration removes old artifacts to save storage and is configurable per job. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Artifacts are preserved indefinitely unless the runner’s executor is cleaned."
+explanation = "Artifacts are stored by GitLab and do not depend on executor cleanup for retention. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Artifacts can be accessed only by jobs within the same pipeline stage."
+explanation = "Artifacts can be passed to downstream jobs using needs or dependencies, irrespective of stage. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Artifacts cannot be downloaded outside the context of the pipeline they belong to."
+explanation = "Artifacts can be downloaded anytime from the GitLab UI or via API as long as they haven’t expired. Correct."
+is_correct = true
+
+[[questions]]
+question = "Which event types can be configured to trigger a GitLab pipeline automatically?"
+id = "42efaa06-de94-4e3e-aa81-2ab8aa5d55d8"
+
+[[questions.options]]
+text = "Push events, merge requests, scheduled pipelines, and API triggers can all automatically trigger pipelines."
+explanation = "GitLab pipelines can be triggered automatically by push, merge request events, scheduled runs, and API calls. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Only push events can trigger pipelines automatically."
+explanation = "Limiting triggers to only push events ignores other available trigger types in GitLab. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Manual jobs require user interaction to start and cannot be triggered automatically."
+explanation = "Manual jobs need explicit user action to start and do not run automatically. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Scheduled pipelines run manually on demand."
+explanation = "Scheduled pipelines run automatically based on cron schedules, not manually on demand. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "API triggers allow external systems to start pipelines programmatically."
+explanation = "API triggers enable external tools or scripts to initiate pipelines via HTTP requests. Correct."
+is_correct = true
+
+[[questions]]
+question = "When using pipeline triggers for merge requests, which statement is true about the pipeline behavior?"
+id = "6a13592b-e3dd-4823-8551-d9e8727a9689"
+
+[[questions.options]]
+text = "Pipelines triggered by merge requests run with the source branch and include merge request context."
+explanation = "Merge request pipelines run using the source branch and are aware of the merge request, making review easier. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Merge request pipelines only run after the merge has completed successfully."
+explanation = "Pipelines usually run before merging to validate changes, not only after the merge. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Merge request pipelines can be configured to run automatically or manually."
+explanation = "You can configure merge request pipelines to run automatically on events or require manual triggering. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Merge request pipelines cannot be triggered via the API."
+explanation = "API triggers can initiate pipelines including those for merge requests when properly configured. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Merge request pipelines ignore scheduled triggers."
+explanation = "Scheduled pipelines are independent and can run regardless of merge request status. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is a distinguishing characteristic of manual jobs within GitLab pipelines?"
+id = "e0242537-cdeb-457d-8597-2a96d461337e"
+
+[[questions.options]]
+text = "Manual jobs require a user to click a button in the GitLab UI or trigger them via API to start."
+explanation = "Manual jobs do not run automatically and need user initiation either via UI or API. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Manual jobs execute immediately after push events without user interaction."
+explanation = "This describes automatic jobs, manual jobs specifically require user interaction to start. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Manual jobs can be included in scheduled pipelines and run automatically."
+explanation = "Manual jobs always require explicit triggering, even if scheduled pipelines run. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Manual jobs are only available in paid GitLab tiers."
+explanation = "Manual jobs are available in all GitLab tiers, including the free one. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Manual jobs can have dependencies and be part of a job DAG."
+explanation = "Manual jobs behave like other jobs regarding dependencies and pipeline structure. Correct."
+is_correct = true
+
+[[questions]]
+question = "How do API pipeline triggers differ from scheduled pipeline triggers in GitLab?"
+id = "3b7156ec-2f1f-4f77-95e6-fd5ef45b2c98"
+
+[[questions.options]]
+text = "API triggers require an HTTP request with a token to start a pipeline immediately, while scheduled triggers run automatically at defined times."
+explanation = "API triggers allow on-demand pipeline runs via API calls; scheduled triggers run according to a cron-like schedule. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Scheduled pipeline triggers require manual intervention to run."
+explanation = "Scheduled pipelines run automatically based on configured schedules without manual intervention. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "API triggers cannot pass variables to the pipeline."
+explanation = "API triggers can pass custom variables when triggering pipelines to modify behaviors. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Scheduled triggers can only run pipelines on the default branch."
+explanation = "Scheduled pipelines can be configured to run on any branch specified in the schedule. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "API triggers use personal access tokens exclusively."
+explanation = "API triggers use project pipeline trigger tokens, not personal access tokens. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which method allows a user to customize pipeline execution time in GitLab?"
+id = "4d975bff-050b-4a7c-968d-adf4593c734b"
+
+[[questions.options]]
+text = "Configuring scheduled pipelines with cron syntax to define when pipelines run."
+explanation = "Scheduled pipelines let users define execution times with cron-like expressions for automated runs. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Manually triggering jobs in the GitLab UI for instant execution."
+explanation = "Manual jobs let users start jobs immediately on demand via the UI. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Using API triggers with a predefined token to start pipelines on demand."
+explanation = "API triggers allow programmatic immediate pipeline runs when triggered. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Pipelines always run immediately upon push and cannot be deferred."
+explanation = "Pipelines can be deferred using schedules or manual jobs, they don't always run immediately. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Merge request pipelines only trigger after manual approval."
+explanation = "Merge request pipelines usually trigger automatically on MR events, approval is not required for triggering. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is a key difference between GitLab pipeline artifacts and cache regarding their lifetime?"
+id = "0aa54064-1458-423f-b10d-1ee569323104"
+
+[[questions.options]]
+text = "Artifacts are typically kept for a limited duration defined by the artifact expiration setting, while cache persists between pipeline runs until explicitly cleared or expired."
+explanation = "Artifacts have an expiration time after which they are deleted, whereas cache can be reused across multiple pipeline runs. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Cache files always have a shorter lifetime than artifacts."
+explanation = "Cache often has a longer or undefined lifetime compared to artifacts, which expire based on settings. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Artifacts and cache both expire immediately after a pipeline finishes."
+explanation = "Artifacts can be downloaded after a job finishes, and cache persists beyond a single pipeline run. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Artifacts never expire unless manually deleted."
+explanation = "Artifacts have an expiration policy by default or set by users; they don’t persist indefinitely. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Cache is only available during the job it is created in, while artifacts are available globally."
+explanation = "Cache can be shared across multiple jobs and pipeline runs; artifacts are typically job-specific but can be downloaded globally. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "In which use case is it more appropriate to use artifacts rather than cache in GitLab pipelines?"
+id = "8c15488d-8a45-474a-89c8-419361056556"
+
+[[questions.options]]
+text = "Storing build outputs that need to be downloaded after the pipeline completes."
+explanation = "Artifacts are designed to be accessed and downloaded after a pipeline finishes, making them ideal for build outputs. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Preserving dependencies to speed up subsequent job executions."
+explanation = "Cache is better suited for dependencies or packages to speed up jobs, not artifacts. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Sharing temporary data between jobs within the same pipeline stage."
+explanation = "Artifacts can share data between jobs but are mainly for final outputs; cache is preferred for temporary data reuse. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Storing logs for debugging purposes after the pipeline finishes."
+explanation = "Artifacts can store logs that users might want to download or view post-pipeline, cache is not used this way. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Maintaining a persistent state between pipeline runs to optimize performance."
+explanation = "Cache is designed to save data across pipeline runs; artifacts are typically discarded after expiration. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "How does scoping differ between cache and artifacts in GitLab pipelines?"
+id = "f29cb022-4c63-4eb4-8770-f51e30c8b987"
+
+[[questions.options]]
+text = "Cache can be shared among multiple jobs and pipeline runs using the same cache key, whereas artifacts are scoped to a specific job or pipeline."
+explanation = "Cache is reusable across jobs and pipelines if keys match; artifacts are specific to the job and pipeline run. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Artifacts can be accessed by future pipelines, but cache cannot."
+explanation = "Artifacts are scoped to the pipeline run and cannot be accessed later; cache can persist for multiple runs. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Both artifacts and cache are globally accessible by all jobs across all pipelines."
+explanation = "Artifacts and cache have limited scopes; artifacts are pipeline-specific and cache can be limited by key and job. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Cache is only accessible within the same job, but artifacts are accessible in all downstream jobs."
+explanation = "Cache is shared across jobs if keys match; artifacts can be downloaded by downstream jobs through dependencies. Partially false as cache is shared. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Artifacts are uploaded to the GitLab server, whereas cache is stored only on the runner."
+explanation = "Artifacts are uploaded to GitLab and available for download; cache may be stored on the runner or a remote cache, depending on configuration. Partly true but mainly about scoping which is incorrect. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which statement correctly contrasts the use cases of cache and artifacts in GitLab CI/CD pipelines?"
+id = "4737675e-0bfa-4b43-8aaa-8028a873be28"
+
+[[questions.options]]
+text = "Cache is optimized for reusing dependencies and speeding up jobs, artifacts are optimized for sharing final job outputs."
+explanation = "Cache is intended to speed up repetitive tasks by reusing files, while artifacts share output results with users or other jobs. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Artifacts automatically speed up job execution by reducing download times."
+explanation = "Artifacts add an upload/download step and don’t directly speed up job execution; cache is designed for that. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Cache is used for storing binary outputs meant for deployment."
+explanation = "Artifacts store deployable binaries; cache is not reliable for deployment artifacts. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Artifacts and cache serve the same purpose but differ in storage location."
+explanation = "They serve different purposes beyond just storage location differences. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Cache cannot be shared between jobs, unlike artifacts."
+explanation = "Cache can be shared between jobs with same cache keys, artifacts cannot be shared beyond job or pipeline scope. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What happens to cache and artifacts if a pipeline is retriggered manually in GitLab?"
+id = "dacd9548-0df7-4933-b28b-0bdbba60e867"
+
+[[questions.options]]
+text = "The cache from previous runs can be reused if the cache key matches, but artifacts are always regenerated per pipeline run."
+explanation = "Cache is persistent and can be reused across pipeline runs, while artifacts are specific to each pipeline execution. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Artifacts from previous pipeline runs remain available and are merged with new artifacts."
+explanation = "Artifacts are isolated per pipeline run and are not merged or preserved when retriggering. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Cache is cleared automatically when retriggering a pipeline."
+explanation = "Cache persists across pipeline runs unless explicitly cleared, it is not removed automatically. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Both cache and artifacts are deleted and recreated when a pipeline is manually retriggered."
+explanation = "Cache usually persists; artifacts are recreated but cache is not deleted automatically. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Retriggering a pipeline disables cache usage but preserves artifacts."
+explanation = "Cache continues to be used if keys match; artifacts are recreated per pipeline. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "In GitLab CI/CD pipelines, what is the primary function of the 'include' keyword?"
+id = "efb8b61f-7f9e-481e-8a9b-603dd3669c62"
+
+[[questions.options]]
+text = "To import external YAML files or templates and reuse CI/CD definitions."
+explanation = "'include' allows you to bring in external pipeline configuration to reuse jobs and definitions. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "To define environment variables that apply to all jobs in the pipeline."
+explanation = "'include' does not manage environment variables globally, it imports pipeline content. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "To specify which runner the job should use."
+explanation = "Runner specification is done via tags or runner configuration, not 'include'. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "To execute jobs sequentially based on a defined order."
+explanation = "Job order is controlled by 'stages' and 'needs'; 'include' is unrelated to execution order. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "To extend existing job definitions with additional configurations."
+explanation = "'include' is for importing external files; extending is done with the 'extends' keyword. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is the effect of using the 'extends' keyword in a GitLab CI/CD job?"
+id = "1c5c9dee-4a6b-4050-8b5e-5806bf19f118"
+
+[[questions.options]]
+text = "It allows a job to inherit configuration from another job or a template."
+explanation = "'extends' enables inheritance of job properties to avoid repetition. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "It is used to import pipeline configuration from other repositories."
+explanation = "'extends' does not import files; that is done with 'include'. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It defines multiple stages for the job to run in."
+explanation = "Stages are defined separately; 'extends' affects job configuration inheritance only. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It overrides the default runner settings for the job."
+explanation = "'extends' inherits or merges configuration; runner override is done in job specs. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It merges variables defined in different jobs automatically."
+explanation = "'extends' merges job configuration including variables when extending a job. Correct."
+is_correct = true
+
+[[questions]]
+question = "How can you include a remote template from a different GitLab project in your .gitlab-ci.yml file?"
+id = "972e6214-e3e5-40c1-ae33-c57781bf9065"
+
+[[questions.options]]
+text = "By specifying the 'include' keyword with the 'project' and 'file' parameters."
+explanation = "Using 'include: { project: ..., file: ... }' imports templates from other projects. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "By using the 'extends' keyword with the URL of the remote template."
+explanation = "'extends' inherits jobs; it does not import files from remote URLs. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By cloning the other repository inside a job and referencing local files."
+explanation = "This is a manual workaround, not using GitLab CI 'include' features. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By adding the remote template URL directly under the 'stages' keyword."
+explanation = "'stages' only defines stages, it does not link templates. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By using 'include' with a local file path relative to the current repository."
+explanation = "Local includes work with relative paths, but remote project includes require 'project' and 'file'. Partially correct but doesn't answer the remote template question fully. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "When combining 'include' and 'extends' in a GitLab CI/CD pipeline, which statement is true?"
+id = "761175f9-cde7-4e81-8f8c-9b89596be4ec"
+
+[[questions.options]]
+text = "Jobs defined in included files can be extended in the main .gitlab-ci.yml file."
+explanation = "You can extend jobs imported through 'include', enabling modular pipeline definitions. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "The 'extends' keyword is ignored for jobs defined in included files."
+explanation = "'extends' works normally regardless of file origin, so this is not true. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "You must declare 'extends' before any 'include' keyword is processed."
+explanation = "The order in a YAML file does not require 'extends' before 'include'; includes are loaded early. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "A job can only extend jobs defined in the same file."
+explanation = "Jobs can extend others across included files as long as they are accessible. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Using 'include' and 'extends' together causes pipeline processing errors."
+explanation = "Using them together is supported and encouraged for DRY configurations. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which of the following statements about 'include' types in GitLab CI/CD are correct?"
+id = "4e70d8fd-a27d-4983-9377-7e9774e68b4f"
+
+[[questions.options]]
+text = "You can include local files, remote files, templates from GitLab, and files from other projects."
+explanation = "'include' supports local, remote, project, and template types. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "You can include only local YAML files within the same repository."
+explanation = "'include' supports more than just local files, so this statement is incomplete. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Remote includes allow fetching files over HTTP or HTTPS."
+explanation = "Remote includes enable fetching YAML files via HTTP/S URLs. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "GitLab does not support including templates from predefined GitLab CI/CD templates."
+explanation = "GitLab provides predefined templates that can be included using 'include: template'. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Project includes require specifying the target project's full path and file path."
+explanation = "The 'project' and 'file' keys are used to include files from other projects. Correct."
+is_correct = true
+
+[[questions]]
+question = "In GitLab CI YAML, what is the correct way to reference an anchor using an alias to reuse a defined set of job configurations?"
+id = "1608aedb-44e2-4157-ad31-a5231bc1d4d9"
+
+[[questions.options]]
+text = "Use an ampersand (&) to define the anchor and an asterisk (*) to reference it as an alias elsewhere."
+explanation = "Anchors are defined with & and referenced by * to reuse YAML nodes. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Use the keyword 'include' followed by the anchor name to reuse the configuration."
+explanation = "'include' is for external files, not YAML anchors. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Define anchors with '#' and use '$' for aliases in the YAML."
+explanation = "'#' denotes comments; '$' is used for variable interpolation, not anchors. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Anchors and aliases are not supported in GitLab CI YAML."
+explanation = "GitLab CI supports YAML anchors and aliases for DRY configurations. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Use the keyword 'extends' to define an alias for an anchor."
+explanation = "'extends' is for inheriting job configs, not for defining or referencing YAML anchors. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is the purpose of the 'extends' keyword in GitLab CI YAML pipeline configuration?"
+id = "4bed5872-3471-435c-8fe9-6b9b4b67903a"
+
+[[questions.options]]
+text = "'extends' is used to inherit job definitions from another job or hidden job, allowing reuse of job configuration."
+explanation = "'extends' allows a job to inherit configuration from another job or template. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "'extends' is used to define global pipeline variables."
+explanation = "'extends' does not define variables; it's for job inheritance. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "'extends' is used to include external YAML files."
+explanation = "'include' is for external files, 'extends' is unrelated. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "'extends' is an alias mechanism for anchors."
+explanation = "'extends' works at job level, anchors/aliases reuse YAML snippets. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "'extends' disables variable interpolation within a job."
+explanation = "Variable interpolation still works regardless of 'extends'. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "How does variable interpolation work inside GitLab CI YAML, and what is the correct syntax to reference a variable within script commands?"
+id = "54f5ebb1-d687-4cb5-b095-5e20412097bb"
+
+[[questions.options]]
+text = "Variables are interpolated using the $VAR or ${VAR} syntax inside scripts and job definitions."
+explanation = "GitLab uses shell-style $VAR or ${VAR} to interpolate variables. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Variables are referenced using <<VAR>> syntax."
+explanation = "<<VAR>> is not valid for variable interpolation in GitLab CI YAML. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Variables can be accessed only with the syntax %VAR%."
+explanation = "%VAR% is Windows batch syntax and not used in GitLab CI YAML. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Variable interpolation requires enclosing variable names within double braces {{VAR}}."
+explanation = "Double braces {{VAR}} are not supported in GitLab CI YAML variable interpolation. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Variables cannot be interpolated directly in GitLab YAML and must be hardcoded."
+explanation = "GitLab CI supports variable interpolation extensively. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which statement best describes the behavior and purpose of YAML anchors and aliases in GitLab CI pipeline configurations?"
+id = "97554095-c425-4cf3-8470-63840d81eefc"
+
+[[questions.options]]
+text = "YAML anchors and aliases allow reuse of repeated YAML content within the same file to keep pipeline definitions DRY."
+explanation = "Anchors/aliases reduce repetition by reusing YAML blocks within a file. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Anchors and aliases in GitLab CI YAML dynamically override the values of variables at runtime."
+explanation = "Anchors/aliases do not affect runtime variables but YAML structure reuse. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "YAML anchors/aliases are used to merge multiple pipeline configurations from different repos."
+explanation = "Merging external configs is done via 'include', not anchors/aliases. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Anchors and aliases are only valid in global metadata sections of GitLab YAML."
+explanation = "Anchors and aliases can be used anywhere in YAML for reuse. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Using anchors disables the ability to use the 'extends' keyword in the same job."
+explanation = "Anchors and 'extends' can be used together without disabling each other. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "If a job in GitLab CI YAML 'extends' multiple jobs, how is the configuration merged?"
+id = "62b49b34-d3f0-4b3a-a50e-34d1d7d58146"
+
+[[questions.options]]
+text = "The configurations are merged from left to right, with later jobs overriding earlier ones on key conflicts."
+explanation = "'extends' merges jobs in order, later definitions override earlier on conflict. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Only the first job in the 'extends' list is considered; others are ignored."
+explanation = "All listed extended jobs are merged; not just the first. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Configurations from extended jobs are concatenated without overriding any keys."
+explanation = "Key conflicts lead to overriding, not concatenation. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "'extends' does not support multiple inheritance; only one job can be extended."
+explanation = "GitLab CI supports extending multiple jobs via an array in 'extends'. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Merging order depends on alphabetical order of extended job names."
+explanation = "Merging order depends on the order listed, not alphabetical. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "In GitLab CI/CD, which variable source has the highest precedence when there are multiple variables with the same name?"
+id = "392c4e14-bd27-4968-821a-5ed7d39781a3"
+
+[[questions.options]]
+text = "Variables defined in a job's 'variables' keyword override variables defined at the group or project level."
+explanation = "Job-level variables have the highest precedence and override project and group variables. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Project-level variables override job-level variables."
+explanation = "Project-level variables are overridden by job-level variables, so this is incorrect. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Group-level variables override pipeline trigger variables."
+explanation = "Pipeline trigger variables have higher precedence than group-level variables. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Pipeline schedule variables have the lowest precedence."
+explanation = "Pipeline schedule variables have higher precedence than group and project variables. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Variables defined in .gitlab-ci.yml have precedence over any CI/CD variable set in GitLab UI."
+explanation = "Variables defined in the UI generally have higher precedence than those defined in the .gitlab-ci.yml file. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which of the following statements about protected variables in GitLab CI/CD is correct?"
+id = "d734981b-85c9-435d-bf91-12d123e7a0be"
+
+[[questions.options]]
+text = "Protected variables are only available to pipelines running on protected branches or tags."
+explanation = "Protected variables are scoped so they are only accessible in pipelines for protected branches or tags. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Protected variables can be used in any pipeline regardless of branch protection settings."
+explanation = "Protected variables are restricted and do not apply to unprotected branch pipelines. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Protected variables are automatically masked in the job logs."
+explanation = "Protection and masking are separate settings; protected variables are not automatically masked. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Protected variables can be edited by anyone with Guest role in the project."
+explanation = "Only users with Maintainer or higher permissions can manage variables; Guests cannot edit variables. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Protected variables can only contain numeric values."
+explanation = "Variable values are not restricted to numeric types; any string is allowed. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is the effect of enabling the 'Mask variable' option on a GitLab CI/CD variable?"
+id = "94c68f13-240c-4bac-969a-472bbc5890b8"
+
+[[questions.options]]
+text = "The variable’s value is hidden in job logs preventing exposure of sensitive information."
+explanation = "Masked variables hide their values in job logs to avoid accidental exposure. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Masking a variable encrypts the value so only the runner can access it."
+explanation = "Masking does not encrypt variable values, it only hides them in logs. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "A masked variable cannot contain special characters."
+explanation = "Masked variables must only contain values matching allowed regex patterns, which disallow some special characters. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Masking a variable automatically protects it from being accessed in pipelines on unprotected branches."
+explanation = "Masking and protection are independent; masking does not affect branch access. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Masked variables are only available in manual jobs."
+explanation = "Masked variables are available in all jobs, not limited to manual ones. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "How can you limit a CI/CD variable's scope to only be available within a certain environment in GitLab?"
+id = "b2703fbf-ae88-4bdc-ae74-572f3adc996c"
+
+[[questions.options]]
+text = "By setting the variable’s 'Environment scope' to the desired environment name."
+explanation = "Environment scope restricts variable availability to pipelines running in that environment. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "By using the 'Protected' flag to assign the variable to the specific environment."
+explanation = "The protected flag manages branch or tag protection, not environment scoping. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By prefixing the variable name with the environment name in the variable key."
+explanation = "Variable key prefixes do not define environment scoping in GitLab CI/CD variables. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By including environment-specific conditions in the .gitlab-ci.yml variables section."
+explanation = "The variables section can't restrict variables to environments; environment scopes are set in UI or API. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By defining variables inside job scripts dynamically during runtime."
+explanation = "Variables defined at runtime in scripts do not enforce environment-based scoping from the variable configuration. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which of the following is true regarding the use of variables defined in pipeline trigger requests in GitLab CI/CD?"
+id = "a49d5607-162f-40cb-81a4-1e52888c3bc1"
+
+[[questions.options]]
+text = "Variables passed via trigger requests override group and project-level variables with the same name."
+explanation = "Trigger variables have higher precedence than group and project variables. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Trigger variables are automatically masked if marked as protected in the UI."
+explanation = "Variables passed via trigger requests are not automatically masked regardless of UI settings. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Trigger variables cannot override variables set in job 'variables' section."
+explanation = "Job variables defined in the YAML have the highest precedence and override trigger variables. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Trigger variables are scoped only to the branch from which the pipeline was triggered."
+explanation = "Trigger variables are available in the full pipeline regardless of branch. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "To use trigger variables securely, they must be protected in pipeline schedules."
+explanation = "Protection of variables is managed separately from pipeline schedules; trigger variables can be passed securely or insecurely depending on setup. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is the best practice for protecting secrets in GitLab Pipelines?"
+id = "08c93db2-0efd-489a-b129-dffdfe3344a8"
+
+[[questions.options]]
+text = "Store secrets in GitLab CI/CD variables with masked and protected flags enabled."
+explanation = "Using GitLab CI/CD variables with masking and protection ensures secrets are not exposed in job logs and only accessible in certain branches. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Hardcode secrets directly into the .gitlab-ci.yml file."
+explanation = "Hardcoding secrets exposes them in the repository and pipeline logs, leading to security risks. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Store secrets unencrypted in project Wiki for easy access."
+explanation = "The project Wiki is publicly accessible and not intended for storing sensitive information. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Add secrets as environment variables in pipeline scripts without any GitLab CI/CD variable settings."
+explanation = "Without using GitLab's secret management features, secrets can be exposed in logs or job output. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Use external secret management tools integrated with GitLab, such as HashiCorp Vault."
+explanation = "Integrating external tools provides additional security control over secrets beyond GitLab's native features. Correct."
+is_correct = true
+
+[[questions]]
+question = "Which branch restriction approach enhances security in GitLab CI/CD pipelines?"
+id = "f1532757-2fa1-46f2-8481-db98f0ed6660"
+
+[[questions.options]]
+text = "Restrict pipeline triggering and job execution to protected branches only."
+explanation = "Limiting job runs to protected branches reduces risk of malicious code running from untrusted branches. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Allow pipeline triggers on all branches without restrictions."
+explanation = "Allowing all branches increases attack surface and risks unauthorized changes triggering pipelines. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Disable merge requests to bypass branch policies."
+explanation = "Disabling merge requests lowers review control and increases risk of unvalidated code execution. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Permit developers to run pipelines only on feature branches."
+explanation = "Feature branches are less trusted than protected branches; limiting job execution there does not enhance security as well. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Use branch naming conventions along with protected branches settings."
+explanation = "Combining naming conventions with protection policies helps enforce who can push and run pipelines on sensitive branches. Correct."
+is_correct = true
+
+[[questions]]
+question = "How should GitLab Runner access be managed to maintain pipeline security?"
+id = "bc9a29c3-f774-4a37-a9c9-0d3459f4e008"
+
+[[questions.options]]
+text = "Use runners tagged and assigned to specific projects or protected branches."
+explanation = "Tagging runners and restricting them to certain projects limits exposure and controls which jobs they execute. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Allow any public runner to execute all jobs automatically."
+explanation = "Public runners may run untrusted jobs and have less secure environments, risking secret leakage. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Store runner tokens in repository code to allow easy onboarding."
+explanation = "Storing runner tokens in code exposes them publicly and allows unauthorized runner access. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Use shared runners for all projects without restrictions."
+explanation = "Shared runners execute jobs from any project, potentially leading to cross-project data exposure if not carefully controlled. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Rotate runner registration tokens regularly and revoke unused runners."
+explanation = "Regular token rotation and removing unused runners reduce the risk of compromised runners being exploited. Correct."
+is_correct = true
+
+[[questions]]
+question = "What is a secure method to expose secrets within GitLab CI/CD job scripts?"
+id = "cafe3e41-51c4-4cd0-9aa2-dd597ca4eb9c"
+
+[[questions.options]]
+text = "Reference protected masked CI/CD variables inside job scripts without echoing them."
+explanation = "Referencing protected masked variables keeps secrets hidden and prevents accidental exposure in logs. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Print secrets to job logs for debugging after pipeline execution."
+explanation = "Printing secrets exposes sensitive information in logs, which is a security risk. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Embed secrets directly in Docker images used by the pipeline."
+explanation = "Embedding secrets in images risks accidental distribution and is not recommended. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Use scripts that retrieve secrets at runtime from secure vaults rather than storing in pipeline variables."
+explanation = "Fetching secrets dynamically from vaults improves security by reducing surface for exposure. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Disable job log masking to ensure full transparency."
+explanation = "Disabling log masking increases risk of exposing secrets in logs. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Why is restricting pipeline execution permissions important in GitLab projects?"
+id = "1c6632f0-9306-4859-86fe-ccd58613abd7"
+
+[[questions.options]]
+text = "It prevents unauthorized users from running pipelines that could expose secrets or introduce malicious code."
+explanation = "Restricting who can run pipelines protects sensitive data and reduces risk of compromised pipelines. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "It allows all users to freely modify pipelines to improve flexibility."
+explanation = "Unrestricted access increases risk of malicious pipeline modifications and secret leakage. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It ensures only administrators can view job logs."
+explanation = "Permission restrictions focus on who triggers pipelines, not just log viewing; broad restriction is key. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Pipeline permissions have no impact on project security."
+explanation = "Pipeline permissions directly impact security posture by controlling execution scope. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It reduces build times by limiting parallel jobs."
+explanation = "Although restrictive permissions might influence build behavior, the main purpose is security, not performance. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is the primary difference between the DAG view and the Stage view in GitLab pipelines visualization?"
+id = "19809ece-f9a6-4bea-bab5-d7392be61506"
+
+[[questions.options]]
+text = "The DAG view shows jobs and their direct dependencies, while the Stage view groups jobs by sequential stages."
+explanation = "DAG (Directed Acyclic Graph) view visualizes jobs based on their dependency relationships, whereas Stage view organizes jobs into stages executed in order. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "The DAG view only shows failed jobs, whereas the Stage view displays all jobs."
+explanation = "DAG view displays the entire job dependency graph, not only failed jobs, making this statement incorrect. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "The Stage view provides a chronological timeline of job execution, which the DAG view does not."
+explanation = "Stage view groups jobs into stages but does not provide a timeline; neither view is a timeline per se. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "DAG view requires a special pipeline configuration while Stage view works automatically."
+explanation = "Both views are available automatically for any pipeline; DAG view requires jobs to have defined dependencies but no special config. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Stage view can display parallel jobs, but DAG view cannot."
+explanation = "DAG view explicitly shows parallel jobs as nodes without dependencies, so this statement is incorrect. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "In GitLab pipelines, how can you diagnose why a particular job is executed after another when using the DAG visualization?"
+id = "d444f097-30ec-400e-8491-606132894fa4"
+
+[[questions.options]]
+text = "By examining the arrows in the DAG, which indicate job dependencies dictating execution order."
+explanation = "Arrows represent job dependencies, showing which jobs must finish before others run, helping diagnose execution order. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "By looking at the job duration times in the Stage view."
+explanation = "Job duration times do not determine execution order, only how long jobs run; this doesn't help diagnose sequencing. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By checking the order in which stages are listed in the Stage view."
+explanation = "Stages run sequentially, but within a stage, job order isn't guaranteed; dependencies in DAG are more precise for job order. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "By verifying if both jobs use the same Docker image."
+explanation = "Docker images do not influence execution order within a pipeline; dependency and stage configuration determine order. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By reviewing the pipeline's logs timestamp."
+explanation = "Log timestamps alone don’t clarify why job order was chosen; dependency graph provides explicit reasoning. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "If a pipeline's DAG shows two jobs without connecting arrows between them, what does that imply about their execution?"
+id = "263862b3-33d7-4792-a458-84c5d1382711"
+
+[[questions.options]]
+text = "The jobs can run concurrently since there is no dependency between them."
+explanation = "A lack of dependency arrows means the jobs are not dependent on each other and can run in parallel. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "One job will always run immediately after the other due to implicit order."
+explanation = "Without explicit dependencies, no execution order is enforced; they can run simultaneously. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "These jobs belong to different pipelines."
+explanation = "Jobs shown in the same DAG belong to the same pipeline; different pipelines are visualized separately. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "These jobs are both failed jobs."
+explanation = "Failure status is not displayed by lack of arrows; dependency absence doesn’t imply failure. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "The jobs must use the same stage to have no arrows."
+explanation = "Jobs in different stages can also have no arrows if no dependency is defined; missing dependency is the critical factor. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which aspect of a GitLab pipeline can cause discrepancies between the Stage view and DAG view execution order?"
+id = "021dc101-0a00-4529-94c8-663108bf399a"
+
+[[questions.options]]
+text = "Defining detailed job dependencies which override stage ordering in DAG view."
+explanation = "Job dependencies specified in 'needs:' override strict stage ordering and affect DAG execution, possibly differing from Stage view. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "The color scheme used in the pipeline visualization."
+explanation = "Colors have no effect on execution order or pipeline logic, only on UI display. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "The number of runners assigned to the project."
+explanation = "Runners affect throughput but not the logical dependency order visualized in either view. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Whether the pipeline uses manual job triggers."
+explanation = "Manual triggers delay job execution but don’t cause discrepancy between DAG and Stage view orders. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Pipeline timeout settings."
+explanation = "Timeouts terminate jobs but do not affect visualization ordering between Stage and DAG views. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "How can the DAG visualization assist in optimizing the execution time of a GitLab pipeline?"
+id = "99176e48-4329-4407-b7b6-5eed26164001"
+
+[[questions.options]]
+text = "By identifying independent jobs that can run in parallel to reduce the overall pipeline duration."
+explanation = "DAG clearly shows jobs without dependencies that can be executed simultaneously, enabling optimization of pipeline run time. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "By showing CPU and memory usage of each job."
+explanation = "Resource usage metrics are not part of the DAG visualization; DAG focuses on dependencies and sequencing. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By indicating which jobs have failed in the past."
+explanation = "DAG visualization shows current job status but not historical failures for optimization; this needs other tools. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By automatically rearranging jobs to use fewer stages."
+explanation = "The DAG view is a visualization, not an automatic optimizer; rearrangement must be configured by the user. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By displaying the exact runtime estimate for each job."
+explanation = "DAG does not provide runtime estimates; this information comes from pipeline job logs or analytics. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "In GitLab CI/CD, when would you prefer to use 'rules' over 'only/except' for conditional job execution?"
+id = "83710af5-41b2-43b0-a1cb-e0365324cd80"
+
+[[questions.options]]
+text = "When you need more granular control with multiple conditions and complex logic."
+explanation = "'rules' provide if/else like evaluation which allows for complex condition combinations. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "When the pipeline configuration is simple and you want to avoid any conditions."
+explanation = "'only/except' are simpler, but 'rules' are better for conditional logic, so this is incorrect. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "When you want to set conditions based on variables, commits, or pipelines flexibly."
+explanation = "Rules support variable evaluation and various attributes making them flexible. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "When you want conditional job execution strictly based on runner tags."
+explanation = "'only/except' can filter by branches/tags; runner tags are specified in job tags, not via rules or only/except conditions. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "When you want to define conditions at workflow level instead of job level."
+explanation = "'rules' are job-specific, for workflow level you use workflow:rules; this makes using rules alone insufficient here. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "How does the 'workflow:rules' keyword affect pipeline creation in GitLab CI/CD?"
+id = "a5754236-b900-47ab-b285-9539b3bceb16"
+
+[[questions.options]]
+text = "'workflow:rules' control whether a pipeline is created or skipped based on conditions before any jobs run."
+explanation = "Workflow rules determine if the entire pipeline is created or not. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "It determines which jobs within the pipeline will run after pipeline creation."
+explanation = "Job execution is controlled by job-level rules or only/except, not workflow rules. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "It acts as a global only/except filter for all jobs in the pipeline."
+explanation = "It affects the pipeline creation, not individual job execution directly. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "It replaces the need for job 'rules' or 'only/except' entirely."
+explanation = "Workflow rules control pipeline creation, does not replace job-level conditionals. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "It can be used to skip pipelines triggered by schedules."
+explanation = "Workflow rules can conditionally skip pipeline creation based on any variable including pipeline source. Correct"
+is_correct = true
+
+[[questions]]
+question = "What is the priority order between 'rules' and 'only/except' when both are defined in the same GitLab job?"
+id = "0d484819-094f-415b-9cb9-fbe1bb7b1bef"
+
+[[questions.options]]
+text = "'rules' take precedence and override 'only/except' when both are defined."
+explanation = "GitLab processes 'rules' first and ignores 'only/except' if rules are present. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "'only/except' conditions will apply first before evaluating 'rules'."
+explanation = "'rules' always override 'only/except', so this is incorrect. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Both are evaluated and the job runs only if both conditions pass."
+explanation = "Only 'rules' are evaluated when present; 'only/except' are ignored in that case. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "You can combine both for more granular control, and GitLab merges the conditions."
+explanation = "GitLab does not merge both; it uses only 'rules' if defined. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "If 'only/except' and 'rules' conflict, the job will fail the pipeline."
+explanation = "Conflicting conditions don't cause pipeline failure, the system uses 'rules' and ignores 'only/except'. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "Which of the following statements about using 'only' and 'except' for controlling job execution are true?"
+id = "1ce0892e-d43a-4d86-bb4b-b503dd612d7a"
+
+[[questions.options]]
+text = "'only' limits the job to run on specified refs or pipeline sources."
+explanation = "'only' can restrict job execution to branches, tags, or pipelines. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "'except' specifies the conditions under which the job will be skipped."
+explanation = "'except' is used to prevent job execution on specified refs or pipelines. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "'only' and 'except' can be used simultaneously with additive conditions."
+explanation = "Using both together can cause complex behavior and is deprecated; rules are recommended instead. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "'only' supports evaluation of variables for conditional execution."
+explanation = "'only' supports limited keywords and refs but does not evaluate arbitrary variables; rules do. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "'except' can only be used to exclude branches, not tags."
+explanation = "'except' can exclude branches, tags, or even special pipeline sources. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "When using 'rules' in a GitLab CI job, what role does the 'when' attribute play?"
+id = "3caf76ba-c4e5-4acf-9224-e4ee96ae602a"
+
+[[questions.options]]
+text = "'when' defines the job’s execution behavior such as running, manual, or never."
+explanation = "'when' controls if and how the job executes based on the rule match. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "'when' is used to specify the order in which jobs run within the pipeline."
+explanation = "'when' does not affect job ordering, only execution conditions. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "'when' indicates if the job is a child pipeline or parent pipeline job."
+explanation = "'when' is unrelated to pipeline hierarchy, only job execution control. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "'when' defines which runner tags the job will require."
+explanation = "'when' does not control runner tags, which are set separately. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "'when' controls whether artifacts are uploaded after job completion."
+explanation = "'when' does not affect artifact uploads. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "In GitLab CI/CD, when using 'parallel:matrix' to create job variants, how are the matrix variables exposed inside the job script?"
+id = "008f1565-b055-4aaa-b0f8-60d085bd96b4"
+
+[[questions.options]]
+text = "Matrix variables are available as environment variables named exactly after the keys defined in the matrix."
+explanation = "The variables defined in the matrix section become environment variables within the job context, accessible by their keys. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "Matrix variables are only accessible via predefined GitLab variables like CI_JOB_NAME."
+explanation = "CI_JOB_NAME reflects the job name but does not expose matrix parameters directly. Therefore, matrix variables must be accessed by their names. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Matrix variables are not passed to the job environment but are instead passed as job arguments."
+explanation = "Matrix variables become environment variables, not command-line arguments. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "You need to manually define variables in 'variables' section to access matrix values inside the job."
+explanation = "The parallel:matrix mechanism automatically passes the matrix keys as env variables; manual definition is not required. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Matrix variables are accessible only if the 'script' section uses a special syntax like ${{ matrix.variable_name }}."
+explanation = "This interpolation syntax is not supported in GitLab pipelines; matrix variables are accessed as regular environment variables. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "What is the result of defining a 'parallel:matrix' with two variables, each with two values, within a GitLab CI job?"
+id = "e755ee66-36f5-4ed3-a1dc-c3e7896f8601"
+
+[[questions.options]]
+text = "The job will be duplicated to create four parallel jobs, each combination of the two variables is a job variant."
+explanation = "The matrix creates a Cartesian product of all variable values, resulting in the multiplication of job variants. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "The job will run two times, one for each variable independently."
+explanation = "Matrix combinations result in a product, not individual independent runs per variable alone. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Only the first variable's values will be used, ignoring the second variable."
+explanation = "Both variables and their values participate in the matrix build; ignoring one would defeat the parallel:matrix function. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "GitLab will error out, as parallel:matrix supports only one variable."
+explanation = "GitLab supports multiple variables in parallel:matrix correctly. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "The job will execute sequentially four times instead of parallel."
+explanation = "Parallel matrix jobs run in parallel, not sequentially, unless limited by runner concurrency. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "How can you customize the job name generated by GitLab when using 'parallel:matrix'?"
+id = "9da0d26a-bee2-4759-b6ab-a50c90e52d6c"
+
+[[questions.options]]
+text = "Use the 'name:' keyword with placeholders like '%{variable}' to insert matrix variable values into the job name."
+explanation = "The 'name:' field supports variable placeholders allowing meaningful job names including matrix variable values. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "Matrix job names are fixed and cannot be customized; they always follow a default pattern."
+explanation = "GitLab allows customizing job names for matrix jobs to make them readable and informative. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Job names are customized by concatenating the matrix variables manually in the 'script' section."
+explanation = "Concatenating strings inside the script changes output but does not affect the job name shown in the pipeline UI. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Matrix jobs inherit the job name from the parent pipeline and do not have distinct names."
+explanation = "Each matrix variant job has its own name that can be customized; they are distinct in the pipeline. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "You must set a global variable JOB_NAME to override matrix job names."
+explanation = "Global variables do not influence the job's display name; 'name:' keyword is the proper way. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "Which of the following statements is true regarding using 'parallel:matrix' with 'rules:' in a GitLab CI job?"
+id = "8a41ce31-afad-4912-9f0a-b2cb37347290"
+
+[[questions.options]]
+text = "Rules are evaluated once per job definition, and all matrix variants inherit the same job-level rule evaluation."
+explanation = "'rules:' are applied before matrix expansion, so if a job is excluded by rules, none of its matrix variants run. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "Rules can be defined inside 'parallel:matrix' to conditionally exclude specific matrix variants."
+explanation = "'rules:' is a job-level keyword and cannot be applied inside the 'matrix' structure. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Matrix combinations are filtered automatically by matching matrix variable values in 'rules'."
+explanation = "'rules' cannot filter on matrix variables directly; all run or none run depending on rules evaluation. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Each matrix variant re-evaluates 'rules:' independently at runtime."
+explanation = "Rules are evaluated before matrix expansion, not independently per matrix job. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "'rules:' inside a matrix job variant override the global job rules."
+explanation = "You cannot define 'rules:' per matrix variant; rules apply to the parent job only. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "What is an effective way to reduce duplicated code when using 'parallel:matrix' in complex GitLab CI pipelines?"
+id = "7b9145c6-7a40-4f40-96f8-0eeb6ec0df5f"
+
+[[questions.options]]
+text = "Define shared job configuration in 'extends:' and use 'parallel:matrix' to generate variants without repeating common settings."
+explanation = "'extends:' allows inheriting configuration, enabling matrix jobs to reuse shared code and reduce duplication. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "Write separate jobs for each matrix variant, each with full job definition."
+explanation = "This leads to duplication and defeats the purpose of matrix builds. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Avoid using 'parallel:matrix' altogether and run jobs sequentially instead."
+explanation = "This reduces parallelism and efficiency, not duplication of code. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Configure matrix variants inside the 'script' commands instead of 'parallel:matrix'."
+explanation = "Matrix variables drive job variants at the pipeline level, not script-level branching. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Use environment variables only without defining matrix to minimize code in pipeline."
+explanation = "Without matrix, there’s no automatic generation of job variants, increasing manual job definitions. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "Which caching strategy in GitLab CI helps reduce build times by reusing downloaded dependencies across pipeline runs?"
+id = "0852a660-be1e-4f0d-89bc-21c6c8eb2f67"
+
+[[questions.options]]
+text = "Using the cache keyword to store dependencies in a shared location accessible by multiple jobs."
+explanation = "Caching dependencies via the cache keyword allows reuse across jobs and pipelines, reducing redundant downloads. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Using artifacts to transfer dependencies between jobs."
+explanation = "Artifacts are meant for passing build results, not caching dependencies for multiple pipeline runs. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Disabling cache to always fetch fresh dependencies."
+explanation = "Disabling cache increases build time by refetching dependencies every time. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Storing dependencies inside the Docker image used in the pipeline."
+explanation = "Preloading dependencies in Docker images reduces dependency installation time but is not a caching strategy within pipelines. Partially correct but not a caching strategy. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Using external storage services to manually store and retrieve dependencies without pipeline cache."
+explanation = "While possible, it adds complexity and is not the recommended GitLab caching strategy. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is the primary benefit of using selective execution with GitLab CI rules or only/except keywords?"
+id = "1c7670b6-fd1d-49d7-ba1c-a8fa7258871e"
+
+[[questions.options]]
+text = "It allows jobs to run only when specific conditions are met, reducing unnecessary job runs and saving pipeline resources."
+explanation = "Selective execution prevents running jobs when not needed, improving pipeline efficiency. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "It ensures that all jobs run in every pipeline to maximize test coverage."
+explanation = "Running all jobs every time wastes resources and does not improve efficiency. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It forces jobs to always use the cache regardless of pipeline context."
+explanation = "Selective execution controls when jobs run, not cache usage. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It eliminates the need for artifacts by sharing cache automatically."
+explanation = "Selective execution regulates job runs, not artifact management. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It enables parallel execution of jobs."
+explanation = "Selective execution controls conditional runs, not parallelism. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which approach best minimizes artifact size in GitLab pipelines?"
+id = "ad2ae512-d771-4562-869d-6a751ab22d0f"
+
+[[questions.options]]
+text = "Specifying only essential files or directories in the artifacts:paths setting."
+explanation = "Artifacts should include only necessary outputs to reduce size and upload time. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Including the entire working directory in artifacts to ensure completeness."
+explanation = "Packaging the whole directory increases artifact size unnecessarily. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Compressing artifacts before upload automatically happens without any configuration."
+explanation = "GitLab compresses artifacts, but limiting content size is key to minimization. Compression alone is insufficient. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Using artifacts with no expiration date."
+explanation = "Artifacts retention does not affect size, but can cause storage bloat. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Storing artifacts as cache entries."
+explanation = "Artifacts and cache serve different purposes; cache should not be used to optimize artifact size. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "How can caching strategy be combined with selective execution to improve pipeline efficiency?"
+id = "7b8b5f19-5af8-4cf3-92ed-0e10cfe47162"
+
+[[questions.options]]
+text = "Cache dependencies in stages that run only when necessary, avoiding cache creation for skipped jobs."
+explanation = "Combining caching with conditional job runs prevents wasting resources on cache storage and retrieval. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Always cache in every job regardless of conditions to ensure cache hits."
+explanation = "Unconditional caching in skipped jobs wastes pipeline time and space. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Use selective execution to skip cache restore steps."
+explanation = "Skipping cache restore may cause re-fetching dependencies, negating cache benefits. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Disable caching in selective execution to speed up skipped jobs."
+explanation = "Disabling caching does not speed up skipped jobs, which do not run. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Store all build outputs as artifacts to avoid caching."
+explanation = "Artifacts are for job outputs, not a caching replacement; this does not improve cache strategy. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is a downside of caching large amounts of data in GitLab pipelines without artifact minimization?"
+id = "6a5da001-3464-4513-bafd-e4df2d59b1be"
+
+[[questions.options]]
+text = "Longer job startup and cache upload/download times, slowing down overall pipeline performance."
+explanation = "Large caches increase transfer times and delay jobs, reducing efficiency. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Increased parallel job execution speed."
+explanation = "Large caches do not improve parallelism; they usually slow down jobs. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Permanent storage of build outputs without expiration."
+explanation = "Cache is temporary by default and separate from artifact storage, unrelated to size downside. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Automatic cleanup of unnecessary files."
+explanation = "Caching large amounts can make cleanup harder, not easier. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Reduction of unnecessary job runs."
+explanation = "Cache size does not directly affect job run conditions. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "In a GitLab multi-project pipeline, which method allows triggering a pipeline in another project and passing variables to it?"
+id = "63fdd253-297f-41ba-82e9-0093135c7f0e"
+
+[[questions.options]]
+text = "Using the trigger keyword with project and variables specified under the trigger section in the downstream job."
+explanation = "The trigger keyword supports specifying the target project and passing custom variables. This allows invoking pipelines in other projects and passing context. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Using only the extends clause to inherit jobs from the other project's pipeline configuration."
+explanation = "The extends keyword can inherit job definitions, but it does not trigger an external project's pipeline or pass variables. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Configuring a parent pipeline to explicitly define downstream pipelines in the same project only."
+explanation = "Downstream pipelines can be triggered in the same project, but this does not inherently trigger pipelines in other projects. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Manually running a pipeline in the other project via the GitLab web interface after the parent pipeline finishes."
+explanation = "Manually running pipelines is not considered triggering downstream or multi-project pipelines automatically. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Using a webhook to trigger the downstream job automatically with the appropriate variables."
+explanation = "Webhooks are external triggers and not a built-in method to trigger downstream pipelines with variables via GitLab CI configuration. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is a key difference between parent-child pipelines and downstream pipelines in GitLab?"
+id = "0abb3418-948e-4389-96f8-15dc0608975f"
+
+[[questions.options]]
+text = "Parent-child pipelines share the same pipeline graph and are visually nested under a single pipeline in the UI."
+explanation = "Parent-child pipelines are tightly coupled and shown in a nested view in GitLab's UI, reflecting a hierarchical relationship. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Downstream pipelines must always be triggered in the same project and cannot span multiple projects."
+explanation = "Downstream pipelines can be in the same or different projects, making this statement incorrect. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Parent-child pipelines cannot pass pipeline-level variables between them."
+explanation = "Pipeline-level variables can be passed between parent and child pipelines using the needs keyword or trigger configuration. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Downstream pipelines run simultaneously with the parent pipeline instead of sequentially."
+explanation = "Downstream pipelines start after the triggering pipeline job completes unless dependencies are orchestrated differently. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Parent-child pipelines require manual intervention to trigger child pipelines."
+explanation = "Parent-child pipelines are usually triggered automatically by the parent pipeline's configuration. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "When configuring a trigger job to invoke a downstream pipeline in another project, which attribute is mandatory to specify?"
+id = "f0c0bb25-f64b-41fb-8989-5c441027dae2"
+
+[[questions.options]]
+text = "The project attribute to identify the target project."
+explanation = "The trigger job must specify the project attribute to indicate which external project’s pipeline to trigger. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "The branch attribute to specify which branch of the target project to run the pipeline on."
+explanation = "Though recommended, branch defaults to the current branch if not explicitly set, so it is not strictly mandatory. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "The pipeline variables list to transfer context between pipelines."
+explanation = "Variables are optional parameters to pass context but are not mandatory. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "The tag attribute to specify the GitLab Runner to execute the downstream pipeline."
+explanation = "Tags control runners on jobs but do not apply to the trigger keyword for downstream pipeline execution. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "The ref attribute to specify the commit SHA on which to run the downstream pipeline."
+explanation = "The ref attribute is mandatory to specify the branch, tag, or SHA to run the downstream pipeline on. Correct."
+is_correct = true
+
+[[questions]]
+question = "Which scenario best describes when you would use a parent-child pipeline instead of a downstream pipeline with trigger in GitLab?"
+id = "b0482f1c-7e46-4f2d-a971-1e3a22bd5a29"
+
+[[questions.options]]
+text = "You want to split a complex pipeline into smaller reusable units within the same repository with tight dependency control."
+explanation = "Parent-child pipelines are best suited for organizing complex workflows into modular units within the same repo, providing clear graphical representation. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "You want to trigger pipelines across multiple projects to coordinate a cross-team release."
+explanation = "Multi-project coordination is better handled with trigger jobs that invoke downstream pipelines in other projects. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "You want to manually start a pipeline at a later time independent of the current pipeline run."
+explanation = "Manual or scheduled pipelines are unrelated to parent-child pipeline triggering mechanisms. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "You want to pass artifacts automatically from one pipeline project to another."
+explanation = "Passing artifacts across projects typically requires specific job artifacts and dependencies in downstream pipelines, not necessarily parent-child pipelines. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "You want to have completely independent pipelines that never interact but share the same GitLab group."
+explanation = "Independent pipelines don’t require parent-child or downstream triggers, so this is unrelated. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is true about job dependencies when using a trigger keyword to start a downstream pipeline in another GitLab project?"
+id = "d4cc9f0d-441b-4a36-9e3f-101bf49f34ba"
+
+[[questions.options]]
+text = "The triggering job will wait for the downstream pipeline to finish before completing."
+explanation = "When configured normally, trigger jobs that start downstream pipelines wait for their completion before finishing, enabling status propagation. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Artifacts from the downstream pipeline are automatically passed back to the triggering project."
+explanation = "Artifacts are not automatically shared between projects in multi-project pipelines and require explicit transfer setup. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Downstream pipelines cannot fail independently from the triggering pipeline."
+explanation = "Downstream pipelines can fail independently; their result affects the triggering job’s status but they are separate entities. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "You cannot pass any variables from the triggering job to the downstream pipeline."
+explanation = "Variables can be passed explicitly using variables under the trigger keyword. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Triggering a downstream pipeline automatically shares runner resources between the projects."
+explanation = "Runner resources are shared based on runner registration and tagging, not by the trigger keyword automatically. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is the primary purpose of a review app in GitLab pipelines?"
+id = "473b1611-7c2d-4638-a233-74d31f204062"
+
+[[questions.options]]
+text = "To provide a temporary environment for testing merge requests before they are merged."
+explanation = "Review apps allow dynamic environments to test code changes prior to merging, ensuring functionality. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "To automatically deploy code to production as soon as a pipeline finishes."
+explanation = "Review apps are not used for direct production deployment, they are meant for pre-merge testing. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "To store pipeline artifacts permanently for auditing purposes."
+explanation = "Artifacts are stored separately and not directly related to review apps' environment creation. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "To replace manual UI testing by automated unit tests."
+explanation = "Review apps provide live environments for integration testing, but do not replace automated unit testing. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "To clean up old branches automatically."
+explanation = "Cleanup policies may remove old review app environments but do not clean up branches themselves. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "Which setting would you configure to automatically remove review app environments after a set period?"
+id = "7cdd6461-4b55-4195-8083-69f844700fd2"
+
+[[questions.options]]
+text = "Cleanup policies in the environment definition."
+explanation = "Cleanup policies specify when review app environments should be deleted automatically. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "Job artifacts expiration time."
+explanation = "Artifacts expiration controls how long build files are kept, unrelated to environment cleanup. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Pipeline schedule frequency."
+explanation = "Pipeline schedules determine when pipelines run, not environment removal timing. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Merge request approval rules."
+explanation = "Approval rules manage code review approvals, not environment lifecycle. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "Runner tags."
+explanation = "Runner tags specify which runners can execute jobs, not cleanup policies. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "How do you specify an environment as a review app in a GitLab CI/CD pipeline?"
+id = "d6b9ae83-3df6-4333-9c73-2643a41109bd"
+
+[[questions.options]]
+text = "By using 'environment: name: review/$CI_COMMIT_REF_NAME' and setting 'auto_stop_in'."
+explanation = "Naming environment dynamically and setting auto_stop_in enables review apps that are branch-specific and automatically stopped. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "By setting 'environment: production' in the job definition."
+explanation = "'production' is typically used for actual deployment, not review apps. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "By adding 'review_app: true' in the job script."
+explanation = "There is no 'review_app' keyword; review apps are defined via environment naming and settings. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "By tagging the job with 'review'."
+explanation = "Tags relate to runners, not environment designation as review apps. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "By enabling 'review_app' feature in project settings only."
+explanation = "Project settings enable review apps feature but the pipeline must define environment properly for them. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "What happens when a branch associated with a review app environment is deleted in GitLab with default cleanup policies?"
+id = "03e05a1f-ae82-44bb-9e96-c4b5e7877b15"
+
+[[questions.options]]
+text = "The corresponding review app environment is automatically stopped and removed."
+explanation = "Cleanup policies are designed to remove review app environments linked to deleted branches. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "The review app environment becomes permanent until manually deleted."
+explanation = "Default cleanup policies usually prevent environments from persisting after branch deletion. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "The pipeline is re-run to redeploy the environment."
+explanation = "Deleting a branch does not trigger pipeline reruns for review apps. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "The environment is switched to production mode."
+explanation = "Environments linked to deleted branches do not change mode automatically. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "The environment retains its last deployed version indefinitely."
+explanation = "Cleanup policies remove old review app environments to conserve resources. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "Which is an advantage of using GitLab's cleanup policies on review app environments?"
+id = "7d3ea2d8-9e42-4f40-beab-ad9bb4572fbe"
+
+[[questions.options]]
+text = "It reduces resource usage by automatically removing stale environments."
+explanation = "Cleanup policies free up computing and storage resources by deleting unused environments. Correct"
+is_correct = true
+
+[[questions.options]]
+text = "It backs up environments for long-term access."
+explanation = "Cleanup policies do not back up but remove environments to save resources. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "It ensures all environments stay active regardless of branch status."
+explanation = "The purpose of cleanup policies is to remove, not retain, old environments. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "It disables manual deployment to production."
+explanation = "Cleanup policies affect environment lifecycle, not deployment permissions. Incorrect"
+is_correct = false
+
+[[questions.options]]
+text = "It replaces the need for automated testing pipelines."
+explanation = "Cleanup policies manage environment lifecycle and do not substitute for testing. Incorrect"
+is_correct = false
+
+[[questions]]
+question = "In GitLab Pipelines, what is the primary function of required checks in the context of merge requests?"
+id = "c749dcc0-6a1b-4f7d-89bf-8cdc3431a042"
+
+[[questions.options]]
+text = "To enforce that specific pipeline jobs must succeed before merging code."
+explanation = "Required checks ensure that critical pipeline stages pass successfully before code can be merged. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "To automatically assign approval roles to team members."
+explanation = "Required checks do not handle role assignments; this is managed separately. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "To prevent any pipeline from running if a merge request is opened."
+explanation = "Required checks do not block pipelines from running; they block merges based on job results. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "To send notifications when a pipeline fails."
+explanation = "While GitLab can send notifications, required checks specifically enforce merge policies, not notifications. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "To automatically merge code after pipeline success without approvals."
+explanation = "Required checks enforce success before merge but do not bypass approvals automatically. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which of the following statements about merge approvals in GitLab compliance pipelines is true?"
+id = "5fa181ee-1a5f-4b04-a955-31601369aa31"
+
+[[questions.options]]
+text = "Merge approvals can be configured to require multiple approvers before a merge is allowed."
+explanation = "GitLab allows setting the number of required approvers to enforce compliance. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Approvals are automatically granted once pipelines pass successfully."
+explanation = "Approvals are a manual or configured policy process, independent of pipeline success. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Approvals cannot be customized based on branch or group settings."
+explanation = "Merge approvals can be customized per branch or group, so this statement is false. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Merge approvals must be bypassed if compliance jobs fail."
+explanation = "Approvals cannot be bypassed based on job failure to maintain policy integrity. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Approvals only apply to merge requests created by external contributors."
+explanation = "Approvals apply to all merge requests as configured, not just external contributors. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What role do compliance jobs play in GitLab pipelines designed for regulatory requirements?"
+id = "ef5009f1-1e9d-4869-bf2e-af2c443ec389"
+
+[[questions.options]]
+text = "They run specific checks or audits to ensure code changes meet compliance before merging."
+explanation = "Compliance jobs verify adherence to policies by running mandated checks prior to merge. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "They replace the need for any merge approvals."
+explanation = "Compliance jobs do not replace approvals but work alongside them for enforcement. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "They automatically resolve merge conflicts in compliance branches."
+explanation = "Resolving merge conflicts is manual or handled by developers, not compliance jobs. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "They only run after code is merged into the main branch."
+explanation = "Compliance jobs typically run before merging to prevent non-compliant code integration. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "They disable pipeline jobs that are unrelated to compliance."
+explanation = "Compliance jobs do not disable other jobs; they add specific compliance checks. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "How can you enforce that a merge request in GitLab cannot be merged until all required checks and approvals are satisfied?"
+id = "5b809e56-691e-426f-9b39-75035c4ff314"
+
+[[questions.options]]
+text = "By configuring branch protection rules with required pipeline status checks and approval rules."
+explanation = "Branch protection with required status checks and approval settings enforces this policy. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "By marking the pipeline as manual to delay merging."
+explanation = "Manual pipelines control execution but do not enforce merge conditions alone. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By disabling compliance jobs temporarily."
+explanation = "Disabling compliance jobs removes enforcement, allowing merges without checks. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By requiring developers to manually verify compliance before merging."
+explanation = "Manual verification is not enforced by GitLab settings, so less reliable. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By enabling auto-merge immediately when the pipeline starts."
+explanation = "Auto-merge triggers after all required conditions are met, not immediately when pipelines start. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which of these is true regarding the integration of compliance jobs with required checks in GitLab pipelines?"
+id = "f9fd5f49-8fd8-4121-8aef-6376cda7ff50"
+
+[[questions.options]]
+text = "Compliance jobs can be included as required checks that must pass before merging."
+explanation = "Compliance jobs are often configured as required checks to enforce policy compliance. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Compliance jobs run after code is merged to validate post-merge compliance."
+explanation = "Compliance jobs typically run pre-merge, not after merging, to prevent policy violations. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "If compliance jobs fail, GitLab automatically approves the merge to expedite delivery."
+explanation = "Failure of compliance jobs blocks merge, approvals are never automatically granted in that case. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Required checks ignore the status of compliance jobs."
+explanation = "Required checks consider the outcome of compliance jobs if configured accordingly. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Compliance jobs are unrelated to merge request workflows."
+explanation = "Compliance jobs are integral to merge request workflows in enforcing compliance policies. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "In GitLab CI/CD pipelines, which methods can be used to efficiently diagnose why a job has failed?"
+id = "1a27771b-733c-4730-88fc-afdcfe5b0415"
+
+[[questions.options]]
+text = "Review the job logs directly in the pipeline UI to identify error messages and stack traces."
+explanation = "Job logs contain detailed output and error messages critical for diagnosing failures. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Use the retry feature to automatically restart the entire pipeline without checking logs."
+explanation = "Retrying without looking at logs may mask underlying issues rather than help diagnosis. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Check the runner system logs on the GitLab instance to find connection or resource issues."
+explanation = "Runner logs provide insights on runner-specific problems affecting jobs. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Increase job timeout settings arbitrarily to prevent timeouts without investigating root causes."
+explanation = "Extending timeouts without understanding job behavior can lead to resource waste. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Use the 'trace' artifacts to obtain historical job execution data for debugging purposes."
+explanation = "Trace artifacts are job logs and state data that help debug job execution issues. Correct."
+is_correct = true
+
+[[questions]]
+question = "What are the effects and best practices of using automatic job retries in GitLab pipelines?"
+id = "670f36e5-ac60-4711-90a8-10759b9d2874"
+
+[[questions.options]]
+text = "Retries should be configured for transient failures to improve pipeline reliability."
+explanation = "Retrying jobs on transient errors reduces flakiness and improves stability. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Configuring too many retries may create delays and unnecessary resource consumption."
+explanation = "Excessive retries can cause pipeline delays and increase CI resource costs. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Retries automatically fix all categories of job failures."
+explanation = "Retries only help with intermittent errors, not persistent job misconfigurations. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Retries can only be set globally and cannot be configured per job."
+explanation = "Retries can be configured at the job level via the retry keyword. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Using retries skips generating job logs for failed attempts."
+explanation = "Job logs are generated for every attempt, including retries. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "How can job timeouts help in monitoring and debugging GitLab pipelines, and what is their default behavior?"
+id = "748d099c-e117-4b80-85c9-17e6f7e0611d"
+
+[[questions.options]]
+text = "Job timeouts help prevent jobs from running indefinitely by terminating jobs exceeding a set duration."
+explanation = "Timeouts ensure resources are reclaimed by stopping hung or excessively long jobs. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "The default job timeout is unlimited, allowing all jobs to run as long as needed."
+explanation = "GitLab's default timeout is 1 hour, not unlimited. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Timeout settings can be overridden in the .gitlab-ci.yml file per job or globally."
+explanation = "Timeouts can be configured both globally in project settings and overridden per job. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Timeout termination leaves incomplete job logs inaccessible in the pipeline UI."
+explanation = "Logs up to the timeout moment remain accessible, aiding debugging. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Increasing timeouts always helps resolve job failures related to builds."
+explanation = "Timeout increases only help if the job genuinely needs more time, not if there are other failures. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "When analyzing GitLab pipeline job logs, which strategies improve the efficiency of identifying errors and performance bottlenecks?"
+id = "6852119d-7741-4c6d-9409-039d4e043c88"
+
+[[questions.options]]
+text = "Search for keywords such as 'error', 'failed', or 'timeout' in the job logs to quickly locate issues."
+explanation = "Keyword searching filters relevant parts in extensive logs for faster diagnosis. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Use the artifact browser to download large logs and analyze them locally if the UI is slow."
+explanation = "Downloading large logs helps in detailed inspection using preferred tools. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Ignore warning messages as they do not impact job success or performance."
+explanation = "Warnings may indicate potential future problems; ignoring them is not best practice. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Split complex scripts into smaller jobs to isolate errors and reduce log size."
+explanation = "Smaller jobs improve error isolation and make logs easier to review. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Disable verbose logging in jobs to reduce log clutter and speed up diagnosis."
+explanation = "Verbose logs often provide needed details; disabling them can obscure errors. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What are the correct ways to handle job logs privacy and retention when debugging GitLab pipeline failures?"
+id = "ec3c8858-e83b-4ef4-8d2d-67f615ee4511"
+
+[[questions.options]]
+text = "Configure job artifacts’ expiration time to keep logs available during the debugging window."
+explanation = "Setting artifact expiration manages how long logs remain accessible for troubleshooting. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Mask sensitive information in job logs using CI/CD variables of type 'masked'."
+explanation = "Masked variables hide secrets in logs, protecting sensitive data. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Remove job logs immediately after each run to ensure maximum security."
+explanation = "Deleting logs too quickly reduces ability to debug issues properly. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Only store logs within external storage solutions to avoid cluttering GitLab server disk space."
+explanation = "External storage can help, but logs should be retained sufficiently within GitLab for debug. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Allow all project members unrestricted access to job logs regardless of role for faster debugging."
+explanation = "Access should be controlled to protect sensitive information in logs. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "In GitLab CI/CD pipelines, what is the primary purpose of SAST scanning integration?"
+id = "eee6fd27-dcad-42fd-b5a6-9f356362021e"
+
+[[questions.options]]
+text = "To analyze source code statically to identify security vulnerabilities before code execution."
+explanation = "SAST scans source code or binaries without execution to find vulnerabilities early. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "To dynamically test a running application by sending HTTP requests."
+explanation = "Dynamic testing is performed by DAST, not SAST, as SAST is static analysis. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "To scan software dependencies for known vulnerabilities."
+explanation = "Dependency scanning focuses on third-party libraries, separate from SAST functionality. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "To monitor application logs during runtime for suspicious activities."
+explanation = "Runtime monitoring is beyond the scope of SAST; it's a dynamic or operational practice. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "To review infrastructure as code configurations for security misconfigurations."
+explanation = "Infrastructure scanning is specialized and not directly handled by SAST in GitLab. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What is a key requirement to enable Dependency Scanning in a GitLab pipeline?"
+id = "07c3f8b7-5daa-4a07-b697-7bd2f36588dd"
+
+[[questions.options]]
+text = "Including the appropriate Dependency Scanning template in the .gitlab-ci.yml file."
+explanation = "GitLab provides predefined templates that enable dependency scanning jobs. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Having a running application instance accessible through a public URL."
+explanation = "Dependency scanning analyzes source and metadata, not a running app URL. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Configuring environment variables for the DAST scanner to authenticate."
+explanation = "This relates to DAST scanning, not dependency scanning. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Adding SAST rulesets directly inside the Dockerfile."
+explanation = "SAST rules are configured in GitLab CI, not embedded inside Dockerfiles. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Manually uploading third-party libraries to the pipeline."
+explanation = "Dependency scanning automatically analyzes declared dependencies, manual upload is not needed. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which of the following best describes how DAST scanners work in GitLab pipelines?"
+id = "5de8ebf0-6ddc-4c3c-8afc-f69c4984a981"
+
+[[questions.options]]
+text = "They perform security tests on the deployed application by simulating attacks using HTTP requests."
+explanation = "DAST tools send requests to a running app to find vulnerabilities dynamically. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "They scan for license compliance issues in third-party packages."
+explanation = "License compliance scanning is separate from DAST. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "They statically analyze source code files to detect insecure coding patterns."
+explanation = "Static code analysis is performed by SAST, not DAST. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "They analyze commit histories to detect suspicious developer activities."
+explanation = "Commit history analysis isn't part of DAST scanning. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "They execute infrastructure tests to detect misconfigurations."
+explanation = "Infrastructure tests are outside the scope of DAST scanners within GitLab. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What must you do to enable security scanning reports to appear directly in the merge request view?"
+id = "6746d76f-050a-4566-85ac-069716f5e181"
+
+[[questions.options]]
+text = "Use GitLab's predefined security scanning jobs and ensure reports are generated in supported formats."
+explanation = "GitLab recognizes supported report formats for inline display when configured properly. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Manually upload scan results as attachments to the merge request."
+explanation = "Manual uploads are unnecessary; GitLab automates this with CI integration. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Disable pipeline job artifacts to reduce clutter."
+explanation = "Artifacts must be generated and uploaded for reports to appear; disabling prevents this. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Remove all dependency scanning configurations to prevent false positives."
+explanation = "Dependency scanning helps discover vulnerabilities and does not prevent report display. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Configure DAST scanner to run only after merge request approval."
+explanation = "Scans should run before approval to provide feedback; delaying reduces effectiveness. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "Which security scanning type requires a reachable application URL during the pipeline execution?"
+id = "bd561619-4867-4bb2-b1dc-a6f911eb723d"
+
+[[questions.options]]
+text = "DAST (Dynamic Application Security Testing)"
+explanation = "DAST needs an accessible application to perform dynamic scans over HTTP. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "SAST (Static Application Security Testing)"
+explanation = "SAST analyzes source code locally without requiring a running app. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Dependency Scanning"
+explanation = "Dependency scanning examines declared packages locally, not the running application. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Secret Detection"
+explanation = "Secret detection scans code or commits, not a live app URL. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Container Scanning"
+explanation = "Container scanning analyzes container images, not a running app URL. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "In GitLab pipelines, what is the primary benefit of using dynamic child pipelines in a monorepo strategy?"
+id = "60127a44-ecbe-4af7-8e39-534a8e682e36"
+
+[[questions.options]]
+text = "They allow you to generate pipeline configurations at runtime based on the contents or changes in the monorepo."
+explanation = "Dynamic child pipelines enable generating pipeline jobs dynamically, reflecting specific paths or conditions in a large repo. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "They simplify the pipeline by requiring only a single YAML file, avoiding includes completely."
+explanation = "Dynamic child pipelines often rely on includes and do not eliminate the need for multiple YAML files. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "They prevent the need for any pipeline rules or conditions since all jobs run unconditionally."
+explanation = "Dynamic child pipelines typically work with rules to decide when or how to generate child configs, so this is incorrect. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "They automatically parallelize jobs across different repositories."
+explanation = "Dynamic child pipelines operate within a project or monorepo context, not across different repositories automatically. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "They ensure all child pipelines complete before the parent pipeline starts."
+explanation = "Child pipelines are triggered by the parent, so they run after the parent triggers them. The parent pipeline waits for child completion but they do not run before parent. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "How can the 'include:rules' feature be used to optimize monorepo pipelines in GitLab?"
+id = "f66d89ad-6b39-44e6-baae-9d339101a616"
+
+[[questions.options]]
+text = "By conditionally including specific pipeline configuration files based on changes in particular directory paths."
+explanation = "'include:rules' allows conditional includes, so only parts relevant to changed areas in a monorepo are loaded, optimizing the pipeline. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "By enforcing that all included configuration files load regardless of changes, ensuring consistent pipelines."
+explanation = "'include:rules' is used specifically to avoid loading unnecessary configs unconditionally, so this is incorrect. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By running all jobs sequentially instead of concurrently to reduce race conditions."
+explanation = "'include:rules' controls conditional inclusion, not job execution order, so this is inaccurate. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By automatically caching Docker images across different includes for faster build times."
+explanation = "'include:rules' does not impact Docker image caching directly, so this is incorrect. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "By allowing pipeline definitions to be fetched from remote URLs only when specific rules are matched."
+explanation = "'include:rules' also supports remote includes that can be conditionally loaded, enhancing flexibility in monorepos. Correct."
+is_correct = true
+
+[[questions]]
+question = "Which of the following are effective monorepo strategies when setting up GitLab CI/CD pipelines?"
+id = "9a6979f9-549d-45fc-bda9-c8abbb229e91"
+
+[[questions.options]]
+text = "Using path-based rules to trigger jobs or child pipelines only for changed directories or packages."
+explanation = "Path-based rules minimize unnecessary jobs and are widely used in monorepos to improve pipeline efficiency. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Defining all jobs in a single pipeline YAML with no dynamic includes, running all jobs every commit."
+explanation = "Running all jobs on every commit in a monorepo is inefficient and not a recommended strategy. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Leveraging dynamic child pipelines to split and parallelize jobs based on affected projects in the monorepo."
+explanation = "Dynamic child pipelines help modularize and accelerate monorepo builds through parallelization and conditional execution. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Using multiple GitLab projects instead of one monorepo to avoid pipeline complexity."
+explanation = "This is not a monorepo strategy but a multi-repo approach, thus irrelevant for monorepo pipeline setups. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Including pipeline configuration files conditionally based on commit message keywords only."
+explanation = "While possible, commit message based inclusion is rarely sufficient alone for monorepo strategies; path-based triggers are preferred. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "When configuring dynamic child pipelines using 'trigger:include', which statement is true about the pipeline execution flow?"
+id = "ddd7736b-4cf4-40b7-bac2-0e648b5105ae"
+
+[[questions.options]]
+text = "The parent pipeline waits for the triggered child pipeline(s) to complete before finishing."
+explanation = "Parent pipelines typically wait for dynamic child pipelines to complete before marking the overall pipeline done. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "Child pipelines execute independently and do not affect the status of the parent pipeline."
+explanation = "Child pipeline status influences the parent pipeline’s result, not independent execution. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Dynamic child pipelines caused by 'trigger:include' can only be generated at the start of the parent pipeline."
+explanation = "Dynamic child pipelines can be created dynamically anytime during the parent pipeline execution. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "The triggered child pipeline’s jobs all run before any parent pipeline jobs start."
+explanation = "Parent jobs can run before triggering child pipelines; child pipelines do not necessarily start first. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "Trigger:include cannot be used with rules to control when child pipelines run."
+explanation = "Trigger:include can be combined with rules to conditionally create child pipelines. Incorrect."
+is_correct = false
+
+[[questions]]
+question = "What advantage does combining 'include:rules' with dynamic child pipelines offer in monorepo CI/CD setups?"
+id = "830969be-e4d6-4175-89ab-ca2edc29e7e8"
+
+[[questions.options]]
+text = "It enables highly granular workflows by conditionally including pipeline configs and generating child pipelines only when needed."
+explanation = "Combining both allows flexible, efficient pipelines adjusted dynamically to specific changes, improving speed and resource use. Correct."
+is_correct = true
+
+[[questions.options]]
+text = "It forces all child pipelines to run even if the included files are not matched by rules."
+explanation = "The purpose is to prevent unnecessary runs, so forcing all child pipelines unconditionally is not an advantage. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It eliminates the need for any manual YAML maintenance in the repository."
+explanation = "Manual maintenance is still required; this technique optimizes pipeline runs but does not remove maintenance completely. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It ensures that pipeline stages always execute in a strictly sequential order regardless of job dependencies."
+explanation = "Execution order depends on dependencies; this feature is unrelated to strict sequencing of stages. Incorrect."
+is_correct = false
+
+[[questions.options]]
+text = "It allows triggering pipelines in parallel GitLab projects rather than within the same monorepo."
+explanation = "While cross-project triggers exist, this combination mostly optimizes pipeline behavior within a monorepo, not across separate projects. Incorrect."
+is_correct = false

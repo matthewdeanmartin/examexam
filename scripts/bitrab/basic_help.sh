@@ -1,0 +1,3 @@
+examexam --help
+
+
