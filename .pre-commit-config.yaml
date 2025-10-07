@@ -61,8 +61,8 @@ repos:
   #                name: isort
   #                args:
   #                    - --profile black
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.12.10
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.13.3
     hooks:
       - id: ruff
         exclude: ^dead_code/
@@ -97,4 +97,4 @@ repos:
 #    hooks:
 #    -   id: blacken-docs
 #        additional_dependencies:
-#        - black>=25.1.1
+#        - black==23.12.1
