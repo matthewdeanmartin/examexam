@@ -2,6 +2,15 @@
 
 A CLI for **creating**, **validating**, **studying for**, and **taking** multiple-choice practice exams. Keep everything local as TOML question banks, generate new questions with an LLM, sanity-check them, generate study guides, and test your knowledge in a `rich` terminal UI.
 
+[![tests](https://github.com/matthewdeanmartin/examexam/actions/workflows/build.yml/badge.svg)
+](https://github.com/matthewdeanmartin/examexam/actions/workflows/tests.yml)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/matthewdeanmartin/examexam/main.svg)
+](https://results.pre-commit.ci/latest/github/matthewdeanmartin/examexam/main)
+[![Downloads](https://img.shields.io/pypi/dm/examexam)](https://pypistats.org/packages/examexam)
+[![Python Version](https://img.shields.io/pypi/pyversions/examexam)
+![Release](https://img.shields.io/pypi/v/examexam)
+](https://pypi.org/project/examexam/)
+
 ---
 
 ## Install
@@ -188,6 +197,10 @@ examexam study-plan --toc-file <path> [--model-provider ...]
   * **Session Files:** Saved automatically to `.session/<test-name>.toml` to allow resuming tests.
   * **Study Guides:** Saved to `study_guide/` in your project directory.
   * **Custom Prompts:** If you run `customize`, templates are deployed to `prompts/`.
+
+## Badges
+
+
 
 ## Credits
 

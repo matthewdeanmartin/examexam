@@ -1,3 +1,5 @@
+## Various
+
 - support "35" to mean "3,5" - number of answers less than 10, so no ambiguity
 - generate with a self check phase
 - show predicted total time!
@@ -6,6 +8,11 @@
 - session file should use test name
 - BUG: reports model company name (gpt4) instead of company/family
 - Can't see logging when it is failing
+
+## Convert
+
+- md and html are always keys & show answers!
+- ugly html
 
 # Refactor generations
 - Bot must indicate the explanation along with the possible answer. It too often generats the answer list and expression list in different order
