@@ -394,6 +394,7 @@ def ask_question_interactive(question: dict[str, Any], options_list: list[dict[s
 
 # ----------------- Machine answering -----------------
 
+
 def ask_question_machine(
     provider: AnswerProvider, question: dict[str, Any], options_list: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
@@ -535,9 +536,7 @@ def display_results(
     else:
         judgement = f"\n[green]{passed}[/green]"
 
-    result_text = (
-        f"[bold yellow]Your Score: {score}/{total} ({percent:.2f}%){judgement}\n{time_info}\n{confidence_str}\n{pvalue_str}[/bold yellow]"
-    )
+    result_text = f"[bold yellow]Your Score: {score}/{total} ({percent:.2f}%){judgement}\n{time_info}\n{confidence_str}\n{pvalue_str}[/bold yellow]"
 
     console.print(
         Panel(
@@ -590,7 +589,9 @@ def interactive_question_and_answer(
 
     # Compute remaining allowance per caps
     remaining_allowed_session = (
-        None if questions_to_complete_for_session is None else max(0, questions_to_complete_for_session - completed_so_far)
+        None
+        if questions_to_complete_for_session is None
+        else max(0, questions_to_complete_for_session - completed_so_far)
     )
     remaining_allowed_this_run = questions_to_complete if questions_to_complete is not None else None
 

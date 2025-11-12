@@ -66,4 +66,3 @@ def test_find_select_pattern(s: str, expected: str):
 )
 def test_is_valid(answer: str, option_count: int, answer_count: int, ok: bool):
     assert te.is_valid(answer, option_count, answer_count)[0] is ok
-

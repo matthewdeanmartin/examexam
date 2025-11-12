@@ -42,19 +42,18 @@ Notes:
   controls (font size, line height, width, theme), sticky TOC, and scroll spy.
 
 """
+
 from __future__ import annotations
 
-from dataclasses import dataclass
-from pathlib import Path
-from collections.abc import Iterable
+import argparse
 import json
 import textwrap
-import argparse
+from collections.abc import Iterable
+from dataclasses import dataclass
+from pathlib import Path
 
 import markdown as _markdown
-
 from jinja2 import Environment
-
 
 # -------------------------
 # Built-in Jinja2 template
@@ -268,6 +267,7 @@ _DEFAULT_JS: str = textwrap.dedent(
 @dataclass
 class RenderOptions:
     """Configuration for Markdown → HTML rendering."""
+
     title: str | None = None
     theme: str = "light"  # "light" | "dark"
     css: str | None = None
@@ -296,6 +296,7 @@ def _make_markdown(extensions: Iterable[str] | None = None, extension_configs: d
     # Try enabling codehilite if pygments is installed
     try:
         import pygments  # noqa: F401
+
         exts.append("codehilite")
     except Exception:
         pass
@@ -358,9 +359,7 @@ def render_file_to_html(path: Path, *, options: RenderOptions | None = None, enc
     md_text = path.read_text(encoding=encoding)
     opts = options or RenderOptions()
     if not opts.title:
-        opts = RenderOptions(
-            **{**opts.__dict__, "title": path.stem.replace("-", " ").replace("_", " ").title()}
-        )
+        opts = RenderOptions(**{**opts.__dict__, "title": path.stem.replace("-", " ").replace("_", " ").title()})
     return render_markdown_to_html(md_text, opts)
 
 
@@ -376,6 +375,7 @@ def _infer_title(md_text: str) -> str | None:
 # CLI Entrypoint
 # -------------------------
 
+
 def _cli(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="md2readable",
@@ -384,9 +384,7 @@ def _cli(argv: list[str] | None = None) -> int:
     parser.add_argument("input", type=Path, help="Input Markdown file")
     parser.add_argument("-o", "--output", type=Path, help="Output HTML file")
     parser.add_argument("--dark", action="store_true", help="Start in dark mode")
-    parser.add_argument(
-        "--template", type=Path, help="Path to custom Jinja2 template (overrides built-in)"
-    )
+    parser.add_argument("--template", type=Path, help="Path to custom Jinja2 template (overrides built-in)")
     parser.add_argument(
         "--assets-json",
         type=Path,

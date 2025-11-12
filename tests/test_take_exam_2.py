@@ -224,7 +224,3 @@ def test_display_results_does_not_crash():
     # Smoke test: ensure printing/rendering doesn't raise
     start_time = datetime.now() - timedelta(seconds=30)
     take_exam.display_results(score=1, total=2, start_time=start_time, session=None, withhold_judgement=True)
-
-
-
-

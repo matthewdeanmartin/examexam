@@ -1,9 +1,19 @@
 """Metadata for examexam."""
 
-__all__ = ["__title__", "__version__", "__description__", "__readme__", "__requires_python__"]
+__all__ = [
+    "__title__",
+    "__version__",
+    "__description__",
+    "__credits__",
+    "__readme__",
+    "__requires_python__",
+    "__status__",
+]
 
 __title__ = "examexam"
 __version__ = "0.1.8"
 __description__ = "Let LLM generate tests, validate test, and then you take them. Useful for certs."
+__credits__ = [{"name": "Matthew Martin", "email": "matthewdeanmartin@gmail.com"}]
 __readme__ = "README.md"
 __requires_python__ = ">=3.11"
+__status__ = "4 - Beta"

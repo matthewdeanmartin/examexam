@@ -5,22 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="0.1.9: 3.14 support">
-      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.ask.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.ask2agent.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.python-version" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/SOURCE.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examexam.flat.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examexam/generate_pretty_study_plan.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/build.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/build.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/integration_test.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/integration_test.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/publish_to_pypi.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/publish_to_pypi.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/tox.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/tox.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.cli_tool_audit_cache/.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.pre-commit-config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/.pre-commit-config.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/TODO.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/TODO.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tox.ini" beforeDir="false" afterPath="$PROJECT_DIR$/tox.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.pylintrc" beforeDir="false" afterPath="$PROJECT_DIR$/.pylintrc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.pylintrc_docs" beforeDir="false" afterPath="$PROJECT_DIR$/.pylintrc_docs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.pylintrc_scripts" beforeDir="false" afterPath="$PROJECT_DIR$/.pylintrc_scripts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.pylintrc_tests" beforeDir="false" afterPath="$PROJECT_DIR$/.pylintrc_tests" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/__about__.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/__about__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/generate_pretty_study_plan.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/generate_pretty_study_plan.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/take_exam.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/take_exam.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_take_exam_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_take_exam_2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_take_exam_again.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_take_exam_again.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -247,8 +243,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-9c94529fcfe0-JavaScript-PY-252.26199.168" />
-        <option value="bundled-python-sdk-b3d66beaba9a-c6efb3732140-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.26199.168" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-PY-252.27397.106" />
+        <option value="bundled-python-sdk-4e2b1448bda8-9a97661f3031-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.27397.106" />
       </set>
     </attachedChunks>
   </component>
@@ -289,7 +285,9 @@
       <workItem from="1758921779490" duration="3460000" />
       <workItem from="1758983825733" duration="6997000" />
       <workItem from="1759189300158" duration="9282000" />
-      <workItem from="1759877045869" duration="899000" />
+      <workItem from="1759877045869" duration="3827000" />
+      <workItem from="1762619399159" duration="2107000" />
+      <workItem from="1762919799977" duration="360000" />
     </task>
     <task id="LOCAL-00001" summary="Get ready for publication">
       <option name="closed" value="true" />
@@ -483,7 +481,23 @@
       <option name="project" value="LOCAL" />
       <updated>1757882924493</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="0.1.9: 3.14 support">
+      <option name="closed" value="true" />
+      <created>1759879274225</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1759879274225</updated>
+    </task>
+    <task id="LOCAL-00026" summary="0.1.9: 3.14 support">
+      <option name="closed" value="true" />
+      <created>1759879352266</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1759879352266</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
