@@ -168,3 +168,5 @@ session.toml
 integration_tests/.session
 .session
 tests/conversations
+.idea
+/integration_tests/cats.toml
