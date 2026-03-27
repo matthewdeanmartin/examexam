@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -d /c/github/examexam/*/)",
+      "Bash(wc -l /c/github/examexam/examexam/*.py /c/github/examexam/examexam/**/*.py)",
+      "Bash(find /c/github/examexam/tests -type f -name *.py)",
+      "Bash(python -m pytest tests/ -x --timeout=30)",
+      "Bash(python -c \"from examexam.frontends import get_frontend; ui = get_frontend\\(''gui''\\); print\\(''TkinterUI loaded:'', type\\(ui\\).__name__\\)\")",
+      "Bash(python -c \"from examexam.frontends import get_frontend; ui = get_frontend\\(''cli''\\); print\\(''RichUI loaded:'', type\\(ui\\).__name__\\)\")",
+      "Bash(python -c \":*)",
+      "Bash(python -m examexam --help)",
+      "Bash(python -m pytest tests/ --timeout=30 -v)",
+      "Bash(python -m pytest tests/ --timeout=30 -q)"
+    ]
+  }
+}

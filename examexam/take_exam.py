@@ -1,5 +1,4 @@
-"""
-Enhanced exam runner with per-run and per-session question caps.
+"""Enhanced exam runner with per-run and per-session question caps.
 
 Changes made:
 - Added two new args:
@@ -11,6 +10,7 @@ Changes made:
 - Safer screen clearing via Rich (still falls back if unavailable).
 - Added small performance improvement by indexing session questions by id.
 - More comments throughout for clarity and future maintenance.
+- Refactored to use FrontendUI protocol for multi-frontend support.
 
 Example toml
 
@@ -38,26 +38,21 @@ import random
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Literal, Protocol, cast
+from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 
 import dotenv
 import rtoml as toml
-from rich.align import Align
-from rich.console import Console
-from rich.markdown import Markdown
-from rich.panel import Panel
-from rich.prompt import Confirm, Prompt
-from rich.table import Table
 from scipy import stats
 
-from examexam.constants import BAD_QUESTION_TEXT
+from examexam.models import AnswerFeedback, ExamResult, Option, Question, TestInfo
 from examexam.utils.secure_random import SecureRandom
 from examexam.utils.toml_normalize import normalize_exam_for_toml
 
+if TYPE_CHECKING:
+    from examexam.ui_protocol import FrontendUI
+
 # Load environment variables (e.g., OPENAI_API_KEY)
 dotenv.load_dotenv()
-
-console = Console()
 
 # ----------------- NEW: answer provider protocol & strategies -----------------
 
@@ -138,46 +133,31 @@ def get_session_path(test_name: str) -> Path:
     return session_dir / f"{test_name}.toml"
 
 
-def get_available_tests() -> list[str]:
+def get_available_tests(ui: FrontendUI) -> list[str]:
     """Get list of available test files from /data/ folder (fallback: CWD)."""
     data_dir = Path("data")
     if not data_dir.exists():
-        console.print("[bold red]Error: /data/ folder not found![/bold red]")
+        ui.show_error("Error: /data/ folder not found!")
         data_dir = Path(".")
 
     test_files = list(data_dir.glob("*.toml"))
     return [f.stem for f in test_files]
 
 
-def select_test() -> str | None:
+def select_test(ui: FrontendUI) -> str | None:
     """Let user select a test to take."""
-    tests = get_available_tests()
+    tests = get_available_tests(ui)
     if not tests:
-        console.print("[bold red]No test files found in /data/ folder![/bold red]")
         return None
 
-    console.print("[bold blue]Available Tests:[/bold blue]")
-    table = Table(show_header=True, header_style="bold magenta")
-    table.add_column("Number", style="dim", width=6)
-    table.add_column("Test Name")
-
-    for idx, test in enumerate(tests, 1):
-        table.add_row(str(idx), test)
-
-    console.print(table)
-
-    while True:
-        try:
-            choice = Prompt.ask("Enter the test number", default="1")
-            test_idx = int(choice) - 1
-            if 0 <= test_idx < len(tests):
-                return tests[test_idx]
-            console.print("[bold red]Invalid choice. Please try again.[/bold red]")
-        except ValueError:
-            console.print("[bold red]Please enter a valid number.[/bold red]")
+    test_infos = [TestInfo(name=t, index=idx) for idx, t in enumerate(tests, 1)]
+    choice = ui.show_test_selection(test_infos)
+    if choice is not None:
+        return tests[choice]
+    return None
 
 
-def check_resume_session(test_name: str) -> tuple[bool, list[dict[str, Any]] | None, datetime | None]:
+def check_resume_session(test_name: str, ui: FrontendUI) -> tuple[bool, list[dict[str, Any]] | None, datetime | None]:
     """Check if a session exists and ask if user wants to resume.
 
     Returns: (should_resume, session_data_or_None, session_start_time_or_None)
@@ -199,20 +179,19 @@ def check_resume_session(test_name: str) -> tuple[bool, list[dict[str, Any]] | N
         if completed == 0:
             return False, None, None
 
-        console.print(f"[bold yellow]Found existing session for '{test_name}'[/bold yellow]")
-        console.print(f"Progress: {completed}/{total} questions completed")
-
         start_dt = None
+        time_ago = ""
         if start_time:
             try:
                 start_dt = datetime.fromisoformat(start_time)
                 elapsed = datetime.now() - start_dt
-                console.print(f"Started: {humanize_timedelta(elapsed)} ago")
+                time_ago = humanize_timedelta(elapsed)
             except (ValueError, TypeError):
-                # Invalid start_time format, will use current time as fallback
-                console.print("Started: Unknown time ago")
+                time_ago = "Unknown time"
 
-        resume = Confirm.ask("Do you want to resume this session?")
+        ui.show_session_info(test_name, completed, total, time_ago)
+
+        resume = ui.confirm("Do you want to resume this session?")
         if resume:
             return True, session_data, start_dt
         # User wants to start fresh
@@ -220,7 +199,7 @@ def check_resume_session(test_name: str) -> tuple[bool, list[dict[str, Any]] | N
         return False, None, None
 
     except Exception as e:
-        console.print(f"[bold red]Error reading session file: {e}[/bold red]")
+        ui.show_error(f"Error reading session file: {e}")
         return False, None, None
 
 
@@ -281,14 +260,6 @@ def calculate_time_estimates(session: list[dict[str, Any]], start_time: datetime
 # ----------------- Terminal helpers -----------------
 
 
-def clear_screen() -> None:
-    """Clear terminal safely using Rich; fallback to os.system if needed."""
-    try:
-        console.clear()
-    except Exception:
-        os.system("cls" if os.name == "nt" else "clear")  # nosec
-
-
 def play_sound(_file: str) -> None:
     """Hook for sound effects; intentionally a no-op placeholder here."""
     # playsound(_file)
@@ -298,9 +269,7 @@ def play_sound(_file: str) -> None:
 
 
 def find_select_pattern(input_string: str) -> str:
-    """
-    Finds the first occurrence of "(Select n)" in the input string where n is a number from 1 to 5.
-    """
+    """Finds the first occurrence of "(Select n)" in the input string where n is a number from 1 to 5."""
     match = re.search(r"\(Select [1-5]\)", input_string)
     return match.group(0) if match else ""
 
@@ -341,50 +310,21 @@ def is_valid(
     return True, ""
 
 
-# ----------------- Interactive question prompt -----------------
+# ----------------- Interactive question prompt (via UI) -----------------
 
 
-def ask_question_interactive(question: dict[str, Any], options_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Render a question and return the selected options (interactive mode)."""
-    clear_screen()
-    question_text = question["question"]
+def ask_question_interactive(
+    ui: FrontendUI, question: dict[str, Any], options_list: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Render a question and return the selected options (interactive mode via UI)."""
+    q_model = Question.from_dict(question)
+    opt_models = [Option.from_dict(o) for o in options_list]
 
-    pattern = find_select_pattern(question_text)
-    answer_count = len([o for o in question["options"] if o.get("is_correct")])
+    ui.show_question(q_model, opt_models)
 
-    if pattern:
-        correct_select = f"(Select {answer_count})"
-        if correct_select not in question_text:
-            question_text = question_text.replace(pattern, correct_select)
-
-    if "(Select" not in question_text:
-        question_text = f"{question_text} (Select {answer_count})"
-
-    if "(Select n)" in question_text:
-        question_text = question_text.replace("(Select n)", f"(Select {answer_count})")
-
-    question_panel = Align.center(Panel(Markdown(question_text)), vertical="middle")
-    console.print(question_panel)
-
-    table = Table(title="Options", style="green")
-    table.add_column("Option Number", justify="center")
-    table.add_column("Option Text", justify="left")
-
-    for idx, option in enumerate(options_list, 1):
-        table.add_row(str(idx), option["text"])
-
-    table.add_row(str(len(options_list) + 1), BAD_QUESTION_TEXT)
-    console.print(Align.center(table))
-
-    option_count = len(options_list) + 1
-    while True:
-        answer = console.input(
-            "[bold yellow]Enter your answer(s) as a comma-separated list (e.g., 1,2): [/bold yellow]"
-        )
-        is_valid_answer, error_msg = is_valid(answer, option_count, answer_count)
-        if is_valid_answer:
-            break
-        console.print(f"[bold red]{error_msg}[/bold red]")
+    option_count = len(options_list) + 1  # +1 for "bad question" sentinel
+    answer_count = q_model.answer_count
+    answer = ui.get_answer(option_count, answer_count)
 
     selected = [
         options_list[int(idx) - 1] for idx in answer.split(",") if idx.isdigit() and 1 <= int(idx) <= len(options_list)
@@ -431,7 +371,7 @@ def calculate_confidence_interval(score: int, total: int, confidence: float = 0.
 
 
 def calculate_exact_binomial_ci(score: int, total: int, confidence: float = 0.95) -> tuple[float, float]:
-    """Exact (Clopper–Pearson) CI using the Beta distribution via SciPy.
+    """Exact (Clopper-Pearson) CI using the Beta distribution via SciPy.
 
     This is more conservative but valid for all n, including small samples.
     Useful for reporting alongside the normal CI when n is small or p is extreme.
@@ -464,6 +404,53 @@ def binomial_pass_rate_test(score: int, total: int, pass_rate: float = 0.7) -> f
     return float(res.pvalue)
 
 
+def _build_exam_result(
+    score: int,
+    total: int,
+    start_time: datetime,
+    session: list[dict[str, Any]] | None = None,
+    *,
+    is_final: bool = False,
+) -> ExamResult:
+    """Build an ExamResult from current state."""
+    elapsed = datetime.now() - start_time
+    lower, upper = calculate_confidence_interval(score, total)
+    exact_lower, exact_upper = calculate_exact_binomial_ci(score, total)
+    p_value = binomial_pass_rate_test(score, total, pass_rate=0.70)
+
+    avg_time = None
+    est_left = None
+    if session:
+        avg_time, est_left = calculate_time_estimates(session, start_time)
+
+    return ExamResult(
+        score=score,
+        total=total,
+        elapsed=elapsed,
+        avg_time_per_question=avg_time,
+        estimated_time_left=est_left,
+        ci_lower=lower,
+        ci_upper=upper,
+        exact_ci_lower=exact_lower,
+        exact_ci_upper=exact_upper,
+        p_value=p_value,
+        is_final=is_final,
+    )
+
+
+def build_answer_feedback(options_list: list[dict[str, Any]], selected: list[dict[str, Any]]) -> AnswerFeedback:
+    """Build answer feedback for a displayed option list and the user's selection."""
+    correct = {o["text"] for o in options_list if o.get("is_correct", False)}
+    user_answers = {o["text"] for o in selected}
+    explanations = [(o.get("explanation", ""), o.get("is_correct", False)) for o in options_list]
+    return AnswerFeedback(
+        is_correct=user_answers == correct,
+        correct_answers=correct,
+        user_answers=user_answers,
+        explanations=explanations,
+    )
+
+
 # ----------------- Core Q&A engine with caps -----------------
 
 
@@ -485,68 +472,6 @@ def find_question(question: dict[str, Any], session_index: dict[str, dict[str, A
     return session_index.get(question.get("id", ""), {})
 
 
-def display_results(
-    score: float,
-    total: float,
-    start_time: datetime,
-    session: list[dict[str, Any]] | None = None,
-    withhold_judgement: bool = False,
-) -> None:
-    """Render results panel including timing and confidence interval info."""
-    percent = (score / total) * 100 if total else 0.0
-    passed = "Passed" if percent >= 70 else "Failed"
-
-    # Calculate timing
-    elapsed = datetime.now() - start_time
-
-    # Calculate confidence interval (normal approx)
-    lower, upper = calculate_confidence_interval(int(score), int(total))
-
-    # Also compute exact CI for small samples (informational)
-    exact_lower, exact_upper = calculate_exact_binomial_ci(int(score), int(total))
-
-    # Optionally, compute a p-value against a nominal pass rate (e.g., 70%)
-    p_value = binomial_pass_rate_test(int(score), int(total), pass_rate=0.70)
-
-    # Format timing info
-    total_time_str = humanize_timedelta(elapsed)
-
-    # Calculate time estimates with outlier removal
-    if session:
-        avg_time_per_question, estimated_time_left = calculate_time_estimates(session, start_time)
-        avg_time_str = humanize_timedelta(avg_time_per_question)
-
-        time_info = f"Total Time: {total_time_str}\nAvg Time per Question: {avg_time_str}"
-        if estimated_time_left and not withhold_judgement:
-            time_info += f"\nEstimated Time to Complete: {humanize_timedelta(estimated_time_left)}"
-    else:
-        # Fallback to simple calculation
-        time_per_question = elapsed / total if total > 0 else timedelta()
-        avg_time_str = humanize_timedelta(time_per_question)
-        time_info = f"Total Time: {total_time_str}\nTime per Question: {avg_time_str}"
-
-    # Format confidence intervals
-    confidence_str = f"Normal 95% CI: {lower * 100:.1f}%-{upper * 100:.1f}% | Exact 95% CI: {exact_lower * 100:.1f}%-{exact_upper * 100:.1f}%"
-
-    # Include p-value info (lower is worse relative to the target pass rate)
-    pvalue_str = f"Binomial test vs 70% pass rate (one-sided): p={p_value:.3f}"
-
-    if withhold_judgement:
-        judgement = ""
-    else:
-        judgement = f"\n[green]{passed}[/green]"
-
-    result_text = f"[bold yellow]Your Score: {score}/{total} ({percent:.2f}%){judgement}\n{time_info}\n{confidence_str}\n{pvalue_str}[/bold yellow]"
-
-    console.print(
-        Panel(
-            result_text,
-            title="Results",
-            style="magenta",
-        )
-    )
-
-
 def save_session_file(session_file: Path, state: list[dict[str, Any]], start_time: datetime) -> None:
     """Persist session state atomically to TOML (normalized for stable diffs)."""
     with open(session_file, "w", encoding="utf-8") as file:
@@ -563,6 +488,7 @@ def interactive_question_and_answer(
     session: list[dict[str, Any]],
     session_path: Path,
     start_time: datetime,
+    ui: FrontendUI,
     *,
     answer_provider: AnswerProvider | None = None,
     quiet: bool = False,
@@ -604,23 +530,11 @@ def interactive_question_and_answer(
         # Check caps before asking
         if remaining_allowed_session is not None and remaining_allowed_session <= 0:
             if not quiet:
-                console.print(
-                    Panel(
-                        "[bold yellow]Session total cap reached.[/bold yellow]",
-                        title="Limit Reached",
-                        style="yellow",
-                    )
-                )
+                ui.show_panel("Session total cap reached.", title="Limit Reached", style="yellow")
             break
         if remaining_allowed_this_run is not None and answered_this_run >= remaining_allowed_this_run:
             if not quiet:
-                console.print(
-                    Panel(
-                        "[bold yellow]Per-run question cap reached.[/bold yellow]",
-                        title="Limit Reached",
-                        style="yellow",
-                    )
-                )
+                ui.show_panel("Per-run question cap reached.", title="Limit Reached", style="yellow")
             break
 
         session_question = find_question(question, session_index)
@@ -642,40 +556,25 @@ def interactive_question_and_answer(
 
         try:
             if answer_provider is None:
-                selected = ask_question_interactive(question, options_list)
+                selected = ask_question_interactive(ui, question, options_list)
             else:
                 selected = ask_question_machine(answer_provider, question, options_list)
         except KeyboardInterrupt:
             if not quiet:
-                display_results(score, completed_so_far, start_time, session)
+                result = _build_exam_result(score, completed_so_far, start_time, session, is_final=False)
+                ui.show_results(result)
             raise
 
         # Record completion time
         session_question["completion_time"] = datetime.now().isoformat()
 
-        correct = {o["text"] for o in options_list if o.get("is_correct", False)}
-        user_answers = {o["text"] for o in selected}
+        feedback = build_answer_feedback(options_list, selected)
+        correct = feedback.correct_answers
+        user_answers = feedback.user_answers
 
         # Feedback (skip in quiet mode)
         if not quiet:
-            if user_answers == correct:
-                console.print(Panel("[bold green]✓ Correct![/bold green]", title="Answer Review", style="green"))
-            else:
-                console.print(
-                    Panel(
-                        f"[bold cyan]Correct Answer(s): {', '.join(correct)}\nYour Answer(s): {', '.join(user_answers)}[/bold cyan]",
-                        title="Answer Review",
-                        style="blue",
-                    )
-                )
-            colored_explanations: list[str] = []
-            for idx, option in enumerate(options_list, 1):
-                exp = option.get("explanation", "")
-                if option.get("is_correct", False):
-                    colored_explanations.append(f"{idx}. [bold green]{exp}[/bold green]")
-                else:
-                    colored_explanations.append(f"{idx}. [bold red]{exp}[/bold red]")
-            console.print(Panel("\n".join(colored_explanations), title="Explanation"))
+            ui.show_answer_feedback(feedback)
 
         session_question["user_answers"] = list(user_answers)
         if user_answers == correct:
@@ -684,7 +583,7 @@ def interactive_question_and_answer(
             session_question["user_score"] = 1
         else:
             if not quiet:
-                console.print("[bold red]Incorrect.[/bold red]", style="bold red")
+                ui.show_error("Incorrect.")
                 play_sound("incorrect.mp3")
             session_question["user_score"] = 0
 
@@ -694,19 +593,19 @@ def interactive_question_and_answer(
             remaining_allowed_session -= 1
 
         if not quiet:
-            display_results(score, completed_so_far, start_time, session, withhold_judgement=True)
+            interim_result = _build_exam_result(score, completed_so_far, start_time, session, is_final=False)
+            ui.show_results(interim_result)
 
         if answer_provider is None:
-            go_on: str | None = None
-            while go_on not in ("", "bad"):
-                go_on = console.input("[bold yellow]Press Enter to continue to the next question...[/bold yellow]")
+            go_on = ui.wait_for_continue()
             if go_on == "bad":
                 session_question["defective"] = True
                 save_session_file(session_path, session, start_time)
 
     if not quiet:
-        clear_screen()
-        display_results(score, completed_so_far, start_time, session)
+        ui.clear_screen()
+        final_result = _build_exam_result(score, completed_so_far, start_time, session, is_final=True)
+        ui.show_results(final_result)
     save_session_file(session_path, session, start_time)
     return score
 
@@ -717,6 +616,7 @@ def interactive_question_and_answer(
 def take_exam_now(
     question_file: str | None = None,
     *,
+    ui: FrontendUI | None = None,
     machine: bool = False,
     strategy: MachineStrategy = "oracle",
     seed: int | None = 42,
@@ -729,10 +629,17 @@ def take_exam_now(
     Interactive by default, or machine mode if requested.
     The two caps allow "do N more now" and "stop session at M total answered" behaviors.
     """
+    # Default to Rich CLI if no UI provided
+    if ui is None:
+        from examexam.frontends.rich_ui import RichUI
+
+        ui = RichUI()
+
     # If explicitly in machine mode (or via env var), run headless path
     if (machine and question_file) or (os.environ.get("EXAMEXAM_MACHINE_TAKES_EXAM")):
         _ = take_exam_machine(
             cast(str, question_file),
+            ui=ui,
             strategy=strategy,
             seed=seed,
             quiet=quiet,
@@ -749,7 +656,7 @@ def take_exam_now(
         session_path = get_session_path(test_name)
 
         # Check for existing session
-        resume_session, session_data, session_start_time = check_resume_session(test_name)
+        resume_session, session_data, session_start_time = check_resume_session(test_name, ui)
 
         if resume_session and session_data:
             session = session_data
@@ -762,7 +669,7 @@ def take_exam_now(
             save_session_file(session_path, session, start_time)
     else:
         # New interactive API
-        test_name = select_test()
+        test_name = select_test(ui)
         if not test_name:
             return
 
@@ -774,7 +681,7 @@ def take_exam_now(
         session_path = get_session_path(test_name)
 
         # Check for existing session
-        resume_session, session_data, session_start_time = check_resume_session(test_name)
+        resume_session, session_data, session_start_time = check_resume_session(test_name, ui)
 
         if resume_session and session_data:
             session = session_data
@@ -790,19 +697,19 @@ def take_exam_now(
     already_completed = sum(1 for q in session if q.get("user_score") is not None)
     if questions_to_complete_for_session is not None and already_completed >= questions_to_complete_for_session:
         if not quiet:
-            console.print(
-                Panel(
-                    f"[bold yellow]Session cap reached[/bold yellow]\nAnswered: {already_completed}/{questions_to_complete_for_session}",
-                    title="Limits",
-                    style="yellow",
-                )
+            ui.show_panel(
+                f"Session cap reached\nAnswered: {already_completed}/{questions_to_complete_for_session}",
+                title="Limits",
+                style="yellow",
             )
-            display_results(
+            final_result = _build_exam_result(
                 sum(1 for q in session if q.get("user_score") == 1),
                 already_completed,
                 start_time,
                 session,
+                is_final=True,
             )
+            ui.show_results(final_result)
         save_session_file(session_path, session, start_time)
         return
 
@@ -812,6 +719,7 @@ def take_exam_now(
             session,
             session_path,
             start_time,
+            ui,
             answer_provider=None,
             quiet=quiet,
             questions_to_complete=questions_to_complete,
@@ -820,12 +728,13 @@ def take_exam_now(
         save_session_file(session_path, session, start_time)
     except KeyboardInterrupt:
         save_session_file(session_path, session, start_time)
-        console.print("[bold red]Exiting the exam...[/bold red]")
+        ui.show_error("Exiting the exam...")
 
 
 def take_exam_machine(
     question_file: str,
     *,
+    ui: FrontendUI | None = None,
     strategy: MachineStrategy = "oracle",
     seed: int | None = 42,
     quiet: bool = True,
@@ -838,6 +747,12 @@ def take_exam_machine(
     Returns:
       dict with keys: score, total, percent, session_path, session, start_time
     """
+    # Default to Rich CLI if no UI provided
+    if ui is None:
+        from examexam.frontends.rich_ui import RichUI
+
+        ui = RichUI()
+
     test_path = Path(question_file)
     test_name = test_path.stem
     questions = load_questions(str(test_path))
@@ -856,6 +771,7 @@ def take_exam_machine(
         session,
         session_path,
         start_time,
+        ui,
         answer_provider=build_machine_answer_provider(strategy=strategy, seed=seed),
         quiet=quiet,
         questions_to_complete=questions_to_complete,

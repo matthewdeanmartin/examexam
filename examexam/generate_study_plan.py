@@ -4,11 +4,11 @@ import logging
 import os
 from pathlib import Path
 from time import perf_counter
+from typing import TYPE_CHECKING
 
 import dotenv
 from rich.console import Console
 from rich.logging import RichHandler
-from rich.panel import Panel
 from rich.progress import (
     BarColumn,
     MofNCompleteColumn,
@@ -20,6 +20,9 @@ from rich.progress import (
 )
 
 from examexam.generate_topic_research import generate_study_guide
+
+if TYPE_CHECKING:
+    from examexam.ui_protocol import FrontendUI
 
 # Load environment variables
 dotenv.load_dotenv()
@@ -34,16 +37,18 @@ if not logger.handlers:
         handlers=[RichHandler(rich_tracebacks=True, markup=True, show_time=False, show_level=True)],
     )
 
-console = Console()
 
+def generate_study_plan_now(toc_file: str, model: str = "openai", ui: FrontendUI | None = None) -> None:
+    """Generates a consolidated study guide for all topics in a TOC file."""
+    # Default to Rich CLI if no UI provided
+    if ui is None:
+        from examexam.frontends.rich_ui import RichUI
 
-def generate_study_plan_now(toc_file: str, model: str = "openai") -> None:
-    """
-    Generates a consolidated study guide for all topics in a TOC file.
-    """
+        ui = RichUI()
+
     toc_path = Path(toc_file)
     if not toc_path.exists():
-        console.print(Panel.fit(f"[red]TOC file not found:[/] {toc_file}", title="Error"))
+        ui.show_panel(f"TOC file not found: {toc_file}", title="Error", style="red")
         return
 
     with toc_path.open(encoding="utf-8") as f:
@@ -51,21 +56,22 @@ def generate_study_plan_now(toc_file: str, model: str = "openai") -> None:
 
     total_topics = len(topics)
     if total_topics == 0:
-        console.print(Panel.fit("[yellow]TOC file is empty.[/]", title="Nothing to do"))
+        ui.show_panel("TOC file is empty.", title="Nothing to do", style="yellow")
         return
 
-    console.rule("[bold]Study Plan Generation[/bold]")
-    console.print(f"Generating study guides for [bold]{total_topics}[/] topics using model [italic]{model}[/]…\n")
+    ui.show_rule("Study Plan Generation")
+    ui.show_message(f"Generating study guides for {total_topics} topics using model {model}...")
 
     all_guides_content = [f"# Study Plan for {toc_path.stem}\n\n"]
     failures = 0
 
+    console = Console()
     progress = Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         MofNCompleteColumn(),
-        TextColumn("•"),
+        TextColumn("\u2022"),
         TimeElapsedColumn(),
         TextColumn("ETA:"),
         TimeRemainingColumn(),
@@ -98,10 +104,10 @@ def generate_study_plan_now(toc_file: str, model: str = "openai") -> None:
             progress.advance(topic_task)
             progress.advance(overall_task)
 
-    console.rule()
+    ui.show_rule()
 
     if not all_guides_content or len(all_guides_content) == 1:
-        console.print(Panel.fit("[bold red]Failed to generate any study guides.[/]", title="Complete Failure"))
+        ui.show_panel("Failed to generate any study guides.", title="Complete Failure", style="red")
         return
 
     # Save the consolidated file
@@ -114,14 +120,14 @@ def generate_study_plan_now(toc_file: str, model: str = "openai") -> None:
         with output_path.open("w", encoding="utf-8") as f:
             f.write("".join(all_guides_content))
 
-        summary_message = f"Successfully generated study guides for [bold green]{total_topics - failures}[/] topics. Saved to:\n[bold cyan]{output_path}[/]"
+        summary = f"Successfully generated study guides for {total_topics - failures} topics. Saved to:\n{output_path}"
         if failures > 0:
-            summary_message += f"\n[bold red]{failures}[/] topics failed."
+            summary += f"\n{failures} topics failed."
 
-        console.print(Panel.fit(summary_message, title="Summary"))
+        ui.show_panel(summary, title="Summary")
 
     except OSError as e:
-        console.print(Panel(f"[bold red]Error saving file: {e}[/]", title="Save Error"))
+        ui.show_panel(f"Error saving file: {e}", title="Save Error", style="red")
 
 
 if __name__ == "__main__":

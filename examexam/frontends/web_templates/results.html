@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel">
+    <h2 data-autofocus tabindex="-1">Final results</h2>
+    <p class="eyebrow">{{ active_exam_name }}</p>
+
+    <div class="flash {% if result.passed %}flash--success{% else %}flash--warning{% endif %}" role="status" aria-live="polite">
+        <p>
+            <strong>{% if result.passed %}Passed{% else %}Completed{% endif %}.</strong>
+            Score: {{ result.score }}/{{ total_questions }} ({{ "%.1f"|format(result.percent) }}%)
+        </p>
+    </div>
+
+    <dl class="results-grid">
+        <div>
+            <dt>Elapsed time</dt>
+            <dd>{{ result.elapsed | humanize_timedelta }}</dd>
+        </div>
+        {% if result.avg_time_per_question %}
+        <div>
+            <dt>Average time per question</dt>
+            <dd>{{ result.avg_time_per_question | humanize_timedelta }}</dd>
+        </div>
+        {% endif %}
+        <div>
+            <dt>Normal 95% confidence interval</dt>
+            <dd>{{ "%.1f"|format(result.ci_lower * 100) }}% to {{ "%.1f"|format(result.ci_upper * 100) }}%</dd>
+        </div>
+        <div>
+            <dt>Exact 95% confidence interval</dt>
+            <dd>{{ "%.1f"|format(result.exact_ci_lower * 100) }}% to {{ "%.1f"|format(result.exact_ci_upper * 100) }}%</dd>
+        </div>
+        <div>
+            <dt>Binomial p-value vs 70% pass rate</dt>
+            <dd>{{ "%.3f"|format(result.p_value) }}</dd>
+        </div>
+        <div>
+            <dt>Session file</dt>
+            <dd><code>{{ session_path }}</code></dd>
+        </div>
+    </dl>
+
+    <div class="button-row">
+        <a class="button" href="/">Back to exams</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
 import rtoml as toml
@@ -23,6 +24,21 @@ text = "To manage relational databases on EC2."
 explanation = "Amazon Athena is a serverless query service, and it does not manage databases on EC2. Incorrect."
 is_correct = false
 """.strip()
+
+
+def _make_mock_ui(**overrides):
+    """Create a mock FrontendUI for testing."""
+    ui = MagicMock()
+    ui.show_message = MagicMock()
+    ui.show_error = MagicMock()
+    ui.confirm = MagicMock(return_value=True)
+    ui.show_session_info = MagicMock()
+    ui.show_test_selection = MagicMock(return_value=0)
+    ui.show_results = MagicMock()
+    ui.show_panel = MagicMock()
+    for k, v in overrides.items():
+        setattr(ui, k, MagicMock(return_value=v))
+    return ui
 
 
 def write(tmp_path: Path, rel: str, content: str) -> Path:
@@ -55,14 +71,16 @@ def test_get_available_tests_when_present(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     write(tmp_path, "data/athena.toml", SAMPLE_TOML)
     write(tmp_path, "data/other.toml", SAMPLE_TOML)
-    names = take_exam.get_available_tests()
+    ui = _make_mock_ui()
+    names = take_exam.get_available_tests(ui)
     assert set(names) == {"athena", "other"}
 
 
 def test_get_available_tests_when_missing(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    names = take_exam.get_available_tests()
-    # Should print an error and return []
+    ui = _make_mock_ui()
+    names = take_exam.get_available_tests(ui)
+    # Should call show_error and return []
     assert names == []
 
 
@@ -94,10 +112,9 @@ def test_check_resume_session_user_resumes(tmp_path, monkeypatch):
     ]
     session_path.write_text(toml.dumps(_session_file_content(questions, start_time)), encoding="utf-8")
 
-    # Minimal mocking: only the user prompt
-    monkeypatch.setattr(take_exam.Confirm, "ask", lambda *a, **k: True)
+    ui = _make_mock_ui(confirm=True)
 
-    resumed, session_data, start_dt = take_exam.check_resume_session(test_name)
+    resumed, session_data, start_dt = take_exam.check_resume_session(test_name, ui)
     assert resumed is True
     assert isinstance(session_data, list) and len(session_data) == 2
     assert isinstance(start_dt, datetime)
@@ -111,9 +128,9 @@ def test_check_resume_session_user_declines_deletes_file(tmp_path, monkeypatch):
     questions = [{"id": "q1", "user_score": 1}]
     session_path.write_text(toml.dumps(_session_file_content(questions, start_time)), encoding="utf-8")
 
-    monkeypatch.setattr(take_exam.Confirm, "ask", lambda *a, **k: False)
+    ui = _make_mock_ui(confirm=False)
 
-    resumed, session_data, start_dt = take_exam.check_resume_session(test_name)
+    resumed, session_data, start_dt = take_exam.check_resume_session(test_name, ui)
     assert resumed is False
     assert session_data is None
     assert start_dt is None
@@ -220,7 +237,10 @@ def test_save_session_file_writes_toml(tmp_path, monkeypatch):
     assert "questions" in data and isinstance(data["questions"], list)
 
 
-def test_display_results_does_not_crash():
-    # Smoke test: ensure printing/rendering doesn't raise
+def test_show_results_does_not_crash():
+    """Smoke test: ensure building and showing results doesn't raise."""
     start_time = datetime.now() - timedelta(seconds=30)
-    take_exam.display_results(score=1, total=2, start_time=start_time, session=None, withhold_judgement=True)
+    ui = _make_mock_ui()
+    result = take_exam._build_exam_result(score=1, total=2, start_time=start_time, session=None, is_final=False)
+    ui.show_results(result)
+    ui.show_results.assert_called_once()

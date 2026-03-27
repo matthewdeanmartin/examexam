@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel">
+    <h2 data-autofocus tabindex="-1">Background progress</h2>
+    {% if progress_items %}
+    <ul class="progress-list">
+        {% for item in progress_items %}
+        <li class="progress-list__item">
+            <p><strong>{{ item.description or item.task_id }}</strong></p>
+            <p>{{ item.current }} / {{ item.total }}</p>
+            <div class="progress-bar" aria-hidden="true">
+                <div class="progress-bar__fill" style="width: {{ (item.current / item.total * 100) if item.total else 0 }}%"></div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No background work is being tracked right now.</p>
+    {% endif %}
+</section>
+{% endblock %}

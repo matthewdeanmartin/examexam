@@ -1,5 +1,4 @@
-"""
-Call a bot to create study guide
+"""Call a bot to create study guide.
 
     router = Router(conversation)
     content = router.call(user_prompt, model)
@@ -29,21 +28,21 @@ from __future__ import annotations
 import logging
 import os
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import dotenv
-from rich.console import Console
-from rich.markdown import Markdown
-from rich.panel import Panel
-from rich.prompt import Confirm
 
 from examexam.apis.conversation_and_router import Conversation, Router
 from examexam.jinja_management import jinja_env
+
+if TYPE_CHECKING:
+    from examexam.ui_protocol import FrontendUI
 
 # Load environment variables (e.g., OPENAI_API_KEY)
 dotenv.load_dotenv()
 
 # ---- Logging setup (for developers) ----
-# Keep logger.info/debug; print user-facing stuff with Rich Console.
+# Keep logger.info/debug; print user-facing stuff with FrontendUI.
 logger = logging.getLogger(__name__)
 if not logger.handlers:
     from rich.logging import RichHandler
@@ -55,22 +54,21 @@ if not logger.handlers:
         handlers=[RichHandler(rich_tracebacks=True, markup=True, show_time=False, show_level=True)],
     )
 
-console = Console()
-
 
 # ---------- Core Logic ----------
-def generate_study_guide(topic: str, model: str) -> str | None:
-    """
-    Calls an LLM to generate a study guide for a given topic.
+def generate_study_guide(topic: str, model: str, ui: FrontendUI | None = None) -> str | None:
+    """Calls an LLM to generate a study guide for a given topic.
 
     Args:
         topic: The topic for the study guide.
         model: The LLM to use.
+        ui: Optional frontend UI for user-facing output.
 
     Returns:
         The generated study guide in Markdown format, or None on failure.
     """
-    console.print(f"Generating study guide for topic: [bold cyan]{topic}[/] using model [italic]{model}[/]...")
+    if ui:
+        ui.show_message(f"Generating study guide for topic: {topic} using model {model}...")
 
     system_prompt = "You are an expert tutor and research assistant. Your goal is to create a concise, well-structured study guide on a given topic. The guide should be in Markdown format. It must include a section with suggested search engine queries to help the user learn more."
     conversation = Conversation(system=system_prompt)
@@ -85,16 +83,15 @@ def generate_study_guide(topic: str, model: str) -> str | None:
 
     content = router.call(user_prompt, model)
     if not content:
-        console.print("[bold red]Failed to generate study guide. The model returned no content.[/bold red]")
+        if ui:
+            ui.show_error("Failed to generate study guide. The model returned no content.")
         return None
 
     return content
 
 
-def save_and_display_guide(guide_content: str, topic: str) -> None:
-    """
-    Saves the study guide to a file and displays it in the terminal.
-    """
+def save_and_display_guide(guide_content: str, topic: str, ui: FrontendUI) -> None:
+    """Saves the study guide to a file and displays it."""
     # Sanitize topic for filename
     safe_topic = "".join(c for c in topic if c.isalnum() or c in (" ", "_", "-")).rstrip()
     safe_topic = safe_topic.replace(" ", "_").lower()
@@ -109,29 +106,33 @@ def save_and_display_guide(guide_content: str, topic: str) -> None:
     try:
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(guide_content)
-        console.print(Panel(f"Study guide saved to [bold green]{file_path}[/]", title="File Saved"))
+        ui.show_panel(f"Study guide saved to {file_path}", title="File Saved")
     except OSError as e:
-        console.print(Panel(f"[bold red]Error saving file: {e}[/]", title="Save Error"))
+        ui.show_panel(f"Error saving file: {e}", title="Save Error", style="red")
         return
 
     # Display in terminal
-    console.rule(f"[bold]Study Guide: {topic}[/bold]")
-    console.print(Markdown(guide_content))
-    console.rule()
+    ui.show_rule(f"Study Guide: {topic}")
+    ui.show_markdown(guide_content)
+    ui.show_rule()
 
 
-def generate_topic_research_now(topic: str, model: str = "openai") -> None:
-    """
-    Main execution function to generate, save, and display a study guide.
-    """
-    guide_content = generate_study_guide(topic, model)
+def generate_topic_research_now(topic: str, model: str = "openai", ui: FrontendUI | None = None) -> None:
+    """Main execution function to generate, save, and display a study guide."""
+    # Default to Rich CLI if no UI provided
+    if ui is None:
+        from examexam.frontends.rich_ui import RichUI
+
+        ui = RichUI()
+
+    guide_content = generate_study_guide(topic, model, ui)
 
     if guide_content:
-        save_and_display_guide(guide_content, topic)
+        save_and_display_guide(guide_content, topic, ui)
         if not os.environ.get("EXAMEXAM_NONINTERACTIVE"):
-            Confirm.ask("Press Enter to exit", default=True, show_default=False)
+            ui.confirm("Press Enter to exit", default=True)
     else:
-        console.print("[bold red]Could not generate the study guide.[/bold red]")
+        ui.show_error("Could not generate the study guide.")
 
 
 if __name__ == "__main__":

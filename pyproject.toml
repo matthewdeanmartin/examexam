@@ -1,6 +1,6 @@
 [project]
 name = "examexam"
-version = "0.1.8"
+version = "0.1.9"
 description = "Let LLM generate tests, validate test, and then you take them. Useful for certs."
 authors = [{ name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" }]
 readme = "README.md"
@@ -47,6 +47,13 @@ classifiers = [
 [project.scripts]
 examexam = "examexam.__main__:main"
 
+[project.optional-dependencies]
+web = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "python-multipart>=0.0.9",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -54,6 +61,8 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.sdist]
 include = [
     "examexam/**/*.py",
+    "examexam/frontends/web_templates/**/*.html",
+    "examexam/frontends/web_static/**/*.*",
     "examexam/prompts/**/*.j2",
     "examexam/prompts/**/*.md.j2",
     "examexam/py.typed",
@@ -69,6 +78,8 @@ exclude = [
 packages = ["examexam"]
 include = [
     "examexam/**/*.py",
+    "examexam/frontends/web_templates/**/*.html",
+    "examexam/frontends/web_static/**/*.*",
     "examexam/prompts/**/*.j2",
     "examexam/prompts/**/*.md.j2",
     "examexam/py.typed",
@@ -116,6 +127,7 @@ dev = [
     "pytest-mock; python_version >= '3.8'",
     "pytest-unused-fixtures; python_version >= '3.10'",
     "hypothesis[cli]; python_version >= '3.8'",
+    "httpx>=0.28.0",
     "detect-test-pollution",
     "pytest-timeout>=2.4.0",
     # docs

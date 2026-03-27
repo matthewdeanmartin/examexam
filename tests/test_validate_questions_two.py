@@ -199,7 +199,9 @@ def test_grade_test_scores_and_writes(tmp_path):
     good_bad = [("good", "ok"), ("bad", "nope")]
     out_file = tmp_path / "graded.toml"
 
-    score = mod.grade_test(questions, responses, good_bad, out_file, model="fakebot")
+    from unittest.mock import MagicMock
+    mock_ui = MagicMock()
+    score = mod.grade_test(questions, responses, good_bad, out_file, model="fakebot", ui=mock_ui)
     assert score == 0.5
     assert out_file.exists()
 
@@ -213,7 +215,9 @@ def test_grade_test_scores_and_writes(tmp_path):
 
 
 def test_grade_test_zero_total(tmp_path):
-    out = mod.grade_test([], [], [], tmp_path / "out.toml", model="fakebot")
+    from unittest.mock import MagicMock
+    mock_ui = MagicMock()
+    out = mod.grade_test([], [], [], tmp_path / "out.toml", model="fakebot", ui=mock_ui)
     assert out == 0
 
 

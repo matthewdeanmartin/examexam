@@ -99,6 +99,15 @@ Here’s a typical workflow for creating and studying for an AWS exam.
     examexam take --question-file aws_exam.toml
     ```
 
+    Or launch the localhost web UI with accessible server-rendered pages:
+
+    ```bash
+    pip install "examexam[web]"
+    examexam --frontend web take --question-file aws_exam.toml
+    ```
+
+    > The web UI starts a local FastAPI server, opens your browser, and keeps progress in the same `.session/` files used by the CLI flow.
+
 8.  **(Optional) Customize the prompts**
 
     If you want to change how questions or study guides are generated, you can deploy the default Jinja2 templates to your local directory for editing.
@@ -169,6 +178,7 @@ examexam customize [--target-dir <path>] [--force]
 examexam generate --toc-file <path> [-n 5] [--output-file <path>] [--model-provider ...]
 examexam validate --question-file <path> [--model-provider ...]
 examexam take [--question-file <path>]
+examexam --frontend web take [--question-file <path>]
 examexam convert --input-file <path> --output-base-name <str>
 
 # Study Tools
@@ -181,7 +191,7 @@ examexam study-plan --toc-file <path> [--model-provider ...]
   * **`init`**: Creates a default `examexam.toml` configuration file in the current directory.
   * **`generate`**: Creates new multiple-choice questions for topics in a `--toc-file` and appends them to a TOML question bank.
   * **`validate`**: Asks an LLM to answer each question and flags questions as "Good" or "Bad" with a rationale, saving results back to the file.
-  * **`take`**: Launches a clean, keyboard-only test UI. Supports automatic session saving and resuming. Can also be run in a non-interactive "machine mode" for testing (`--machine --strategy <name>`).
+  * **`take`**: Launches a clean, keyboard-only test UI. With `--frontend web`, starts a localhost FastAPI server with server-rendered accessible pages for taking the exam in a browser. Supports automatic session saving and resuming.
   * **`convert`**: Turns a TOML question bank into pretty Markdown and HTML files for studying.
   * **`research`**: Generates a detailed, single-topic study guide with concepts, examples, and suggested search queries.
   * **`study-plan`**: Generates a consolidated Markdown study guide covering all topics from a `--toc-file`.

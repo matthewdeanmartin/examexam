@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel">
+    <p class="eyebrow">Question {{ question_number }} of {{ total_questions }}</p>
+    <h2 data-autofocus tabindex="-1">Answer the current question</h2>
+    <div class="question-text">{{ question.question | markdown }}</div>
+
+    <p id="answer-help">
+        Select exactly {{ answer_count }} answer{% if answer_count != 1 %}s{% endif %}, then submit.
+    </p>
+
+    {% if error_message %}
+    <section class="error-summary" role="alert" aria-labelledby="error-title">
+        <h3 id="error-title">There is a problem with your answer</h3>
+        <p>{{ error_message }}</p>
+    </section>
+    {% endif %}
+
+    <form method="post" action="/answer/{{ question_number }}" novalidate>
+        <fieldset>
+            <legend>Answer options</legend>
+            <ol class="option-list">
+                {% for option in options %}
+                <li class="option-item">
+                    <label class="option-control">
+                        <input
+                            type="{{ input_type }}"
+                            name="answer"
+                            value="{{ option.index }}"
+                            aria-describedby="answer-help"
+                            {% if option.index|string in selected_answers %}checked{% endif %}
+                        >
+                        <span><strong>{{ option.index }}.</strong> {{ option.text }}</span>
+                    </label>
+                </li>
+                {% endfor %}
+            </ol>
+        </fieldset>
+
+        <div class="button-row">
+            <button type="submit" class="button">Submit answer</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

@@ -6,15 +6,14 @@ import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from time import perf_counter, sleep
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import dotenv
 import rtoml as toml
 
-# --- Rich UI for users ---
+# --- Rich UI for progress (kept for backward compat in CLI mode) ---
 from rich.console import Console
 from rich.logging import RichHandler
-from rich.panel import Panel
 from rich.progress import (
     BarColumn,
     MofNCompleteColumn,
@@ -29,6 +28,9 @@ from examexam.apis.conversation_and_router import Conversation, Router
 from examexam.find_the_toml import extract_questions_toml as extract_toml
 from examexam.jinja_management import jinja_env
 
+if TYPE_CHECKING:
+    from examexam.ui_protocol import FrontendUI
+
 # Load environment variables (e.g., OPENAI_API_KEY)
 dotenv.load_dotenv()
 
@@ -42,8 +44,6 @@ if not logger.handlers:
         datefmt="%H:%M:%S",
         handlers=[RichHandler(rich_tracebacks=True, markup=True, show_time=False, show_level=True)],
     )
-
-console = Console()
 
 
 # ---------- Custom Exceptions ----------
@@ -66,8 +66,8 @@ class GenStats:
 
 
 def _validate_schema(data: dict[str, Any]) -> None:
-    """
-    Validates the structure of the parsed TOML data.
+    """Validates the structure of the parsed TOML data.
+
     Raises SchemaValidationError on failure.
     """
     if not isinstance(data, dict):
@@ -137,19 +137,6 @@ def _is_fatal_message(msg: str) -> bool:
     return any(m in msg_lower for m in fatal_markers)
 
 
-# def extract_toml(markdown_content: str) -> str | None:
-#     """Extract TOML fenced block from markdown content."""
-#     if not markdown_content:
-#         logger.debug("No content returned from router.call; skipping TOML extract")
-#         return None
-#     match = re.search(r"```toml\n(.*?)\n```", markdown_content, re.DOTALL)
-#     if match:
-#         logger.info("TOML content found in response.")
-#         return match.group(1)
-#     logger.debug("TOML fenced block not found in content (len=%d)", len(markdown_content))
-#     return None
-
-
 def generate_questions(
     prompt: str,
     n: int,
@@ -161,8 +148,7 @@ def generate_questions(
     retry_delay_seconds: float = 1.5,
     stats: GenStats | None = None,
 ) -> dict[str, list[dict[str, Any]]] | None:
-    """
-    Request questions from an LLM, validates the response, and retries with
+    """Request questions from an LLM, validates the response, and retries with
     corrective feedback if parsing or schema validation fails.
     """
     logger.info("Generating %d questions for topic: %s", n, prompt)
@@ -255,7 +241,7 @@ def generate_questions(
     return None
 
 
-def save_toml_to_file(toml_content: str, file_name: str) -> None:
+def save_toml_to_file(toml_content: str, file_name: str, ui: FrontendUI) -> None:
     """Save TOML to file, appending to existing [[questions]]."""
     path = Path(file_name)
     logger.debug("Saving TOML to %s (exists=%s)", path, path.exists())
@@ -276,10 +262,10 @@ def save_toml_to_file(toml_content: str, file_name: str) -> None:
         else:
             with path.open("w", encoding="utf-8") as file:
                 file.write(toml_content)
-        console.print(f"[bold green]TOML content saved to[/] {file_name}")
+        ui.show_message(f"TOML content saved to {file_name}", style="bold green")
     except (toml.TomlParsingError, OSError) as e:
         logger.error(f"Failed to save TOML to {file_name}: {e}")
-        console.print(f"[bold red]Error saving TOML to {file_name}. Check file permissions and content.[/bold red]")
+        ui.show_error(f"Error saving TOML to {file_name}. Check file permissions and content.")
 
 
 def generate_questions_now(
@@ -288,11 +274,18 @@ def generate_questions_now(
     toc_file: str,
     system_prompt: str,
     model: str = "fakebot",
+    ui: FrontendUI | None = None,
 ) -> int:
     """Main execution with Rich progress UI."""
+    # Default to Rich CLI if no UI provided
+    if ui is None:
+        from examexam.frontends.rich_ui import RichUI
+
+        ui = RichUI()
+
     toc_path = Path(toc_file)
     if not toc_path.exists():
-        console.print(Panel.fit(f"[red]TOC file not found:[/] {toc_file}", title="Error"))
+        ui.show_panel(f"TOC file not found: {toc_file}", title="Error", style="red")
         return 0
 
     with toc_path.open(encoding="utf-8") as f:
@@ -300,23 +293,24 @@ def generate_questions_now(
 
     total_topics = len(services)
     if total_topics == 0:
-        console.print(Panel.fit("[yellow]TOC file is empty.[/]", title="Nothing to do"))
+        ui.show_panel("TOC file is empty.", title="Nothing to do", style="yellow")
         return 0
 
-    console.rule("[bold]Exam Question Generation")
-    console.print(
-        f"Generating [bold]{questions_per_toc_topic}[/] per topic across [bold]{total_topics}[/] topics with model [italic]{model}[/]…\n"
+    ui.show_rule("Exam Question Generation")
+    ui.show_message(
+        f"Generating {questions_per_toc_topic} per topic across {total_topics} topics with model {model}..."
     )
 
-    # Overall and per-topic progress bars.
+    # Overall and per-topic progress bars (Rich-specific for CLI, simple messages for other UIs).
     total_so_far = 0
+    console = Console()
 
     progress = Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         MofNCompleteColumn(),
-        TextColumn("•"),
+        TextColumn("\u2022"),
         TimeElapsedColumn(),
         TextColumn("ETA:"),
         TimeRemainingColumn(),
@@ -351,8 +345,8 @@ def generate_questions_now(
                 absolute_failures += 1
                 progress.update(topic_task, description=f"{idx}/{total_topics} {service} [red](failed)[/]")
                 if absolute_failures >= 3:
-                    console.print(
-                        "\n[bold red]Stopping due to 3 consecutive topic failures. Check API keys, model access, and network.[/bold red]"
+                    ui.show_error(
+                        "Stopping due to 3 consecutive topic failures. Check API keys, model access, and network."
                     )
                     break  # Exit the loop
             else:
@@ -364,7 +358,7 @@ def generate_questions_now(
                 logger.info("Total questions so far: %d", total_so_far)
 
                 toml_content = toml.dumps(questions)
-                save_toml_to_file(toml_content, file_name)
+                save_toml_to_file(toml_content, file_name, ui)
 
                 progress.update(
                     topic_task,
@@ -374,12 +368,11 @@ def generate_questions_now(
             progress.advance(topic_task)
             progress.advance(overall_task)
 
-    console.rule()
-    console.print(
-        Panel.fit(
-            f"[bold green]Done[/]: generated [bold]{total_so_far}[/] questions across [bold]{total_topics}[/] topics.",
-            title="Summary",
-        )
+    ui.show_rule()
+    ui.show_panel(
+        f"Done: generated {total_so_far} questions across {total_topics} topics.",
+        title="Summary",
+        style="green",
     )
     return total_so_far
 

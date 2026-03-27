@@ -13,6 +13,7 @@ import dotenv
 from examexam import __about__, logging_config
 from examexam.apis.conversation_and_router import FRONTIER_MODELS, pick_model
 from examexam.convert_to_pretty import run as convert_questions_run
+from examexam.frontends import FRONTEND_CHOICES, get_frontend
 from examexam.generate_questions import generate_questions_now
 from examexam.generate_study_plan import generate_study_plan_now
 from examexam.generate_topic_research import generate_topic_research_now
@@ -63,6 +64,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--version", action="version", version=f"%(prog)s {__about__.__version__}")
 
     parser.add_argument("--verbose", action="store_true", required=False, help="Enable detailed logging.")
+
+    parser.add_argument(
+        "--frontend",
+        type=str,
+        default="cli",
+        choices=FRONTEND_CHOICES,
+        help="UI frontend to use: cli (Rich terminal), gui (Tkinter), tui (Textual), web (browser). Default: cli",
+    )
+
     subparsers = parser.add_subparsers(dest="command", help="Available commands", required=True)
 
     # --- Take Command ---
@@ -169,49 +179,75 @@ def main(argv: Sequence[str] | None = None) -> int:
         # Configure a basic logger for user-facing messages
         logging.basicConfig(level=logging.INFO, format="%(message)s")
 
-    if args.command == "take":
-        if hasattr(args, "question_file") and args.question_file:
-            take_exam_now(question_file=args.question_file)
-        else:
-            take_exam_now()
-    elif args.command == "generate":
-        toc_file = args.toc_file
-        if not toc_file.endswith(".txt"):
-            toc_file_base = toc_file + ".txt"
-        else:
-            toc_file_base = toc_file
-        model = pick_model(args.model, args.model_provider, args.model_class)
+    # Instantiate the selected frontend
+    ui = get_frontend(args.frontend)
+    needs_event_loop = args.frontend in ("gui", "tui")
 
-        generate_questions_now(
-            questions_per_toc_topic=args.n,
-            file_name=args.output_file or toc_file_base.replace(".txt", ".toml"),
-            toc_file=args.toc_file,
-            model=model,
-            system_prompt="You are a test maker.",
-        )
-    elif args.command == "validate":
-        model = pick_model(args.model, args.model_provider, args.model_class)
-        validate_questions_now(file_name=args.question_file, model=model)
-    elif args.command == "research":
-        model = pick_model(args.model, args.model_provider, args.model_class)
-        generate_topic_research_now(topic=args.topic, model=model)
-    elif args.command == "study-plan":
-        model = pick_model(args.model, args.model_provider, args.model_class)
-        generate_study_plan_now(toc_file=args.toc_file, model=model)
-    elif args.command == "convert":
-        md_path = f"{args.output_base_name}.md"
-        html_path = f"{args.output_base_name}.html"
-        convert_questions_run(
-            toml_file_path=args.input_file,
-            markdown_file_path=md_path,
-            html_file_path=html_path,
-        )
-    elif args.command == "customize":
-        target_path = Path(args.target_dir)
-        logging.info(f"Deploying templates to '{target_path.resolve()}/prompts'...")
-        deploy_for_customization(target_dir=target_path, force=args.force)
+    if args.frontend == "web":
+        if args.command != "take":
+            parser.error("The web frontend currently supports only the 'take' command.")
+        configure_exam = getattr(ui, "configure_take_exam", None)
+        if configure_exam is None:
+            raise RuntimeError("Selected web frontend cannot be configured for exam taking.")
+        configure_exam(args.question_file or None)
+        ui.run()
+        return 0
+
+    def _run_command() -> None:
+        """Execute the selected command. Runs on main thread (CLI) or worker thread (GUI/TUI)."""
+        if args.command == "take":
+            if hasattr(args, "question_file") and args.question_file:
+                take_exam_now(question_file=args.question_file, ui=ui)
+            else:
+                take_exam_now(ui=ui)
+        elif args.command == "generate":
+            toc_file = args.toc_file
+            if not toc_file.endswith(".txt"):
+                toc_file_base = toc_file + ".txt"
+            else:
+                toc_file_base = toc_file
+            model = pick_model(args.model, args.model_provider, args.model_class)
+
+            generate_questions_now(
+                questions_per_toc_topic=args.n,
+                file_name=args.output_file or toc_file_base.replace(".txt", ".toml"),
+                toc_file=args.toc_file,
+                model=model,
+                system_prompt="You are a test maker.",
+                ui=ui,
+            )
+        elif args.command == "validate":
+            model = pick_model(args.model, args.model_provider, args.model_class)
+            validate_questions_now(file_name=args.question_file, model=model, ui=ui)
+        elif args.command == "research":
+            model = pick_model(args.model, args.model_provider, args.model_class)
+            generate_topic_research_now(topic=args.topic, model=model, ui=ui)
+        elif args.command == "study-plan":
+            model = pick_model(args.model, args.model_provider, args.model_class)
+            generate_study_plan_now(toc_file=args.toc_file, model=model, ui=ui)
+        elif args.command == "convert":
+            md_path = f"{args.output_base_name}.md"
+            html_path = f"{args.output_base_name}.html"
+            convert_questions_run(
+                toml_file_path=args.input_file,
+                markdown_file_path=md_path,
+                html_file_path=html_path,
+            )
+        elif args.command == "customize":
+            target_path = Path(args.target_dir)
+            logging.info(f"Deploying templates to '{target_path.resolve()}/prompts'...")
+            deploy_for_customization(target_dir=target_path, force=args.force)
+        else:
+            parser.print_help()
+
+    if needs_event_loop:
+        # GUI/TUI frontends need the main thread for their event loop.
+        # Business logic runs in a background worker thread via ui.run(callback=...).
+        ui.run(callback=_run_command)
     else:
-        parser.print_help()
+        # CLI runs synchronously on the main thread.
+        _run_command()
+
     return 0
 
 

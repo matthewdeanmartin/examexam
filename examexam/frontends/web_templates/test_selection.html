@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel">
+    <h2 data-autofocus tabindex="-1">Choose an exam</h2>
+    <p>
+        This browser UI runs locally and uses semantic HTML, keyboard-friendly controls, and
+        screen-reader-friendly status messaging.
+    </p>
+
+    {% if active_exam_url %}
+    <p><a class="button button-secondary" href="{{ active_exam_url }}">Continue current browser session</a></p>
+    {% endif %}
+
+    {% if available_tests %}
+    <ul class="test-list" aria-label="Available exams">
+        {% for test in available_tests %}
+        <li class="panel panel--compact">
+            <h3>{{ test.name }}</h3>
+            <p><code>{{ test.question_file }}</code></p>
+            {% if test.resume_info %}
+            <p>
+                Resume available: {{ test.resume_info.completed }}/{{ test.resume_info.total }}
+                completed, started {{ test.resume_info.time_ago }} ago.
+            </p>
+            <div class="button-row">
+                <form method="post" action="/start">
+                    <input type="hidden" name="test_name" value="{{ test.name }}">
+                    <input type="hidden" name="resume" value="true">
+                    <button type="submit" class="button">Resume session</button>
+                </form>
+                <form method="post" action="/start">
+                    <input type="hidden" name="test_name" value="{{ test.name }}">
+                    <input type="hidden" name="resume" value="false">
+                    <button type="submit" class="button button-secondary">Start fresh</button>
+                </form>
+            </div>
+            {% else %}
+            <form method="post" action="/start">
+                <input type="hidden" name="test_name" value="{{ test.name }}">
+                <input type="hidden" name="resume" value="false">
+                <button type="submit" class="button">Start exam</button>
+            </form>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state" role="status" aria-live="polite">
+        <p>No exam files are available yet.</p>
+        <p>Put TOML question banks in <code>data\</code> or launch with <code>--question-file</code>.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

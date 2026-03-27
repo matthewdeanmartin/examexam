@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel">
+    <p class="eyebrow">Question {{ question_number }} of {{ total_questions }}</p>
+    <h2 data-autofocus tabindex="-1">Answer feedback</h2>
+    <div class="question-text">{{ question.question | markdown }}</div>
+
+    {% if feedback.is_correct %}
+    <section class="flash flash--success" role="status" aria-live="polite">
+        <p><strong>Correct.</strong> Your selected answers matched the answer key.</p>
+    </section>
+    {% else %}
+    <section class="flash flash--warning" role="alert" aria-live="assertive">
+        <p><strong>Not quite.</strong></p>
+        <p>Your answers: {{ feedback.user_answers | sort | join(", ") if feedback.user_answers else "None selected" }}</p>
+        <p>Correct answers: {{ feedback.correct_answers | sort | join(", ") }}</p>
+    </section>
+    {% endif %}
+
+    <h3>Option review</h3>
+    <ul class="feedback-list">
+        {% for option in option_details %}
+        <li class="feedback-list__item">
+            <p>
+                <strong>{{ option.index }}. {{ option.text }}</strong>
+                {% if option.was_selected %}<span class="pill">You selected this</span>{% endif %}
+                {% if option.is_correct %}
+                <span class="pill pill--success">Correct option</span>
+                {% else %}
+                <span class="pill pill--muted">Incorrect option</span>
+                {% endif %}
+            </p>
+            <div>{{ option.explanation | markdown }}</div>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <div class="button-row">
+        <form method="post" action="/next/{{ question_number }}">
+            <button type="submit" class="button">{{ next_label }}</button>
+        </form>
+        <form method="post" action="/mark-defective/{{ question_number }}">
+            <button type="submit" class="button button-secondary">Mark as defective</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

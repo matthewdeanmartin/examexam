@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/app.js" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header class="site-header">
+        <div class="site-header__inner">
+            <h1 class="site-title"><a href="/">Examexam web UI</a></h1>
+            <nav aria-label="Primary">
+                <ul class="inline-nav">
+                    <li><a href="/">Home</a></li>
+                    {% if active_exam_url %}
+                    <li><a href="{{ active_exam_url }}">Continue exam</a></li>
+                    {% endif %}
+                    <li><a href="/progress">Progress</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content" class="page-shell" tabindex="-1">
+        {% if flash %}
+        <section class="flash flash--{{ flash.level }}" aria-live="polite" role="status">
+            <p>{{ flash.message }}</p>
+        </section>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

@@ -5,8 +5,39 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="0.1.9: passing build">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/frontends/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/frontends/rich_ui.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/frontends/tkinter_ui.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/frontends/web_static/app.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/frontends/web_static/style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/frontends/web_templates/base.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/frontends/web_templates/feedback.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/frontends/web_templates/progress.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/frontends/web_templates/question.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/frontends/web_templates/results.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/frontends/web_templates/test_selection.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/frontends/web_ui.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/models.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examexam/ui_protocol.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spec/architecture.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spec/tui_frontend_plan.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spec/web_frontend_plan.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/test_web_frontend.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.pre-commit-config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/.pre-commit-config.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/__main__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/generate_questions.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/generate_questions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/generate_study_plan.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/generate_study_plan.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/generate_topic_research.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/generate_topic_research.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/take_exam.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/take_exam.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/validate_questions.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/validate_questions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_generate_guides.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_generate_guides.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_take_exam_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_take_exam_2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_validate_questions_two.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_validate_questions_two.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,45 +83,49 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python tests.Python tests in test_take_exam_again.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in tests.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for tests.test_validate_questions_two.test_grade_test_scores_and_writes.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for tests.test_validate_questions_two.test_parse_answer_variants.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest for tests.test_validate_questions_two.test_parse_quote_lists.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest in test_config.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest in test_find_toml.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest in test_take_exam_2.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest in test_take_exam_3.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest in test_validate_questions_two.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.pytest in tests.executor&quot;: &quot;Run&quot;,
-    &quot;Python.__main__.executor&quot;: &quot;Run&quot;,
-    &quot;Python.game.executor&quot;: &quot;Run&quot;,
-    &quot;Python.game2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.generate_questions.executor&quot;: &quot;Run&quot;,
-    &quot;Python.generate_topic_research.executor&quot;: &quot;Run&quot;,
-    &quot;Python.randomish.executor&quot;: &quot;Run&quot;,
-    &quot;Python.read_schema.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.take_exam.executor&quot;: &quot;Run&quot;,
-    &quot;Python.update_checker.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;SHELLCHECK.PATH&quot;: &quot;C:\\Users\\matth\\AppData\\Roaming\\JetBrains\\PyCharm2025.2\\plugins\\Shell Script\\shellcheck.exe&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/github/examexam&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.stylelint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.stylelint&quot;: &quot;&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python tests.Python tests in test_take_exam_again.py.executor": "Run",
+    "Python tests.Python tests in tests.executor": "Run",
+    "Python tests.pytest for tests.test_validate_questions_two.test_grade_test_scores_and_writes.executor": "Run",
+    "Python tests.pytest for tests.test_validate_questions_two.test_parse_answer_variants.executor": "Run",
+    "Python tests.pytest for tests.test_validate_questions_two.test_parse_quote_lists.executor": "Run",
+    "Python tests.pytest in test_config.py.executor": "Run",
+    "Python tests.pytest in test_find_toml.py.executor": "Run",
+    "Python tests.pytest in test_take_exam_2.py.executor": "Run",
+    "Python tests.pytest in test_take_exam_3.py.executor": "Run",
+    "Python tests.pytest in test_validate_questions_two.py.executor": "Run",
+    "Python tests.pytest in tests.executor": "Run",
+    "Python.__main__.executor": "Run",
+    "Python.game.executor": "Run",
+    "Python.game2.executor": "Run",
+    "Python.generate_questions.executor": "Run",
+    "Python.generate_topic_research.executor": "Run",
+    "Python.randomish.executor": "Run",
+    "Python.read_schema.executor": "Debug",
+    "Python.take_exam.executor": "Run",
+    "Python.update_checker.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SHELLCHECK.PATH": "C:\\Users\\matth\\AppData\\Roaming\\JetBrains\\PyCharm2025.2\\plugins\\Shell Script\\shellcheck.exe",
+    "ai.playground.ignore.import.keys.banner.in.settings": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/github/examexam",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.stylelint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.stylelint": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\github\examexam" />
@@ -139,6 +174,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examexam/generate_topic_research.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -159,6 +195,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
@@ -177,6 +214,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
@@ -195,6 +233,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
@@ -213,6 +252,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
@@ -233,8 +273,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-a71380e98a7c-JavaScript-PY-252.28238.29" />
-        <option value="bundled-python-sdk-a101402ee41c-968fe969f28a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.28238.29" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PY-253.31033.139" />
+        <option value="bundled-python-sdk-2653e85de345-6d6dccd035ac-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.31033.139" />
       </set>
     </attachedChunks>
   </component>
@@ -280,7 +320,12 @@
       <workItem from="1762919799977" duration="535000" />
       <workItem from="1764450481906" duration="54000" />
       <workItem from="1764453707202" duration="1306000" />
-      <workItem from="1764474970093" duration="31000" />
+      <workItem from="1764474970093" duration="130000" />
+      <workItem from="1764516407908" duration="2422000" />
+      <workItem from="1764904512790" duration="1629000" />
+      <workItem from="1767036755679" duration="1206000" />
+      <workItem from="1767497206810" duration="2032000" />
+      <workItem from="1774575641662" duration="351000" />
     </task>
     <task id="LOCAL-00001" summary="Get ready for publication">
       <option name="closed" value="true" />
@@ -498,7 +543,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762920184032</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="0.1.9: passing build">
+      <option name="closed" value="true" />
+      <created>1764475064722</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1764475064722</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

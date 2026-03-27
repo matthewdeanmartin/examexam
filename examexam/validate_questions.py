@@ -1,5 +1,4 @@
-"""
-Example toml
+"""Example toml
 
 
 [[questions]]
@@ -17,7 +16,7 @@ explanation = "Amazon Athena is a serverless query service, and it does not mana
 is_correct = false
 
 Rich-enhanced validator for multiple-choice TOML question sets.
-- User-facing output uses Rich (progress bars, panels, tables).
+- User-facing output uses the FrontendUI protocol (Rich for CLI).
 - Developer logs go to logger.info / logger.debug via RichHandler.
 - Avoids retry loops on fatal API errors (missing keys, auth, bad model).
 """
@@ -30,13 +29,12 @@ import os
 from io import StringIO
 from pathlib import Path
 from time import perf_counter, sleep
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import dotenv
 import rtoml as toml
 from rich.console import Console
 from rich.logging import RichHandler
-from rich.panel import Panel
 from rich.progress import (
     BarColumn,
     MofNCompleteColumn,
@@ -46,11 +44,13 @@ from rich.progress import (
     TimeElapsedColumn,
     TimeRemainingColumn,
 )
-from rich.table import Table
 
 from examexam.apis.conversation_and_router import Conversation, Router
 from examexam.jinja_management import jinja_env
 from examexam.utils.custom_exceptions import ExamExamTypeError
+
+if TYPE_CHECKING:
+    from examexam.ui_protocol import FrontendUI
 
 # ----------------------------------------------------------------------------
 # Env & logging setup
@@ -65,8 +65,6 @@ if not logger.handlers:
         format="%(message)s",
         handlers=[RichHandler(rich_tracebacks=True, markup=True, show_time=False, show_level=True)],
     )
-
-console = Console()
 
 
 # ----------------------------------------------------------------------------
@@ -181,7 +179,7 @@ def parse_quote_lists(answer: str) -> list[str]:
             return answers
 
         # Clean odd quotes sometimes returned by models
-        answer_part = answer_part.replace("â€˜", "").replace("â€™", "")
+        answer_part = answer_part.replace("\u201c", "").replace("\u201d", "")
         answer_part = answer_part.replace('", "', "|").strip('"')
         answers = answer_part.strip("[] ").split("|")
         return [ans.strip("'\" ").strip("'\" ") for ans in answers]
@@ -263,6 +261,7 @@ def grade_test(
     good_bad: list[tuple[str, str]],
     file_path: Path,
     model: str,
+    ui: FrontendUI,
 ) -> float:
     """Grades the LLM's performance and writes results to a TOML file."""
     score = 0
@@ -303,19 +302,18 @@ def grade_test(
         toml.dump({"questions": questions_to_write}, file)
 
     # Pretty print summary
-    console.print(Panel.fit(f"Final Score: [bold]{score}[/] / [bold]{total}[/]", title="Grading Summary"))
+    ui.show_panel(f"Final Score: {score} / {total}", title="Grading Summary")
 
     if failures:
-        table = Table(title=f"Incorrect ({len(failures)})", show_lines=False)
-        table.add_column("ID", no_wrap=True, overflow="fold")
-        table.add_column("Question", overflow="fold")
-        table.add_column("Correct", overflow="fold")
-        table.add_column("Given", overflow="fold")
-        for qid, qtext, correct, given in failures[:25]:  # show top 25 to keep output readable
-            table.add_row(str(qid), qtext, " | ".join(sorted(correct)), " | ".join(sorted(given)))
+        # For non-Rich UIs, show as simple text; Rich UI will still get nice output
+        failure_lines = [f"Incorrect ({len(failures)}):"]
+        for qid, qtext, correct, given in failures[:25]:
+            failure_lines.append(f"  {qid}: {qtext[:60]}...")
+            failure_lines.append(f"    Correct: {' | '.join(sorted(correct))}")
+            failure_lines.append(f"    Given:   {' | '.join(sorted(given))}")
         if len(failures) > 25:
-            table.caption = f"(+{len(failures) - 25} more not shown)"
-        console.print(table)
+            failure_lines.append(f"  (+{len(failures) - 25} more not shown)")
+        ui.show_message("\n".join(failure_lines))
 
     return 0 if total == 0 else score / total
 
@@ -323,31 +321,39 @@ def grade_test(
 def validate_questions_now(
     file_name: str,
     model: str = "claude",
+    ui: FrontendUI | None = None,
 ) -> float:
     """Main function to orchestrate the validation process with Rich progress."""
+    # Default to Rich CLI if no UI provided
+    if ui is None:
+        from examexam.frontends.rich_ui import RichUI
+
+        ui = RichUI()
+
     file_path = Path(file_name)
     if not file_path.exists():
-        console.print(Panel.fit(f"[red]TOML file not found:[/] {file_name}", title="Error"))
+        ui.show_panel(f"TOML file not found: {file_name}", title="Error", style="red")
         return 0.0
 
     questions = read_questions(file_path)
     total = len(questions)
     if total == 0:
-        console.print(Panel.fit("[yellow]No questions found in TOML.[/]", title="Nothing to validate"))
+        ui.show_panel("No questions found in TOML.", title="Nothing to validate", style="yellow")
         return 0.0
 
-    console.rule("[bold]Exam Question Validation")
-    console.print(f"Validating [bold]{total}[/] questions using model [italic]{model}[/]…\n")
+    ui.show_rule("Exam Question Validation")
+    ui.show_message(f"Validating {total} questions using model {model}...")
 
     responses: list[list[str]] = []
     opinions: list[tuple[str, str]] = []
 
+    console = Console()
     progress = Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         MofNCompleteColumn(),
-        TextColumn("•"),
+        TextColumn("\u2022"),
         TimeElapsedColumn(),
         TextColumn("ETA:"),
         TimeRemainingColumn(),
@@ -389,8 +395,8 @@ def validate_questions_now(
                 progress.advance(q_task)
                 progress.advance(overall_task)
 
-    score = grade_test(questions, responses, opinions, file_path, model)
-    console.rule()
+    score = grade_test(questions, responses, opinions, file_path, model, ui)
+    ui.show_rule()
     return score
 
 

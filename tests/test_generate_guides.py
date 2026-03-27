@@ -1,5 +1,6 @@
 # File: tests/test_generate_guides.py
 import textwrap
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -40,6 +41,12 @@ def patch_router_call(monkeypatch):
     monkeypatch.setattr("examexam.apis.conversation_and_router.Router.call", fake_call)
 
 
+def _make_mock_ui():
+    ui = MagicMock()
+    ui.confirm = MagicMock(return_value=True)
+    return ui
+
+
 def test_generate_study_guide_returns_content(monkeypatch):
     content = gtr.generate_study_guide("pytest topic", "fakebot")
     assert content is not None
@@ -57,7 +64,8 @@ def test_save_and_display_guide_writes_file_and_content(tmp_path):
     monkeypatch = pytest.MonkeyPatch()
     monkeypatch.chdir(cwd)
 
-    gtr.save_and_display_guide(guide, topic)
+    ui = _make_mock_ui()
+    gtr.save_and_display_guide(guide, topic, ui)
 
     files = list(out_dir.glob("pytest_topic.md"))
     assert len(files) == 1
@@ -70,10 +78,11 @@ def test_generate_topic_research_now_creates_file(monkeypatch, tmp_path):
     cwd = tmp_path
     monkeypatch.chdir(cwd)
 
-    # Patch Confirm.ask to avoid blocking input
-    monkeypatch.setattr("examexam.generate_topic_research.Confirm.ask", lambda *a, **kw: True)
+    # Set env var to skip interactive confirm
+    monkeypatch.setenv("EXAMEXAM_NONINTERACTIVE", "1")
 
-    gtr.generate_topic_research_now("pytest topic", model="fakebot")
+    ui = _make_mock_ui()
+    gtr.generate_topic_research_now("pytest topic", model="fakebot", ui=ui)
 
     out_file = cwd / "study_guide" / "pytest_topic.md"
     assert out_file.exists()
@@ -88,7 +97,8 @@ def test_generate_study_plan_now_creates_file(tmp_path, monkeypatch):
     toc_file = cwd / "topics.txt"
     toc_file.write_text("topic one\ntopic two\n")
 
-    gsp.generate_study_plan_now(str(toc_file), model="fakebot")
+    ui = _make_mock_ui()
+    gsp.generate_study_plan_now(str(toc_file), model="fakebot", ui=ui)
 
     out_file = cwd / "study_guide" / "topics_study_plan.md"
     assert out_file.exists()
@@ -105,8 +115,9 @@ def test_generate_study_plan_now_handles_empty_file(tmp_path, monkeypatch):
     toc_file = cwd / "empty.txt"
     toc_file.write_text("\n")
 
+    ui = _make_mock_ui()
     # Should return early and not create file
-    gsp.generate_study_plan_now(str(toc_file), model="fakebot")
+    gsp.generate_study_plan_now(str(toc_file), model="fakebot", ui=ui)
     out_dir = cwd / "study_guide"
     assert not out_dir.exists()
 
@@ -115,7 +126,8 @@ def test_generate_study_plan_now_handles_missing_file(tmp_path, monkeypatch):
     cwd = tmp_path
     monkeypatch.chdir(cwd)
 
+    ui = _make_mock_ui()
     # Should return early and not crash
-    gsp.generate_study_plan_now(str(cwd / "doesnotexist.txt"), model="fakebot")
+    gsp.generate_study_plan_now(str(cwd / "doesnotexist.txt"), model="fakebot", ui=ui)
     out_dir = cwd / "study_guide"
     assert not out_dir.exists()
