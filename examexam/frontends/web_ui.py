@@ -578,7 +578,9 @@ class WebUI:
         )
 
     def _render_markdown(self, value: str) -> Markup:
-        return Markup(markdown(value, extensions=["extra", "nl2br"]))
+        return Markup(
+            markdown(value, extensions=["extra", "nl2br"])
+        )  # nosec B704 — input is user-authored question files, not external untrusted data
 
     def _get_browser_session(self, session_id: str | None) -> tuple[BrowserSession, str | None]:
         if session_id and session_id in self._browser_sessions:

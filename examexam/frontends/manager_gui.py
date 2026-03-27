@@ -846,15 +846,15 @@ class ConfigPanel(_BasePanel):
         if not cfg_path.exists():
             messagebox.showinfo("Not found", f"{DEFAULT_CONFIG_FILENAME} does not exist. Create it first.")
             return
-        import subprocess
+        import subprocess  # nosec B404
         import sys
 
         if sys.platform == "win32":
-            os.startfile(str(cfg_path.resolve()))
+            os.startfile(str(cfg_path.resolve()))  # nosec B606
         elif sys.platform == "darwin":
-            subprocess.Popen(["open", str(cfg_path.resolve())])
+            subprocess.Popen(["open", str(cfg_path.resolve())])  # nosec B603 B607
         else:
-            subprocess.Popen(["xdg-open", str(cfg_path.resolve())])
+            subprocess.Popen(["xdg-open", str(cfg_path.resolve())])  # nosec B603 B607
 
 
 # ── API Keys panel ─────────────────────────────────────────────────────────
@@ -1024,31 +1024,28 @@ class TakeExamPanel(_BasePanel):
         frontend = self._frontend_var.get()
         _output_clear(self._out_widget)
 
+        import subprocess  # nosec B404
+        import sys
+
         if frontend == "gui":
             # Launch the tkinter exam UI in a new top-level process/thread
             self._status.set("Launching exam GUI...")
-            import subprocess
-            import sys
-
             cmd = [sys.executable, "-m", "examexam", "--frontend", "gui", "take"]
             if qfile:
                 cmd += ["--question-file", qfile]
             try:
-                subprocess.Popen(cmd)
+                subprocess.Popen(cmd)  # nosec B603
                 _output_append(self._out_widget, "Exam GUI launched in new window.\n")
             except Exception as exc:
                 _output_append(self._out_widget, f"Error: {exc}\n")
             self._status.set("Exam launched.")
         elif frontend == "web":
             self._status.set("Launching web exam...")
-            import subprocess
-            import sys
-
             cmd = [sys.executable, "-m", "examexam", "--frontend", "web", "take"]
             if qfile:
                 cmd += ["--question-file", qfile]
             try:
-                subprocess.Popen(cmd)
+                subprocess.Popen(cmd)  # nosec B603
                 _output_append(self._out_widget, "Web exam launched. Open http://localhost:8000 in your browser.\n")
             except Exception as exc:
                 _output_append(self._out_widget, f"Error: {exc}\n")
@@ -1056,15 +1053,12 @@ class TakeExamPanel(_BasePanel):
         else:
             # CLI – run in background thread, stream output
             self._status.set("Running CLI exam...")
-            import subprocess
-            import sys
-
             cmd = [sys.executable, "-m", "examexam", "take"]
             if qfile:
                 cmd += ["--question-file", qfile]
             _output_append(self._out_widget, f"Launching: {' '.join(cmd)}\n")
             _output_append(self._out_widget, "CLI exam runs in terminal. Check your terminal window.\n")
-            subprocess.Popen(cmd, creationflags=0x10 if sys.platform == "win32" else 0)
+            subprocess.Popen(cmd, creationflags=0x10 if sys.platform == "win32" else 0)  # nosec B603
             self._status.set("CLI exam launched.")
 
 

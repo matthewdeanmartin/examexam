@@ -292,7 +292,7 @@ def _make_markdown(extensions: Iterable[str] | None = None, extension_configs: d
         import pygments  # noqa: F401
 
         exts.append("codehilite")
-    except Exception:
+    except ImportError:
         pass
 
     return _markdown.Markdown(extensions=exts, extension_configs=extension_configs or {})
