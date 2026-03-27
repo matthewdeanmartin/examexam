@@ -10,7 +10,9 @@
       "Bash(python -c \":*)",
       "Bash(python -m examexam --help)",
       "Bash(python -m pytest tests/ --timeout=30 -v)",
-      "Bash(python -m pytest tests/ --timeout=30 -q)"
+      "Bash(python -m pytest tests/ --timeout=30 -q)",
+      "Bash(python -c \"import examexam.__main__; print\\(''__main__ OK''\\)\")",
+      "Bash(uv run:*)"
     ]
   }
 }

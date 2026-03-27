@@ -200,6 +200,7 @@ def test_grade_test_scores_and_writes(tmp_path):
     out_file = tmp_path / "graded.toml"
 
     from unittest.mock import MagicMock
+
     mock_ui = MagicMock()
     score = mod.grade_test(questions, responses, good_bad, out_file, model="fakebot", ui=mock_ui)
     assert score == 0.5
@@ -216,6 +217,7 @@ def test_grade_test_scores_and_writes(tmp_path):
 
 def test_grade_test_zero_total(tmp_path):
     from unittest.mock import MagicMock
+
     mock_ui = MagicMock()
     out = mod.grade_test([], [], [], tmp_path / "out.toml", model="fakebot", ui=mock_ui)
     assert out == 0

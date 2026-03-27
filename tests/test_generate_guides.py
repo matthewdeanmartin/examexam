@@ -16,8 +16,7 @@ def patch_router_call(monkeypatch):
     """
 
     def fake_call(self, request, model, essential=False):
-        return textwrap.dedent(
-            f"""
+        return textwrap.dedent(f"""
         # Guide for {request[:20]}...
 
         ## Core Concepts
@@ -35,8 +34,7 @@ def patch_router_call(monkeypatch):
         ## Further Research
         - google query 1
         - google query 2
-        """
-        )
+        """)
 
     monkeypatch.setattr("examexam.apis.conversation_and_router.Router.call", fake_call)
 

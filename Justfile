@@ -12,7 +12,7 @@ default:
 # Install dependencies
 dependency-install:
     @echo "Installing dependencies"
-    uv sync
+    uv sync --all-extras
 
 update-deps:
     @echo "Updating dependencies"

@@ -73,6 +73,7 @@ class TkinterUI:
             if self._log_text:
                 self._log_text.insert(tk.END, message + "\n")
                 self._log_text.see(tk.END)
+
         if self._root and self._initialized:
             self._schedule(_show)
         # else: silently ignore pre-init messages
@@ -81,6 +82,7 @@ class TkinterUI:
         def _show():
             if self._root:
                 messagebox.showerror("Error", message, parent=self._root)
+
         if self._root and self._initialized:
             self._schedule(_show)
 
@@ -196,6 +198,7 @@ class TkinterUI:
             answer = self._input_result
 
             from examexam.take_exam import is_valid
+
             valid, error_msg = is_valid(answer, option_count, answer_count)
             if valid:
                 return answer
@@ -204,6 +207,7 @@ class TkinterUI:
             def _show_err(msg=error_msg):
                 messagebox.showwarning("Invalid Answer", msg, parent=self._root)
                 # Re-arm the submit (user can click again)
+
             self._schedule(_show_err)
             # Loop back and wait for another submit
 
@@ -213,15 +217,19 @@ class TkinterUI:
             frame = self._main_frame
 
             if feedback.is_correct:
-                ttk.Label(frame, text="\u2713 Correct!", style="Correct.TLabel",
-                          font=("Segoe UI", 16, "bold")).pack(pady=(0, 10))
+                ttk.Label(frame, text="\u2713 Correct!", style="Correct.TLabel", font=("Segoe UI", 16, "bold")).pack(
+                    pady=(0, 10)
+                )
             else:
-                ttk.Label(frame, text="\u2717 Incorrect", style="Incorrect.TLabel",
-                          font=("Segoe UI", 16, "bold")).pack(pady=(0, 10))
-                ttk.Label(frame, text=f"Correct: {', '.join(feedback.correct_answers)}",
-                          wraplength=800).pack(anchor="w", padx=20)
-                ttk.Label(frame, text=f"Your answer: {', '.join(feedback.user_answers)}",
-                          wraplength=800).pack(anchor="w", padx=20)
+                ttk.Label(frame, text="\u2717 Incorrect", style="Incorrect.TLabel", font=("Segoe UI", 16, "bold")).pack(
+                    pady=(0, 10)
+                )
+                ttk.Label(frame, text=f"Correct: {', '.join(feedback.correct_answers)}", wraplength=800).pack(
+                    anchor="w", padx=20
+                )
+                ttk.Label(frame, text=f"Your answer: {', '.join(feedback.user_answers)}", wraplength=800).pack(
+                    anchor="w", padx=20
+                )
 
             ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
 
@@ -229,8 +237,9 @@ class TkinterUI:
             ttk.Label(frame, text="Explanations:", font=("Segoe UI", 12, "bold")).pack(anchor="w", padx=10, pady=(5, 5))
             for idx, (explanation, is_correct) in enumerate(feedback.explanations, 1):
                 color = "green" if is_correct else "red"
-                lbl = ttk.Label(frame, text=f"{idx}. {explanation}", wraplength=780,
-                                foreground=color, font=("Segoe UI", 10))
+                lbl = ttk.Label(
+                    frame, text=f"{idx}. {explanation}", wraplength=780, foreground=color, font=("Segoe UI", 10)
+                )
                 lbl.pack(anchor="w", padx=30, pady=2)
 
         self._schedule(_show)
@@ -252,12 +261,12 @@ class TkinterUI:
             if result.is_final:
                 status = "PASSED" if result.passed else "FAILED"
                 color = "green" if result.passed else "red"
-                ttk.Label(frame, text=status, foreground=color,
-                          font=("Segoe UI", 18, "bold")).pack(pady=5)
+                ttk.Label(frame, text=status, foreground=color, font=("Segoe UI", 18, "bold")).pack(pady=5)
 
             # Progress bar
-            progress_bar = ttk.Progressbar(frame, length=400, mode="determinate",
-                                           maximum=result.total, value=result.score)
+            progress_bar = ttk.Progressbar(
+                frame, length=400, mode="determinate", maximum=result.total, value=result.score
+            )
             progress_bar.pack(pady=10)
 
             # Time info
@@ -266,18 +275,21 @@ class TkinterUI:
 
             if result.avg_time_per_question:
                 ttk.Label(frame, text=f"Avg per question: {humanize_timedelta(result.avg_time_per_question)}").pack(
-                    anchor="w", padx=20)
+                    anchor="w", padx=20
+                )
 
             if result.estimated_time_left and not result.is_final:
                 ttk.Label(frame, text=f"Est. remaining: {humanize_timedelta(result.estimated_time_left)}").pack(
-                    anchor="w", padx=20)
+                    anchor="w", padx=20
+                )
 
             # CI info
             ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
             ci_text = f"95% CI: {result.ci_lower * 100:.1f}%-{result.ci_upper * 100:.1f}% (normal) | {result.exact_ci_lower * 100:.1f}%-{result.exact_ci_upper * 100:.1f}% (exact)"
             ttk.Label(frame, text=ci_text, font=("Segoe UI", 9)).pack(anchor="w", padx=20)
-            ttk.Label(frame, text=f"Binomial test vs 70%: p={result.p_value:.3f}",
-                      font=("Segoe UI", 9)).pack(anchor="w", padx=20)
+            ttk.Label(frame, text=f"Binomial test vs 70%: p={result.p_value:.3f}", font=("Segoe UI", 9)).pack(
+                anchor="w", padx=20
+            )
 
         self._schedule(_show)
 
@@ -312,6 +324,7 @@ class TkinterUI:
 
     def progress_start(self, total: int, description: str = "") -> str:
         import uuid
+
         task_id = str(uuid.uuid4())[:8]
         self.show_message(f"{description} (0/{total})" if description else f"Progress: 0/{total}")
         return task_id
@@ -337,8 +350,7 @@ class TkinterUI:
         def _show():
             self._clear_main_frame()
             frame = self._main_frame
-            text_widget = scrolledtext.ScrolledText(frame, wrap=tk.WORD, font=("Segoe UI", 11),
-                                                     width=90, height=30)
+            text_widget = scrolledtext.ScrolledText(frame, wrap=tk.WORD, font=("Segoe UI", 11), width=90, height=30)
             text_widget.insert(tk.END, content)
             text_widget.configure(state="disabled")
             text_widget.pack(fill=tk.BOTH, expand=True)
@@ -374,24 +386,22 @@ class TkinterUI:
         root.protocol("WM_DELETE_WINDOW", _on_close)
 
         if callback:
+
             def _run_callback():
                 try:
                     callback()
                 except KeyboardInterrupt:
                     pass
                 except Exception as e:
-                    _ = e # something keeps removing this, ruff?
+                    _ = e  # something keeps removing this, ruff?
                     if self._root:
-                        self._schedule(
-                            lambda: messagebox.showerror("Error", str(e), parent=self._root) # noqa
-                        )
+                        self._schedule(lambda: messagebox.showerror("Error", str(e), parent=self._root))  # noqa
                 finally:
                     # When done, add a "Close" button so user can review final results
                     def _add_close_button():
                         if self._main_frame and self._root:
-                            ttk.Button(
-                                self._main_frame, text="Close", command=self._root.quit
-                            ).pack(pady=15)
+                            ttk.Button(self._main_frame, text="Close", command=self._root.quit).pack(pady=15)
+
                     if self._root:
                         self._schedule(_add_close_button)
 

@@ -147,7 +147,9 @@ class WebUI:
         _ = (question, options, question_number)
 
     def get_answer(self, option_count: int, answer_count: int) -> str:
-        raise RuntimeError(f"Web frontend cannot synchronously collect {answer_count} answers from {option_count} options.")
+        raise RuntimeError(
+            f"Web frontend cannot synchronously collect {answer_count} answers from {option_count} options."
+        )
 
     def show_answer_feedback(self, feedback: AnswerFeedback) -> None:
         self.show_message("Answer submitted.", style="success" if feedback.is_correct else "warning")
@@ -303,7 +305,11 @@ class WebUI:
             question, session_question = self._question_pair_for_number(browser_session, n)
             if session_question.get("start_time") is None and browser_session.start_time is not None:
                 session_question["start_time"] = datetime.now().isoformat()
-                save_session_file(get_session_path(browser_session.test_name or "session"), browser_session.session, browser_session.start_time)
+                save_session_file(
+                    get_session_path(browser_session.test_name or "session"),
+                    browser_session.session,
+                    browser_session.start_time,
+                )
 
             page = self._render_question(
                 request,
@@ -366,7 +372,11 @@ class WebUI:
             session_question["completion_time"] = datetime.now().isoformat()
             session_question["user_answers"] = sorted(feedback.user_answers)
             session_question["user_score"] = 1 if feedback.is_correct else 0
-            save_session_file(get_session_path(browser_session.test_name or "session"), browser_session.session, browser_session.start_time or datetime.now())
+            save_session_file(
+                get_session_path(browser_session.test_name or "session"),
+                browser_session.session,
+                browser_session.start_time or datetime.now(),
+            )
 
             response = RedirectResponse(url=f"/feedback/{n}", status_code=status.HTTP_303_SEE_OTHER)
             if created_session_id:
@@ -388,7 +398,9 @@ class WebUI:
 
             question, session_question = self._question_pair_for_number(browser_session, n)
             if session_question.get("user_score") is None:
-                response = RedirectResponse(url=f"/question/{browser_session.completed_count() + 1}", status_code=status.HTTP_303_SEE_OTHER)
+                response = RedirectResponse(
+                    url=f"/question/{browser_session.completed_count() + 1}", status_code=status.HTTP_303_SEE_OTHER
+                )
                 if created_session_id:
                     response.set_cookie(COOKIE_NAME, created_session_id, httponly=True, samesite="lax")
                 return response
@@ -405,8 +417,16 @@ class WebUI:
                 question=self._question_context(question),
                 feedback=feedback,
                 option_details=self._feedback_option_details(display_options, session_question),
-                next_url="/results" if browser_session.completed_count() >= len(browser_session.question_order) else f"/question/{n + 1}",
-                next_label="View results" if browser_session.completed_count() >= len(browser_session.question_order) else "Next question",
+                next_url=(
+                    "/results"
+                    if browser_session.completed_count() >= len(browser_session.question_order)
+                    else f"/question/{n + 1}"
+                ),
+                next_label=(
+                    "View results"
+                    if browser_session.completed_count() >= len(browser_session.question_order)
+                    else "Next question"
+                ),
             )
             if created_session_id:
                 page.set_cookie(COOKIE_NAME, created_session_id, httponly=True, samesite="lax")
@@ -467,7 +487,9 @@ class WebUI:
                 return response
 
             if browser_session.start_time is None:
-                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Missing exam start time.")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Missing exam start time."
+                )
 
             result = _build_exam_result(
                 browser_session.score(),
@@ -670,7 +692,9 @@ class WebUI:
             return f"/question/{expected_question}"
         return None
 
-    def _question_pair_for_number(self, browser_session: BrowserSession, n: int) -> tuple[dict[str, Any], dict[str, Any]]:
+    def _question_pair_for_number(
+        self, browser_session: BrowserSession, n: int
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         if n < 1 or n > len(browser_session.question_order):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Question not found.")
         question_id = browser_session.question_order[n - 1]
@@ -691,7 +715,9 @@ class WebUI:
             browser_session.option_orders[question_id] = option_order
         return [question["options"][index] for index in option_order]
 
-    def _selected_options(self, display_options: list[dict[str, Any]], selected_answers: list[str]) -> list[dict[str, Any]]:
+    def _selected_options(
+        self, display_options: list[dict[str, Any]], selected_answers: list[str]
+    ) -> list[dict[str, Any]]:
         selected_answer_set = set(selected_answers)
         return [option for option in display_options if option.get("text") in selected_answer_set]
 
@@ -705,7 +731,9 @@ class WebUI:
     def _option_context(self, display_options: list[dict[str, Any]]) -> list[dict[str, Any]]:
         options: list[dict[str, Any]] = []
         for index, option in enumerate(display_options, start=1):
-            options.append({"index": index, "text": option.get("text", ""), "explanation": option.get("explanation", "")})
+            options.append(
+                {"index": index, "text": option.get("text", ""), "explanation": option.get("explanation", "")}
+            )
         return options
 
     def _feedback_option_details(

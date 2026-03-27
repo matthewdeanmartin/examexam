@@ -8,8 +8,7 @@ import pytest
 
 from examexam.convert_to_pretty import convert_markdown_to_html, generate_markdown, read_toml_file, run, write_to_file
 
-SAMPLE_TOML = textwrap.dedent(
-    """
+SAMPLE_TOML = textwrap.dedent("""
     [[questions]]
     id = "Q1"
     question = "What is 2+2?"
@@ -41,8 +40,7 @@ SAMPLE_TOML = textwrap.dedent(
       text = "Option A"
       explanation = "Nope"
       is_correct = false
-    """
-).strip()
+    """).strip()
 
 
 def write(tmp_path: Path, name: str, content: str) -> Path:

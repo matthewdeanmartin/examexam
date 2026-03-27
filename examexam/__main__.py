@@ -52,6 +52,134 @@ def add_model_args(parser) -> None:
     )
 
 
+def _interactive_launcher() -> int:
+    """Show an interactive terminal menu when no subcommand is given."""
+    import importlib.util
+
+    _has_tk = importlib.util.find_spec("tkinter") is not None
+
+    if _has_tk:
+        return _launch_interactive_tk()
+    return _launch_interactive_cli()
+
+
+def _launch_interactive_tk() -> int:
+    """Show a small Tkinter launcher dialog."""
+    import tkinter as tk
+
+    # Catppuccin Mocha colours (matching manager_gui.py)
+    _BG = "#1e1e2e"
+    _FG = "#cdd6f4"
+    _ACCENT = "#89b4fa"
+    _BTN = "#313244"
+    _BTN_ACTIVE = "#45475a"
+    _OK = "#22c55e"
+
+    root = tk.Tk()
+    root.title(f"ExamExam {__about__.__version__}")
+    root.geometry("420x340")
+    root.resizable(False, False)
+    root.configure(bg=_BG)
+
+    # Centre on screen
+    root.update_idletasks()
+    x = (root.winfo_screenwidth() - 420) // 2
+    y = (root.winfo_screenheight() - 340) // 2
+    root.geometry(f"+{x}+{y}")
+
+    choice = tk.StringVar(value="")
+
+    tk.Label(root, text="ExamExam", bg=_BG, fg=_ACCENT, font=("Segoe UI", 22, "bold")).pack(pady=(28, 4))
+    tk.Label(root, text="What would you like to do?", bg=_BG, fg=_FG, font=("Segoe UI", 11)).pack(pady=(0, 18))
+
+    def _pick(value: str) -> None:
+        choice.set(value)
+        root.quit()
+
+    def _btn(parent, text, value, bg=_BTN):
+        return tk.Button(
+            parent,
+            text=text,
+            command=lambda: _pick(value),
+            bg=bg,
+            fg=_FG,
+            activebackground=_BTN_ACTIVE,
+            activeforeground=_FG,
+            relief=tk.FLAT,
+            font=("Segoe UI", 11),
+            width=24,
+            pady=8,
+            cursor="hand2",
+        )
+
+    _btn(root, "Take an Exam", "take", bg=_OK).pack(pady=4)
+    _btn(root, "Manage Exams (GUI)", "manage").pack(pady=4)
+    _btn(root, "Manage Exams (CLI)", "manage_cli").pack(pady=4)
+    _btn(root, "Doctor / Diagnostics", "doctor").pack(pady=4)
+
+    root.protocol("WM_DELETE_WINDOW", root.quit)
+    root.mainloop()
+
+    action = choice.get()
+    root.destroy()
+
+    if action == "take":
+        from examexam.frontends.tkinter_ui import TkinterUI
+
+        ui = TkinterUI()
+        ui.run(callback=lambda: take_exam_now(ui=ui))
+    elif action == "manage":
+        from examexam.frontends.manager_gui import launch_manager
+
+        launch_manager()
+    elif action == "manage_cli":
+        # Fall through to the CLI with the Rich UI – show help
+        from rich.console import Console
+
+        Console().print(
+            "[bold cyan]ExamExam CLI[/bold cyan]\n\n"
+            "Run [yellow]examexam --help[/yellow] to see all commands, or use the manager GUI."
+        )
+        return 0
+    elif action == "doctor":
+        from examexam.doctor import run_doctor
+
+        print(run_doctor())
+    return 0
+
+
+def _launch_interactive_cli() -> int:
+    """Fallback interactive launcher for headless/no-tkinter environments."""
+    print(f"\nExamExam {__about__.__version__}")
+    print("=" * 40)
+    print("What would you like to do?")
+    print("  1. Take an exam")
+    print("  2. Generate questions")
+    print("  3. Doctor / diagnostics")
+    print("  4. Show help")
+    print("  q. Quit")
+    print()
+    try:
+        choice = input("Enter choice: ").strip().lower()
+    except (EOFError, KeyboardInterrupt):
+        return 0
+
+    if choice == "1":
+        from examexam.frontends.rich_ui import RichUI
+
+        ui = RichUI()
+        take_exam_now(ui=ui)
+    elif choice == "2":
+        print("\nRun: examexam generate --toc-file <topics.txt>")
+    elif choice == "3":
+        from examexam.doctor import run_doctor
+
+        print(run_doctor())
+    elif choice == "4":
+        print("\nRun: examexam --help")
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     """Main function for the command-line interface."""
     start_background_update_check("examexam", __about__.__version__)
@@ -73,7 +201,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="UI frontend to use: cli (Rich terminal), gui (Tkinter), tui (Textual), web (browser). Default: cli",
     )
 
-    subparsers = parser.add_subparsers(dest="command", help="Available commands", required=True)
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # --- Take Command ---
     take_parser = subparsers.add_parser("take", help="Take an exam from a TOML file.")
@@ -152,7 +280,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     add_model_args(study_plan_parser)
 
-    # --- Customize Command (New) ---
+    # --- Customize Command ---
     customize_parser = subparsers.add_parser(
         "customize", help="Deploy Jinja2 templates to a local directory for customization."
     )
@@ -168,9 +296,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Force overwrite of existing templates, even if they have been modified by the user.",
     )
 
+    # --- Doctor Command ---
+    subparsers.add_parser("doctor", help="Print diagnostic information for tech support.")
+
+    # --- Manager Command ---
+    subparsers.add_parser("manager", help="Launch the exam management GUI.")
+
     argcomplete.autocomplete(parser)
 
     args = parser.parse_args(args=argv)
+
+    # ── No subcommand: launch interactive launcher ─────────────────────────
+    if not args.command:
+        return _interactive_launcher()
 
     if args.verbose:
         config = logging_config.generate_config()
@@ -178,6 +316,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     else:
         # Configure a basic logger for user-facing messages
         logging.basicConfig(level=logging.INFO, format="%(message)s")
+
+    # ── Doctor command ────────────────────────────────────────────────────
+    if args.command == "doctor":
+        from examexam.doctor import run_doctor
+
+        print(run_doctor())
+        return 0
+
+    # ── Manager command ───────────────────────────────────────────────────
+    if args.command == "manager":
+        from examexam.frontends.manager_gui import launch_manager
+
+        launch_manager()
+        return 0
 
     # Instantiate the selected frontend
     ui = get_frontend(args.frontend)

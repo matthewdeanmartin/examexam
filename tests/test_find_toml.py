@@ -6,8 +6,7 @@ import pytest
 # Adjust this import to match your project layout
 from examexam.find_the_toml import extract_questions_toml
 
-VALID_ONE_Q = textwrap.dedent(
-    """
+VALID_ONE_Q = textwrap.dedent("""
 [[questions]]
 question = "Question for user here"
 
@@ -20,8 +19,7 @@ is_correct = true
 text = "Wrong Answer. Must be first."
 explanation = "Explanation. Must be before is_correct. Incorrect."
 is_correct = false
-"""
-).strip()
+""").strip()
 
 
 def parseable(text: str) -> bool:
@@ -82,8 +80,7 @@ And some trailing notes.
 
 
 def test_backticks_inside_strings_are_preserved():
-    with_backticks = textwrap.dedent(
-        """
+    with_backticks = textwrap.dedent("""
     [[questions]]
     question = "This has `inline code` backticks"
 
@@ -91,8 +88,7 @@ def test_backticks_inside_strings_are_preserved():
     text = "Answer with `ticks`"
     explanation = "Explain `like this`"
     is_correct = true
-    """
-    ).strip()
+    """).strip()
 
     src = f"```toml\n{with_backticks}\n```"
     out = extract_questions_toml(src)
@@ -105,8 +101,7 @@ def test_backticks_inside_strings_are_preserved():
 
 @pytest.mark.skip("Doesn't work and also isn't a normal problem bots have")
 def test_smart_quotes_get_normalized_and_then_parseable():
-    smart = textwrap.dedent(
-        """
+    smart = textwrap.dedent("""
     [[questions]]
     question = “Curly quotes should parse after normalization”
 
@@ -114,8 +109,7 @@ def test_smart_quotes_get_normalized_and_then_parseable():
     text = “Answer”
     explanation = “Explains”
     is_correct = true
-    """
-    ).strip()
+    """).strip()
 
     # Mix into prose without fences to ensure aggressive detection
     src = f"Notes:\n\n{smart}\n\nEnd"
@@ -127,12 +121,10 @@ def test_smart_quotes_get_normalized_and_then_parseable():
 
 
 def test_invalid_schema_returns_none():
-    not_schema = textwrap.dedent(
-        """
+    not_schema = textwrap.dedent("""
     [not_questions]
     foo = "bar"
-    """
-    ).strip()
+    """).strip()
 
     src = f"""\
     preface
@@ -149,8 +141,7 @@ def test_invalid_schema_returns_none():
 
 def test_picks_first_valid_among_multiple_candidates():
     valid_1 = VALID_ONE_Q
-    valid_2 = textwrap.dedent(
-        """
+    valid_2 = textwrap.dedent("""
     [[questions]]
     question = "Another"
 
@@ -163,8 +154,7 @@ def test_picks_first_valid_among_multiple_candidates():
     text = "B"
     explanation = "E"
     is_correct = false
-    """
-    ).strip()
+    """).strip()
 
     src = f"""\
     ```toml
@@ -184,13 +174,11 @@ def test_picks_first_valid_among_multiple_candidates():
 
 
 def test_ignores_non_toml_fences_and_still_finds_unfenced_toml():
-    junk = textwrap.dedent(
-        """
+    junk = textwrap.dedent("""
     ```json
     {"foo": "bar"}
     ```
-    """
-    )
+    """)
     src = f"{junk}\n{VALID_ONE_Q}\n"
     out = extract_questions_toml(src)
     assert out is not None
@@ -210,14 +198,12 @@ def test_handles_tilde_fences_too():
 
 def test_does_not_cross_markdown_fences_when_scanning_unfenced_regions():
     # TOML-like lines inside a fenced code block of another language should not be merged
-    inside_fence = textwrap.dedent(
-        f"""
+    inside_fence = textwrap.dedent(f"""
     ```python
     print("[[questions]]")  # looks tomlish but is code
     ```
     {VALID_ONE_Q}
-    """
-    )
+    """)
     out = extract_questions_toml(inside_fence)
     assert out is not None
     assert parseable(out)
@@ -238,8 +224,7 @@ def test_returns_none_when_no_candidate_found(garbage: str):
 @pytest.mark.skip("That is beyond 'is this toml'")
 def test_result_has_at_least_one_true_is_correct_per_question():
     # Negative: zero true -> should return None
-    zero_true = textwrap.dedent(
-        """
+    zero_true = textwrap.dedent("""
     [[questions]]
     question = "All wrong"
 
@@ -252,8 +237,7 @@ def test_result_has_at_least_one_true_is_correct_per_question():
     text = "B"
     explanation = "E"
     is_correct = false
-    """
-    ).strip()
+    """).strip()
 
     assert extract_questions_toml(zero_true) is None
 

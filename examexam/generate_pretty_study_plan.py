@@ -58,8 +58,7 @@ from jinja2 import Environment
 # -------------------------
 # Built-in Jinja2 template
 # -------------------------
-_DEFAULT_TEMPLATE: str = textwrap.dedent(
-    r"""
+_DEFAULT_TEMPLATE: str = textwrap.dedent(r"""
     <!doctype html>
     <html lang="en" data-theme="{{ theme }}">
     <head>
@@ -111,15 +110,13 @@ _DEFAULT_TEMPLATE: str = textwrap.dedent(
       </script>
     </body>
     </html>
-    """
-)
+    """)
 
 
 # -------------------------
 # CSS (minimal, elegant, responsive, readable)
 # -------------------------
-_DEFAULT_CSS: str = textwrap.dedent(
-    r"""
+_DEFAULT_CSS: str = textwrap.dedent(r"""
     :root{
       --bg:#ffffff; --fg:#111; --muted:#555; --accent:#2f6feb;
       --code-bg:#f6f8fa; --border:#e6e6e6; --kbd-bg:#eee; --kbd-fg:#333;
@@ -193,15 +190,13 @@ _DEFAULT_CSS: str = textwrap.dedent(
 
     .loose{ --line: 1.9 }
     .tight{ --line: 1.5 }
-    """
-)
+    """)
 
 
 # -------------------------
 # JS controller for reader prefs, theme, width, line-height, TOC scrollspy
 # -------------------------
-_DEFAULT_JS: str = textwrap.dedent(
-    r"""
+_DEFAULT_JS: str = textwrap.dedent(r"""
     function readPrefs(){
       try{ return JSON.parse(localStorage.getItem(MD2R_PREF_KEY)) || DEFAULT_PREFS; }catch{ return DEFAULT_PREFS; }
     }
@@ -260,8 +255,7 @@ _DEFAULT_JS: str = textwrap.dedent(
     }, { rootMargin: '0px 0px -70% 0px', threshold: 0.01 });
 
     headings.forEach(h=>{ if (!h.id) h.id = h.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-'); obs.observe(h); });
-    """
-)
+    """)
 
 
 @dataclass

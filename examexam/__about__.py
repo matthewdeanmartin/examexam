@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 __title__ = "examexam"
-__version__ = "0.1.8"
+__version__ = "0.1.9"
 __description__ = "Let LLM generate tests, validate test, and then you take them. Useful for certs."
 __credits__ = [{"name": "Matthew Martin", "email": "matthewdeanmartin@gmail.com"}]
 __readme__ = "README.md"
