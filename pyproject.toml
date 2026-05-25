@@ -280,3 +280,6 @@ ruff = { name = "ruff", version = ">=0.6.2", schema = "semver" }
 
 [tool.strict-build-script]
 minimum_test_coverage = 35
+
+[tool.uv]
+universal = true
