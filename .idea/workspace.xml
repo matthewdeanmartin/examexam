@@ -4,21 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="0.1.9: passing build">
-      <change afterPath="$PROJECT_DIR$/spec/tkinter.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Justfile" beforeDir="false" afterPath="$PROJECT_DIR$/Justfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/__about__.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/__about__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/__main__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/frontends/tkinter_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/frontends/tkinter_ui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/frontends/web_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/frontends/web_ui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/generate_pretty_study_plan.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/generate_pretty_study_plan.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_convert_to_pretty.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_convert_to_pretty.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_find_toml.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_find_toml.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_generate_guides.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_generate_guides.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_validate_questions_two.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_validate_questions_two.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
+    <list default="true" id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="0.1.9: gha [skip-ci]">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,9 +80,10 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "SHELLCHECK.PATH": "C:\\Users\\matth\\AppData\\Roaming\\JetBrains\\PyCharm2025.2\\plugins\\Shell Script\\shellcheck.exe",
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/github/examexam/spec",
+    "last_opened_file_path": "C:/github/examexam",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.stylelint": "true",
     "node.js.detected.package.tslint": "true",
@@ -154,6 +142,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/examexam/generate_topic_research.py" />
@@ -175,6 +164,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
       <option name="_new_keywords" value="&quot;&quot;" />
@@ -194,6 +184,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
       <option name="_new_keywords" value="&quot;&quot;" />
@@ -213,6 +204,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
       <option name="_new_keywords" value="&quot;&quot;" />
@@ -232,6 +224,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="RUN_TOOL" value="" />
       <option name="_new_keywords" value="&quot;&quot;" />
@@ -254,8 +247,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-PY-253.31033.139" />
-        <option value="bundled-python-sdk-2653e85de345-6d6dccd035ac-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.31033.139" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-PY-261.23567.174" />
+        <option value="bundled-python-sdk-024ed6589d45-c2ffad84badb-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-261.23567.174" />
       </set>
     </attachedChunks>
   </component>
@@ -306,7 +299,11 @@
       <workItem from="1764904512790" duration="1629000" />
       <workItem from="1767036755679" duration="1206000" />
       <workItem from="1767497206810" duration="2032000" />
-      <workItem from="1774575641662" duration="1217000" />
+      <workItem from="1774575641662" duration="2490000" />
+      <workItem from="1774613678306" duration="1775000" />
+      <workItem from="1774744283836" duration="525000" />
+      <workItem from="1774803354105" duration="562000" />
+      <workItem from="1778188093488" duration="95000" />
     </task>
     <task id="LOCAL-00001" summary="Get ready for publication">
       <option name="closed" value="true" />
@@ -540,7 +537,31 @@
       <option name="project" value="LOCAL" />
       <updated>1774576018748</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="0.1.9: passing build">
+      <option name="closed" value="true" />
+      <created>1774578401428</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1774578401428</updated>
+    </task>
+    <task id="LOCAL-00031" summary="0.1.9: passing build">
+      <option name="closed" value="true" />
+      <created>1774579114653</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1774579114653</updated>
+    </task>
+    <task id="LOCAL-00032" summary="0.1.9: gha [skip-ci]">
+      <option name="closed" value="true" />
+      <created>1778188163190</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1778188163190</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -558,7 +579,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="checkpoint" />
     <MESSAGE value="ready for gh actions" />
     <MESSAGE value="just runner" />
     <MESSAGE value="reduce coverage" />
@@ -583,7 +603,8 @@
     <MESSAGE value="0.1.8 turn off those tests" />
     <MESSAGE value="0.1.9: 3.14 support" />
     <MESSAGE value="0.1.9: passing build" />
-    <option name="LAST_COMMIT_MESSAGE" value="0.1.9: passing build" />
+    <MESSAGE value="0.1.9: gha [skip-ci]" />
+    <option name="LAST_COMMIT_MESSAGE" value="0.1.9: gha [skip-ci]" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/examexam$.coverage" NAME=" Coverage Results" MODIFIED="1756044671211" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
