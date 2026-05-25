@@ -282,4 +282,6 @@ ruff = { name = "ruff", version = ">=0.6.2", schema = "semver" }
 minimum_test_coverage = 35
 
 [tool.uv]
+
+[tool.uv.pip]
 universal = true
