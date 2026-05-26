@@ -304,7 +304,7 @@ def _make_entry(parent, textvariable=None, width=40) -> ttk.Entry:
 
 
 def _make_btn(parent, text: str, command, **kw) -> tk.Button:
-    defaults = dict(
+    defaults: dict[str, Any] = dict(
         bg=_CLR_BTN,
         fg=_CLR_FG,
         activebackground=_CLR_BTN_ACTIVE,
@@ -1216,10 +1216,14 @@ class ManagerApp:
                 ttk.Separator(sidebar, orient="horizontal").pack(fill=tk.X, padx=8, pady=8)
                 continue
             key, label = item
+
+            def _make_cmd(k: str = key) -> None:
+                self._show_panel(k)
+
             btn = tk.Button(
                 sidebar,
                 text=label,
-                command=lambda k=key: self._show_panel(k),
+                command=_make_cmd,
                 bg=_CLR_SIDEBAR,
                 fg=_CLR_FG,
                 activebackground=_CLR_BTN_ACTIVE,

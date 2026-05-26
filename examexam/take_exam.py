@@ -96,14 +96,14 @@ def build_machine_answer_provider(strategy: MachineStrategy = "oracle", *, seed:
         if strategy == "none":
             # Try to pick a *different* set than the correct one
             correct = {id(o) for o in options_list if o.get("is_correct")}
-            population = list(range(len(options_list)))
+            indices: list[int] = list(range(len(options_list)))
             if not correct:
                 # If there is no correct answer, pick one anyway (e.g., trick Q)
                 return [options_list[0]] if options_list else []
             # Greedy: start from first 'answer_count' indices; ensure it differs
-            attempt = population[:answer_count]
-            if {id(options_list[i]) for i in attempt} == correct and len(population) > answer_count:
-                attempt[-1] = population[-1]
+            attempt = indices[:answer_count]
+            if {id(options_list[i]) for i in attempt} == correct and len(indices) > answer_count:
+                attempt[-1] = indices[-1]
             return [options_list[i] for i in attempt]
         raise ValueError(f"Unknown strategy: {strategy!r}")
 
@@ -669,14 +669,15 @@ def take_exam_now(
             save_session_file(session_path, session, start_time)
     else:
         # New interactive API
-        test_name = select_test(ui)
-        if not test_name:
+        test_name_or_none = select_test(ui)
+        if not test_name_or_none:
             return
+        test_name = test_name_or_none
 
         if (Path("data") / f"{test_name}.toml").exists():
-            test_file = Path("data") / f"{test_name}.toml"
+            test_file: Path = Path("data") / f"{test_name}.toml"
         else:
-            test_file = f"{test_name}.toml"
+            test_file = Path(f"{test_name}.toml")
 
         session_path = get_session_path(test_name)
 

@@ -210,7 +210,7 @@ def generate_questions(
         # --- 3. Parse TOML ---
         try:
             parsed_data = toml.loads(toml_content)
-        except toml.TOMLDecodeError as e:
+        except (toml.TomlParsingError, ValueError) as e:
             logger.warning("Attempt %d: Failed to parse TOML. Error: %s", attempt + 1, e)
             current_user_prompt = (
                 f"Your previous TOML response had a syntax error: {e}. Please correct the syntax and provide the full, valid TOML again.\n\n"

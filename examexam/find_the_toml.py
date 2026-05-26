@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 try:
     import rtoml as _toml  # fast, lenient
 except Exception:  # pragma: no cover
-    import tomllib as _toml  # stdlib (py3.11+), stricter
+    import tomllib as _toml  # type: ignore[no-redef]  # stdlib (py3.11+), stricter
 
 
 def _try_parse_toml(text: str) -> dict | None:

@@ -54,7 +54,7 @@ class OpenAICaller(BaseLLMCaller):
         self.conversation.prompt(prompt)
         response = self.client.chat.completions.create(
             model=self.model,
-            messages=self.conversation.conversation,
+            messages=self.conversation.conversation,  # type: ignore[arg-type]
         )
         if response.usage:
             LOGGER.info(
@@ -88,12 +88,12 @@ class AnthropicCaller(BaseLLMCaller):
         try:
             message = self.client.messages.create(
                 max_tokens=self.tokens,
-                messages=self.conversation.without_system(),
+                messages=self.conversation.without_system(),  # type: ignore[arg-type]
                 model=self.model,
                 system=self.conversation.system,
             )
             LOGGER.info(f"Actual Anthropic token count {message.usage}")
-            core_response = message.content[0].text
+            core_response = message.content[0].text  # type: ignore[union-attr]
             self.conversation.response(core_response)
             return core_response
         except anthropic.RateLimitError as e:

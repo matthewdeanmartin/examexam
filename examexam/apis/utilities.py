@@ -29,8 +29,8 @@ def call_limit(limit: int) -> Callable:
         def wrapper(*args, **kwargs) -> Any:
             func.call_count += 1  # type: ignore
             name = func.__name__
-            LOGGER.info(f"{name} called {func.call_count} times")
-            if func.call_count > limit:
+            LOGGER.info(f"{name} called {func.call_count} times")  # type: ignore[attr-defined]
+            if func.call_count > limit:  # type: ignore[attr-defined]
                 raise FailureToHaltError(f"{name} has been called more than {limit} times")
             return func(*args, **kwargs)
 

@@ -33,7 +33,7 @@ def _calculate_hash(content: bytes) -> str:
 
 def _read_hashes_file(path: Path) -> dict[str, str]:
     """Reads a hashes.txt file and returns a dictionary of filename:hash."""
-    hashes = {}
+    hashes: dict[str, str] = {}
     if not path.is_file():
         return hashes
     try:

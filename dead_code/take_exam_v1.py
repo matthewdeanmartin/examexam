@@ -49,7 +49,7 @@ def find_select_pattern(input_string: str) -> str:
 
 
 # Function to display a question and get the user's answers
-def is_valid(answer: str, option_count:int, answer_count:int, last_is_bad_question_flag:bool=True) -> bool:
+def is_valid(answer: str, option_count: int, answer_count: int, last_is_bad_question_flag: bool = True) -> bool:
     if not answer:
         return False
     answers = answer.split(",")
@@ -59,10 +59,9 @@ def is_valid(answer: str, option_count:int, answer_count:int, last_is_bad_questi
         except ValueError:
             return False
 
-    if answer_count == 1 and last_is_bad_question_flag and answers[0]==len(answers):
+    if answer_count == 1 and last_is_bad_question_flag and answers[0] == len(answers):
         # Don't count answer if the question is bad!
         return True
-
 
     # No out of bounds
     a = all(int(number) <= option_count for number in answers)
@@ -70,7 +69,7 @@ def is_valid(answer: str, option_count:int, answer_count:int, last_is_bad_questi
     b = all(int(number) >= 0 for number in answers)
     # No under answers
     c = len(answers) == answer_count
-    return (a and b and c)
+    return a and b and c
 
 
 def ask_question(question: dict[str, Any]) -> list[str]:
@@ -110,11 +109,11 @@ def ask_question(question: dict[str, Any]) -> list[str]:
     answer = ""
     option_count = len(question["options"]) + 1
     answer_count = len(question["answers"])
-    while not is_valid(answer, option_count,answer_count):
+    while not is_valid(answer, option_count, answer_count):
         answer = console.input(
             "[bold yellow]Enter your answer(s) as a comma-separated list (e.g., 1,2): [/bold yellow]"
         )
-        msg  = is_valid(answer, option_count, answer_count)
+        msg = is_valid(answer, option_count, answer_count)
         print(msg)
 
     # Map the input to the actual options
@@ -145,13 +144,14 @@ def display_results(score: float, total: float, withhold_judgement: bool = False
     )
     # play_sound("pass.mp3" if passed == "Passed" else "fail.mp3")
 
-def save_session_file(session_file:str, state:list[dict[str, Any]]) -> None:
+
+def save_session_file(session_file: str, state: list[dict[str, Any]]) -> None:
     with open(session_file, "w", encoding="utf-8") as file:
         data = {"questions": state}
         toml.dump(data, file)
 
 
-def take_exam_now(question_file:str) -> None:
+def take_exam_now(question_file: str) -> None:
     """Main function to run the quiz"""
     session = None
     questions = load_questions(question_file)
@@ -167,7 +167,6 @@ def take_exam_now(question_file:str) -> None:
 
 
 def interactive_question_and_answer(questions, session):
-
 
     score = 0
     so_far = 0

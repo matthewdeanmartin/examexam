@@ -90,7 +90,7 @@ class TkinterUI:
         self._confirm_event.clear()
 
         def _ask():
-            self._confirm_result = messagebox.askyesno("Confirm", message, parent=self._root)
+            self._confirm_result = messagebox.askyesno("Confirm", message, parent=self._root)  # type: ignore[arg-type]
             self._confirm_event.set()
 
         self._schedule(_ask)
@@ -205,7 +205,7 @@ class TkinterUI:
 
             # Show error and re-enable
             def _show_err(msg=error_msg):
-                messagebox.showwarning("Invalid Answer", msg, parent=self._root)
+                messagebox.showwarning("Invalid Answer", msg, parent=self._root)  # type: ignore[arg-type]
                 # Re-arm the submit (user can click again)
 
             self._schedule(_show_err)
