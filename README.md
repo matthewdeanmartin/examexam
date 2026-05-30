@@ -220,3 +220,10 @@ examexam study-plan --toc-file <path> [--model-provider ...]
 ## License
 
 MIT License
+
+## Project Links
+
+- [GitHub](https://github.com/matthewdeanmartin/examexam)
+- [PyPI](https://pypi.org/project/examexam/)
+- [Bug Tracker](https://github.com/matthewdeanmartin/examexam/issues)
+- [Change Log](https://github.com/matthewdeanmartin/examexam/blob/main/CHANGELOG.md)
