@@ -19,8 +19,8 @@ from examexam.generate_study_plan import generate_study_plan_now
 from examexam.generate_topic_research import generate_topic_research_now
 from examexam.jinja_management import deploy_for_customization
 from examexam.take_exam import take_exam_now
+from examexam import upgrade_integration
 from examexam.utils.cli_suggestions import SmartParser
-from examexam.utils.update_checker import start_background_update_check
 from examexam.validate_questions import validate_questions_now
 
 # Load environment variables (e.g., OPENAI_API_KEY)
@@ -182,7 +182,10 @@ def _launch_interactive_cli() -> int:
 
 def main(argv: Sequence[str] | None = None) -> int:
     """Main function for the command-line interface."""
-    start_background_update_check("examexam", __about__.__version__)
+    # Startup: read cached update report and schedule a background PyPI refresh.
+    startup_notice = upgrade_integration.render_notice(upgrade_integration.startup_report())
+    if startup_notice:
+        print(startup_notice, file=sys.stderr)
     parser = SmartParser(
         prog=__about__.__title__,
         description="A CLI for generating, taking, and managing exams.",
@@ -302,9 +305,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     # --- Manager Command ---
     subparsers.add_parser("manager", help="Launch the exam management GUI.")
 
+    # --- Integrated update commands (upgrade / check-updates) ---
+    upgrade_integration.add_commands(subparsers)
+
     argcomplete.autocomplete(parser)
 
     args = parser.parse_args(args=argv)
+
+    # ── Integrated do_i_need_to_upgrade subcommands ───────────────────────
+    if getattr(args, "_diu_func", None) is not None:
+        return upgrade_integration.run_command(args)
 
     # ── No subcommand: launch interactive launcher ─────────────────────────
     if not args.command:
@@ -399,6 +409,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     else:
         # CLI runs synchronously on the main thread.
         _run_command()
+
+    # Exit: reread the (possibly refreshed) cache and show a notice if it differs.
+    exit_notice = upgrade_integration.render_notice(upgrade_integration.exit_report())
+    if exit_notice and exit_notice != startup_notice:
+        print(exit_notice, file=sys.stderr)
 
     return 0
 

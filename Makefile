@@ -86,27 +86,208 @@ install:
 	pip install -e .
 
 
+# ==============================================================================
+# Quality gates
+#
+# Adapted from ../do_i_need_to_upgrade's Makefile. Only targets whose tooling is
+# actually declared in this project's [dependency-groups].dev are wired in.
+# Invoke everything through `uv run` so it uses the locked virtualenv.
+# ==============================================================================
+
+UV ?= uv
+PACKAGE := examexam
+PYTHON_TARGETS := examexam tests
+PYLINT_MAIN_TARGETS := examexam
+PYLINT_TEST_TARGETS := tests
+MARKDOWN_TARGETS := README.md CHANGELOG.md docs
+ABOUT_FILE := examexam/__about__.py
+
+.PHONY: \
+	sync pre-commit-install \
+	format format-python format-markdown \
+	format-check format-check-python format-check-markdown \
+	lint lint-check ruff-fix ruff-check pylint pylint-tests pylint-spelling \
+	spell \
+	docs-check docs-check-docstrings docs-check-pydoctest \
+	test test-ci smoke \
+	typecheck typecheck-mypy \
+	security bandit \
+	metadata metadata-check version-check dev-status \
+	gha-validate \
+	dont-be-lazy pydoc-docs \
+	check check-ci prerelease prerelease-check publish-check help
+
+help:
+	@echo "Quality gate targets:"
+	@echo "  format          Auto-format python + markdown"
+	@echo "  format-check    Check formatting without changes"
+	@echo "  lint            Ruff --fix + pylint (main + tests)"
+	@echo "  lint-check      Ruff check + pylint (read-only)"
+	@echo "  spell           Spell-check code and docs"
+	@echo "  test            pytest with coverage"
+	@echo "  test-ci         pytest -n auto (parallel, for CI)"
+	@echo "  typecheck       mypy"
+	@echo "  security        bandit"
+	@echo "  docs-check      interrogate docstring coverage + pydoctest"
+	@echo "  metadata-check  Verify __about__.py is in sync"
+	@echo "  version-check   jiggle_version consistency check"
+	@echo "  dev-status      Development Status classifier check"
+	@echo "  gha-validate    Parse workflows + zizmor"
+	@echo "  check           Full local quality gate"
+	@echo "  check-ci        CI quality gate (parallel tests)"
+	@echo "  prerelease      All checks before publishing"
+
+sync:
+	@$(UV) sync
+
+pre-commit-install:
+	@$(UV) run pre-commit install
+
+# ── Formatting ────────────────────────────────────────────────────────────────
+
+format: format-python format-markdown
+
+format-python:
+	@$(UV) run isort $(PYTHON_TARGETS)
+	@$(UV) run black $(PYTHON_TARGETS)
+	@$(UV) run ruff check --fix $(PYTHON_TARGETS)
+	@$(UV) run black $(PYTHON_TARGETS)
+
+format-markdown:
+	@$(UV) run mdformat $(MARKDOWN_TARGETS)
+
+format-check: format-check-python format-check-markdown
+
+format-check-python:
+	@$(UV) run isort --check-only $(PYTHON_TARGETS)
+	@$(UV) run black --check $(PYTHON_TARGETS)
+	@$(UV) run ruff check $(PYTHON_TARGETS)
+
+format-check-markdown:
+	@$(UV) run mdformat --check $(MARKDOWN_TARGETS)
+
+# ── Linting ───────────────────────────────────────────────────────────────────
+
+lint: ruff-fix pylint pylint-tests
+
+lint-check: ruff-check pylint pylint-tests
+
+ruff-fix:
+	@$(UV) run ruff check --fix $(PYTHON_TARGETS)
+
+ruff-check:
+	@$(UV) run ruff check $(PYTHON_TARGETS)
+
+pylint:
+	@$(UV) run pylint --score=n --reports=n --rcfile=.pylintrc $(PYLINT_MAIN_TARGETS)
+
+pylint-tests:
+	@$(UV) run pylint --score=n --reports=n --rcfile=.pylintrc_tests $(PYLINT_TEST_TARGETS)
+
+pylint-spelling:
+	@$(UV) run pylint --score=n --reports=n --rcfile=.pylintrc_spell $(PYLINT_MAIN_TARGETS)
+
+# ── Spell check ───────────────────────────────────────────────────────────────
+
+spell:
+	@$(UV) run codespell $(PACKAGE) tests README.md CHANGELOG.md docs
+
+# ── Documentation checks ─────────────────────────────────────────────────────
+
+docs-check: docs-check-docstrings docs-check-pydoctest
+
+docs-check-docstrings:
+	@$(UV) run interrogate $(PACKAGE) --verbose --fail-under 70
+
+docs-check-pydoctest:
+	@$(UV) run pydoctest --config .pydoctest.json \
+		| grep -v "__init__" | grep -v "__main__" | grep -v "Unable to parse" || true
+
+# ── Tests ─────────────────────────────────────────────────────────────────────
+
+smoke:
+	@$(UV) run examexam --version
+	@$(UV) run examexam --help >/dev/null
+
+test:
+	@$(UV) run pytest -q \
+		--cov=$(PACKAGE) \
+		--cov-report=html \
+		--junitxml=junit.xml \
+		--timeout=60
+
+test-ci:
+	@$(UV) run pytest -q -n auto --dist=loadfile \
+		--cov=$(PACKAGE) \
+		--cov-report=xml \
+		--junitxml=junit.xml \
+		--timeout=60
+
+# ── Type checking ─────────────────────────────────────────────────────────────
+
+typecheck: typecheck-mypy
+
+typecheck-mypy:
+	@$(UV) run mypy --hide-error-context $(PACKAGE)
+
+# ── Security ──────────────────────────────────────────────────────────────────
+
+security: bandit
+
+bandit:
+	@$(UV) run bandit -q -r $(PACKAGE)
+
+# ── Metadata / version ───────────────────────────────────────────────────────
+
+metadata:
+	@$(UV) run metametameta pep621 --name $(PACKAGE) --source pyproject.toml --output $(ABOUT_FILE)
+	@$(UV) run isort $(ABOUT_FILE)
+	@$(UV) run black $(ABOUT_FILE)
+
+metadata-check:
+	@$(UV) run metametameta sync-check --output $(ABOUT_FILE)
+
+version-check:
+	@$(UV) run jiggle_version check
+
+dev-status:
+	@$(UV) run --with troml-dev-status>=0.6.0 troml-dev-status validate .
+
+# ── GitHub Actions maintenance ───────────────────────────────────────────────
+
+gha-validate:
+	@echo "Validating GitHub Actions workflows"
+	@$(UV) run python -c "import pathlib, yaml; [yaml.safe_load(p.read_text(encoding='utf-8')) for p in pathlib.Path('.github/workflows').glob('*.yml')]; print('YAML parse OK')"
+	@uvx zizmor --no-progress --no-exit-codes .
+
+# ── Aggregate gates ───────────────────────────────────────────────────────────
+
+check: format-check lint-check security test smoke typecheck metadata-check version-check
+	@echo "All checks passed."
+
+check-ci: format-check lint-check security test-ci smoke typecheck metadata-check version-check
+	@echo "CI checks passed."
+
+prerelease: check dev-status docs-check spell publish-check
+	@echo "Pre-release checks complete — ready to publish."
+
+publish-check:
+	@$(UV) build
+	@echo "Distribution built — inspect dist/ before publishing."
+	@ls -lh dist/
+
 publish: test
 	rm -rf dist && hatch build
+
 # ── Dogfooding targets (independent, not wired into check) ───────────────────
-
-.PHONY: version-check
-version-check:
-	@uv run jiggle_version check
-
-.PHONY: dev-status
-dev-status:
-	@uv run troml-dev-status validate .
 
 .PHONY: prerelease-check
 prerelease-check: version-check dev-status
 	@echo "Pre-release checks passed."
 
-.PHONY: dont-be-lazy
 dont-be-lazy:
 	@uv run dont_be_lazy --root . --no-color summary
 	@uv run dont_be_lazy --root . --no-color scan examexam --no-config-suppressions || true
 
-.PHONY: pydoc-docs
 pydoc-docs:
 	@uv run pydoc_fork examexam -o ./pydoc/

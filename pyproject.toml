@@ -17,6 +17,8 @@ dependencies = [
     # CLI & QoL
     "argcomplete",
     "packaging",
+    # update checking (self-upgrade notices + `examexam upgrade` / `check-updates`)
+    "do_i_need_to_upgrade>=0.1.0",
     # UI
     "textual>=1.0.0",
     # make pretty

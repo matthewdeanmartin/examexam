@@ -170,3 +170,4 @@ integration_tests/.session
 tests/conversations
 .idea
 /integration_tests/cats.toml
+.env
