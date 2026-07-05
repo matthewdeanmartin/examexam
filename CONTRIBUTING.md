@@ -52,7 +52,7 @@ This project ships a `Justfile` with common tasks:
 - `just pylint` — lint (includes `ruff check --fix`)
 - `just bandit` — security scan
 - `just check` — run mypy (currently skipped), tests, lint, bandit, pre-commit, tool audit
-- `just check-docs` / `just make-docs` — docs checks / generate API docs
+- `just check-docs` / `just make-docs` — docs checks / build the MkDocs site
 - `just check-md` / `just spell` — markdown & spelling checks
 - `just package-check` — static dep hygiene (`deptry`)
 - `just publish` — build the package with `hatch` after tests pass
@@ -135,7 +135,7 @@ ______________________________________________________________________
 ## Docs & metadata
 
 - `just check-docs` runs doc coverage/readability checks.
-- `just make-docs` builds HTML docs via `pdoc` into `./docs`.
+- `just make-docs` builds the MkDocs site.
 - Keep `README.md` user‑centric. This file (`CONTRIBUTING.md`) is for devs.
 
 ______________________________________________________________________

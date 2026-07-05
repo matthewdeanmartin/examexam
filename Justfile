@@ -112,7 +112,7 @@ check-docs:
 
 # Generate documentation
 make-docs:
-    pdoc {{project}} --html -o docs --force
+    {{venv}} mkdocs build
 
 # Check Markdown files
 check-md:
