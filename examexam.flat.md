@@ -81,7 +81,7 @@ def run(toml_file_path: str, markdown_file_path: str, html_file_path: str) -> No
 
 ## File: generate_questions.py
 
-```python
+````python
 from __future__ import annotations
 
 import logging
@@ -251,7 +251,7 @@ if __name__ == "__main__":
         system_prompt="We are writing multiple choice tests.",
     )
 
-```
+````
 
 ## File: logging_config.py
 
@@ -939,7 +939,7 @@ if __name__ == "__main__":
 
 ```
 
-## File: apis\anthropic_calls.py
+## File: apis\\anthropic_calls.py
 
 ```python
 import logging
@@ -1036,7 +1036,7 @@ class AnthropicCaller:
 
 ```
 
-## File: apis\bedrock_calls.py
+## File: apis\\bedrock_calls.py
 
 ```python
 import json
@@ -1344,7 +1344,7 @@ class BedrockCaller:
 
 ```
 
-## File: apis\bedrock_models.py
+## File: apis\\bedrock_models.py
 
 ```python
 from dataclasses import dataclass, field
@@ -1365,7 +1365,7 @@ class TitanResponse:
 
 ```
 
-## File: apis\conversation_model.py
+## File: apis\\conversation_model.py
 
 ```python
 import logging
@@ -1549,7 +1549,7 @@ def clean_text(text: str) -> str:
 
 ```
 
-## File: apis\fakebot_calls.py
+## File: apis\\fakebot_calls.py
 
 ```python
 
@@ -1618,7 +1618,7 @@ class FakeBotCaller:
 
 ```
 
-## File: apis\google_calls.py
+## File: apis\\google_calls.py
 
 ```python
 from typing import Optional
@@ -1692,7 +1692,7 @@ class GoogleCaller:
 
 ```
 
-## File: apis\halting_checker.py
+## File: apis\\halting_checker.py
 
 ```python
 import logging
@@ -1752,7 +1752,7 @@ if __name__ == "__main__":
 
 ```
 
-## File: apis\llama_templates.py
+## File: apis\\llama_templates.py
 
 ```python
 from examexam.utils.custom_exceptions import ExamExamTypeError
@@ -1787,7 +1787,7 @@ class LlamaConvo:
 
 ```
 
-## File: apis\model_router.py
+## File: apis\\model_router.py
 
 ```python
 import logging
@@ -2009,7 +2009,7 @@ class Router:
 
 ```
 
-## File: apis\openai_calls.py
+## File: apis\\openai_calls.py
 
 ```python
 import logging
@@ -2100,7 +2100,7 @@ if __name__ == "__main__":
 
 ```
 
-## File: apis\raw_log.py
+## File: apis\\raw_log.py
 
 ```python
 def format_conversation_to_markdown(
@@ -2140,7 +2140,7 @@ def format_conversation_to_markdown(
 
 ```
 
-## File: apis\__init__.py
+## File: apis\__init_\_.py
 
 ```python
 __all__ = [
@@ -2159,7 +2159,7 @@ from examexam.apis.google_calls import GoogleCaller
 
 ```
 
-## File: utils\benchmark_utils.py
+## File: utils\\benchmark_utils.py
 
 ```python
 import io
@@ -2216,7 +2216,7 @@ def log_duration(func: Any) -> Any:
 
 ```
 
-## File: utils\custom_exceptions.py
+## File: utils\\custom_exceptions.py
 
 ```python
 class ExamExamValueError(ValueError):
@@ -2228,7 +2228,7 @@ class ExamExamTypeError(TypeError):
 
 ```
 
-## File: utils\env_loader.py
+## File: utils\\env_loader.py
 
 ```python
 import os
@@ -2261,9 +2261,8 @@ def load_env(dotenv_path: Optional[str] = None) -> None:
 
 ```
 
-## File: utils\__init__.py
+## File: utils\__init_\_.py
 
 ```python
 
 ```
-

@@ -116,8 +116,12 @@ def format_diagnostics(diag: dict) -> str:
         lines.append(f"  {key:<30} {status}")
 
     lines.append("\n[Config]")
-    lines.append(f"  examexam.toml: {diag['config_file']} ({'exists' if diag['config_exists'] else 'MISSING'})")
-    lines.append(f"  .env file:     {diag['dotenv_file']} ({'exists' if diag['dotenv_exists'] else 'not found'})")
+    lines.append(
+        f"  examexam.toml: {diag['config_file']} ({'exists' if diag['config_exists'] else 'MISSING'})"
+    )
+    lines.append(
+        f"  .env file:     {diag['dotenv_file']} ({'exists' if diag['dotenv_exists'] else 'not found'})"
+    )
 
     lines.append("\n[TOML Question Files in CWD]")
     if diag["toml_files_cwd"]:

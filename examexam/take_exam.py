@@ -58,13 +58,17 @@ dotenv.load_dotenv()
 
 
 class AnswerProvider(Protocol):
-    def __call__(self, question: dict[str, Any], options_list: list[dict[str, Any]]) -> list[dict[str, Any]]: ...
+    def __call__(
+        self, question: dict[str, Any], options_list: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]: ...
 
 
 MachineStrategy = Literal["oracle", "random", "first", "none"]
 
 
-def build_machine_answer_provider(strategy: MachineStrategy = "oracle", *, seed: int | None = 42) -> AnswerProvider:
+def build_machine_answer_provider(
+    strategy: MachineStrategy = "oracle", *, seed: int | None = 42
+) -> AnswerProvider:
     """Return a function that selects answers without user input.
 
     Strategies:
@@ -77,7 +81,9 @@ def build_machine_answer_provider(strategy: MachineStrategy = "oracle", *, seed:
     """
     rng = SecureRandom(seed)  # nosec
 
-    def provider(question: dict[str, Any], options_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    def provider(
+        question: dict[str, Any], options_list: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         answer_count = sum(1 for o in question["options"] if o.get("is_correct"))
         if strategy == "oracle":
             return [o for o in options_list if o.get("is_correct")]
@@ -102,7 +108,9 @@ def build_machine_answer_provider(strategy: MachineStrategy = "oracle", *, seed:
                 return [options_list[0]] if options_list else []
             # Greedy: start from first 'answer_count' indices; ensure it differs
             attempt = indices[:answer_count]
-            if {id(options_list[i]) for i in attempt} == correct and len(indices) > answer_count:
+            if {id(options_list[i]) for i in attempt} == correct and len(
+                indices
+            ) > answer_count:
                 attempt[-1] = indices[-1]
             return [options_list[i] for i in attempt]
         raise ValueError(f"Unknown strategy: {strategy!r}")
@@ -157,7 +165,9 @@ def select_test(ui: FrontendUI) -> str | None:
     return None
 
 
-def check_resume_session(test_name: str, ui: FrontendUI) -> tuple[bool, list[dict[str, Any]] | None, datetime | None]:
+def check_resume_session(
+    test_name: str, ui: FrontendUI
+) -> tuple[bool, list[dict[str, Any]] | None, datetime | None]:
     """Check if a session exists and ask if user wants to resume.
 
     Returns: (should_resume, session_data_or_None, session_start_time_or_None)
@@ -223,7 +233,9 @@ def humanize_timedelta(td: timedelta) -> str:
     return " ".join(parts)
 
 
-def calculate_time_estimates(session: list[dict[str, Any]], start_time: datetime) -> tuple[timedelta, timedelta | None]:
+def calculate_time_estimates(
+    session: list[dict[str, Any]], start_time: datetime
+) -> tuple[timedelta, timedelta | None]:
     """Calculate average time per question and estimated completion time, removing outliers.
 
     Outlier rule: drop durations > 3x median of completed question times.
@@ -233,7 +245,9 @@ def calculate_time_estimates(session: list[dict[str, Any]], start_time: datetime
     for question in session:
         if "completion_time" in question and question.get("user_score") is not None:
             completion_dt = datetime.fromisoformat(question["completion_time"])
-            question_start = datetime.fromisoformat(question.get("start_time", start_time.isoformat()))
+            question_start = datetime.fromisoformat(
+                question.get("start_time", start_time.isoformat())
+            )
             question_duration = completion_dt - question_start
             completed_times.append(question_duration.total_seconds())
 
@@ -252,7 +266,9 @@ def calculate_time_estimates(session: list[dict[str, Any]], start_time: datetime
 
     # Calculate remaining questions in session
     remaining = sum(1 for q in session if q.get("user_score") is None)
-    estimated_time_left = timedelta(seconds=avg_seconds * remaining) if remaining > 0 else None
+    estimated_time_left = (
+        timedelta(seconds=avg_seconds * remaining) if remaining > 0 else None
+    )
 
     return avg_time_per_question, estimated_time_left
 
@@ -261,8 +277,7 @@ def calculate_time_estimates(session: list[dict[str, Any]], start_time: datetime
 
 
 def play_sound(_file: str) -> None:
-    """Hook for sound effects; intentionally a no-op placeholder here."""
-    # playsound(_file)
+    """Hook for sound effects; intentionally a no-op (no audio backend wired up)."""
 
 
 # ----------------- Validation helpers -----------------
@@ -275,7 +290,10 @@ def find_select_pattern(input_string: str) -> str:
 
 
 def is_valid(
-    answer: str, option_count: int, answer_count: int, last_is_bad_question_flag: bool = True
+    answer: str,
+    option_count: int,
+    answer_count: int,
+    last_is_bad_question_flag: bool = True,
 ) -> tuple[bool, str]:
     """Validate a comma-separated set of option indices."""
     if not answer:
@@ -291,7 +309,12 @@ def is_valid(
             return False, f"'{number}' is not a valid number."
 
     # Special case for bad question flag
-    if answer_count == 1 and last_is_bad_question_flag and len(answers) == 1 and int(answers[0]) == option_count:
+    if (
+        answer_count == 1
+        and last_is_bad_question_flag
+        and len(answers) == 1
+        and int(answers[0]) == option_count
+    ):
         return True, ""
 
     # Check bounds
@@ -327,7 +350,9 @@ def ask_question_interactive(
     answer = ui.get_answer(option_count, answer_count)
 
     selected = [
-        options_list[int(idx) - 1] for idx in answer.split(",") if idx.isdigit() and 1 <= int(idx) <= len(options_list)
+        options_list[int(idx) - 1]
+        for idx in answer.split(",")
+        if idx.isdigit() and 1 <= int(idx) <= len(options_list)
     ]
     return selected
 
@@ -336,7 +361,9 @@ def ask_question_interactive(
 
 
 def ask_question_machine(
-    provider: AnswerProvider, question: dict[str, Any], options_list: list[dict[str, Any]]
+    provider: AnswerProvider,
+    question: dict[str, Any],
+    options_list: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     """No terminal I/O; defers to the selected answer provider."""
     return provider(question, options_list)
@@ -345,7 +372,9 @@ def ask_question_machine(
 # ----------------- Stats helpers (SciPy) -----------------
 
 
-def calculate_confidence_interval(score: int, total: int, confidence: float = 0.95) -> tuple[float, float]:
+def calculate_confidence_interval(
+    score: int, total: int, confidence: float = 0.95
+) -> tuple[float, float]:
     """Symmetric normal-approximation CI for a proportion using z from SciPy.
 
     Keep existing behavior but fetch z from SciPy for clarity.
@@ -370,7 +399,9 @@ def calculate_confidence_interval(score: int, total: int, confidence: float = 0.
     return lower, upper
 
 
-def calculate_exact_binomial_ci(score: int, total: int, confidence: float = 0.95) -> tuple[float, float]:
+def calculate_exact_binomial_ci(
+    score: int, total: int, confidence: float = 0.95
+) -> tuple[float, float]:
     """Exact (Clopper-Pearson) CI using the Beta distribution via SciPy.
 
     This is more conservative but valid for all n, including small samples.
@@ -438,7 +469,9 @@ def _build_exam_result(
     )
 
 
-def build_answer_feedback(options_list: list[dict[str, Any]], selected: list[dict[str, Any]]) -> AnswerFeedback:
+def build_answer_feedback(
+    options_list: list[dict[str, Any]], selected: list[dict[str, Any]]
+) -> AnswerFeedback:
     """Build answer feedback for a displayed option list and the user's selection.
 
     Options are compared by object identity (not text) since two options in a
@@ -449,7 +482,9 @@ def build_answer_feedback(options_list: list[dict[str, Any]], selected: list[dic
     selected_ids = {id(o) for o in selected}
     correct = {o["text"] for o in options_list if id(o) in correct_ids}
     user_answers = {o["text"] for o in selected}
-    explanations = [(o.get("explanation", ""), o.get("is_correct", False)) for o in options_list]
+    explanations = [
+        (o.get("explanation", ""), o.get("is_correct", False)) for o in options_list
+    ]
     return AnswerFeedback(
         is_correct=selected_ids == correct_ids,
         correct_answers=correct,
@@ -474,12 +509,16 @@ def index_session_by_id(session: list[dict[str, Any]]) -> dict[str, dict[str, An
     return idx
 
 
-def find_question(question: dict[str, Any], session_index: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def find_question(
+    question: dict[str, Any], session_index: dict[str, dict[str, Any]]
+) -> dict[str, Any]:
     """Lookup helper using the session index."""
     return session_index.get(question.get("id", ""), {})
 
 
-def save_session_file(session_file: Path, state: list[dict[str, Any]], start_time: datetime) -> None:
+def save_session_file(
+    session_file: Path, state: list[dict[str, Any]], start_time: datetime
+) -> None:
     """Persist session state atomically to TOML (normalized for stable diffs)."""
     with open(session_file, "w", encoding="utf-8") as file:
         data = {
@@ -526,10 +565,16 @@ def interactive_question_and_answer(
         if questions_to_complete_for_session is None
         else max(0, questions_to_complete_for_session - completed_so_far)
     )
-    remaining_allowed_this_run = questions_to_complete if questions_to_complete is not None else None
+    remaining_allowed_this_run = (
+        questions_to_complete if questions_to_complete is not None else None
+    )
 
     # Collect unanswered questions only
-    unanswered = [q for q in questions if find_question(q, session_index).get("user_score") is None]
+    unanswered = [
+        q
+        for q in questions
+        if find_question(q, session_index).get("user_score") is None
+    ]
     random.shuffle(unanswered)
     answered_this_run = 0
 
@@ -537,11 +582,20 @@ def interactive_question_and_answer(
         # Check caps before asking
         if remaining_allowed_session is not None and remaining_allowed_session <= 0:
             if not quiet:
-                ui.show_panel("Session total cap reached.", title="Limit Reached", style="yellow")
+                ui.show_panel(
+                    "Session total cap reached.", title="Limit Reached", style="yellow"
+                )
             break
-        if remaining_allowed_this_run is not None and answered_this_run >= remaining_allowed_this_run:
+        if (
+            remaining_allowed_this_run is not None
+            and answered_this_run >= remaining_allowed_this_run
+        ):
             if not quiet:
-                ui.show_panel("Per-run question cap reached.", title="Limit Reached", style="yellow")
+                ui.show_panel(
+                    "Per-run question cap reached.",
+                    title="Limit Reached",
+                    style="yellow",
+                )
             break
 
         session_question = find_question(question, session_index)
@@ -568,7 +622,9 @@ def interactive_question_and_answer(
                 selected = ask_question_machine(answer_provider, question, options_list)
         except KeyboardInterrupt:
             if not quiet:
-                result = _build_exam_result(score, completed_so_far, start_time, session, is_final=False)
+                result = _build_exam_result(
+                    score, completed_so_far, start_time, session, is_final=False
+                )
                 ui.show_results(result)
             raise
 
@@ -601,7 +657,9 @@ def interactive_question_and_answer(
             remaining_allowed_session -= 1
 
         if not quiet:
-            interim_result = _build_exam_result(score, completed_so_far, start_time, session, is_final=False)
+            interim_result = _build_exam_result(
+                score, completed_so_far, start_time, session, is_final=False
+            )
             ui.show_results(interim_result)
 
         if answer_provider is None:
@@ -612,7 +670,9 @@ def interactive_question_and_answer(
 
     if not quiet:
         ui.clear_screen()
-        final_result = _build_exam_result(score, completed_so_far, start_time, session, is_final=True)
+        final_result = _build_exam_result(
+            score, completed_so_far, start_time, session, is_final=True
+        )
         ui.show_results(final_result)
     save_session_file(session_path, session, start_time)
     return score
@@ -664,12 +724,16 @@ def take_exam_now(
         session_path = get_session_path(test_name)
 
         # Check for existing session
-        resume_session, session_data, session_start_time = check_resume_session(test_name, ui)
+        resume_session, session_data, session_start_time = check_resume_session(
+            test_name, ui
+        )
 
         if resume_session and session_data:
             session = session_data
             questions = load_questions(question_file)
-            start_time = session_start_time or datetime.now()  # Fallback to current time
+            start_time = (
+                session_start_time or datetime.now()
+            )  # Fallback to current time
         else:
             questions = load_questions(question_file)
             session = questions.copy()
@@ -690,12 +754,16 @@ def take_exam_now(
         session_path = get_session_path(test_name)
 
         # Check for existing session
-        resume_session, session_data, session_start_time = check_resume_session(test_name, ui)
+        resume_session, session_data, session_start_time = check_resume_session(
+            test_name, ui
+        )
 
         if resume_session and session_data:
             session = session_data
             questions = load_questions(str(test_file))
-            start_time = session_start_time or datetime.now()  # Fallback to current time
+            start_time = (
+                session_start_time or datetime.now()
+            )  # Fallback to current time
         else:
             questions = load_questions(str(test_file))
             session = questions.copy()
@@ -704,7 +772,10 @@ def take_exam_now(
 
     # Enforce session-wide cap before starting this run
     already_completed = sum(1 for q in session if q.get("user_score") is not None)
-    if questions_to_complete_for_session is not None and already_completed >= questions_to_complete_for_session:
+    if (
+        questions_to_complete_for_session is not None
+        and already_completed >= questions_to_complete_for_session
+    ):
         if not quiet:
             ui.show_panel(
                 f"Session cap reached\nAnswered: {already_completed}/{questions_to_complete_for_session}",

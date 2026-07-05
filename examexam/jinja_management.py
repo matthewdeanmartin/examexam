@@ -17,7 +17,11 @@ if not logger.handlers:
         level=os.environ.get("LOG_LEVEL", "INFO"),
         format="%(message)s",
         datefmt="%H:%M:%S",
-        handlers=[RichHandler(rich_tracebacks=True, markup=True, show_time=False, show_level=True)],
+        handlers=[
+            RichHandler(
+                rich_tracebacks=True, markup=True, show_time=False, show_level=True
+            )
+        ],
     )
 
 # --- Constants ---
@@ -103,11 +107,17 @@ def deploy_for_customization(target_dir: Path, force: bool = False) -> None:
                 if original_hash:
                     current_dest_hash = _calculate_hash(dest_file_path.read_bytes())
                     if current_dest_hash != original_hash:
-                        logger.warning("Skipping modified template '%s'. Use --force to overwrite.", src_file.name)
+                        logger.warning(
+                            "Skipping modified template '%s'. Use --force to overwrite.",
+                            src_file.name,
+                        )
                         should_write = False
                 # If no original hash, we assume it's user-managed and don't touch it without force.
                 else:
-                    logger.warning("Skipping template '%s' (no hash record). Use --force to overwrite.", src_file.name)
+                    logger.warning(
+                        "Skipping template '%s' (no hash record). Use --force to overwrite.",
+                        src_file.name,
+                    )
                     should_write = False
 
             if should_write:
@@ -115,7 +125,9 @@ def deploy_for_customization(target_dir: Path, force: bool = False) -> None:
                 logger.debug("Deployed template: %s", dest_file_path)
 
         except Exception as e:
-            logger.error("Failed to process or deploy template '%s': %s", src_file.name, e)
+            logger.error(
+                "Failed to process or deploy template '%s': %s", src_file.name, e
+            )
 
     _write_hashes_file(dest_hashes_path, new_hashes)
     logger.info("Template deployment complete. Hashes updated in %s", dest_hashes_path)
@@ -133,14 +145,19 @@ def get_jinja_env() -> Environment:
     """
     # 1. Check for user-customized prompts in the current directory
     if CUSTOM_PROMPTS_DIR.is_dir():
-        logger.debug("Loading Jinja2 templates from user-customized directory: %s", CUSTOM_PROMPTS_DIR.resolve())
+        logger.debug(
+            "Loading Jinja2 templates from user-customized directory: %s",
+            CUSTOM_PROMPTS_DIR.resolve(),
+        )
         loader = FileSystemLoader(CUSTOM_PROMPTS_DIR)
         return Environment(loader=loader, autoescape=False)  # nosec
 
     # 2. Check for development mode prompts
     dev_prompts_path = Path(__file__).parent.parent / "prompts"
     if dev_prompts_path.is_dir():
-        logger.debug("Loading Jinja2 templates from development directory: %s", dev_prompts_path)
+        logger.debug(
+            "Loading Jinja2 templates from development directory: %s", dev_prompts_path
+        )
         loader = FileSystemLoader(dev_prompts_path)
         return Environment(loader=loader, autoescape=False)  # nosec
 

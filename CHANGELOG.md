@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- OpenRouter as a supported model provider (alongside OpenAI, Anthropic, Google)
+
+### Changed
+
+- Validation now runs deterministic checks (answer-count vs. stem wording, banned option
+  patterns, duplicate options/questions) before any LLM call, and records results separately
+  from the LLM's good/bad verdict
+- Validation LLM calls (`ask_llm`, `ask_if_bad_question`) now use structured TOML responses
+  with retry-on-parse-failure instead of fragile string parsing
+- A validation response that can't be parsed after retries is now recorded as "inconclusive"
+  and excluded from the score, instead of silently counting as a wrong answer
+- `Router` now raises `FatalConversationError` instead of calling `sys.exit()`, so a bad
+  provider/model no longer kills the whole process
+- Removed the non-functional Bedrock/Mistral/Cohere/Meta/AI21 mock provider, which
+  previously fabricated exam content silently instead of calling a real API
+
+### Fixed
+
+- Exam scoring now compares selected options by identity instead of text, fixing undefined
+  behavior when two options in a question share identical text
+- `generate` no longer risks corrupting the output file on a crash mid-write (atomic
+  write via temp file + rename)
+- Corrected the `openai` dependency floor, which previously allowed a pre-1.0 install
+  incompatible with the v1+ client API actually used
+
 ## [0.1.8] - 2025-09-14
 
 ### Fixed

@@ -147,7 +147,9 @@ class Config:
             except Exception as e:
                 logger.error(f"Error reading config file {self._config_path}: {e}")
         else:
-            logger.debug(f"Config file not found at {self._config_path}. Using defaults.")
+            logger.debug(
+                f"Config file not found at {self._config_path}. Using defaults."
+            )
 
         # Override with environment variables
         self._load_from_env()
@@ -191,7 +193,9 @@ class Config:
                             else:
                                 casted_value = original_type(env_value)
                             settings[key] = casted_value
-                            logger.debug(f"Overrode '{section}.{key}' with env var '{env_var_name}'.")
+                            logger.debug(
+                                f"Overrode '{section}.{key}' with env var '{env_var_name}'."
+                            )
                         except (ValueError, TypeError) as e:
                             logger.warning(
                                 f"Could not cast env var {env_var_name}='{env_value}' to type {original_type}: {e}"
@@ -203,8 +207,14 @@ class Config:
             if key in base and isinstance(base[key], dict) and isinstance(value, dict):
                 self._merge_configs(base[key], value)
             else:
-                if key in base and isinstance(base[key], dict) and not isinstance(value, dict):
-                    logger.warning(f"Config conflict: Section '{key}' cannot be overridden by a non-section value.")
+                if (
+                    key in base
+                    and isinstance(base[key], dict)
+                    and not isinstance(value, dict)
+                ):
+                    logger.warning(
+                        f"Config conflict: Section '{key}' cannot be overridden by a non-section value."
+                    )
                 else:
                     base[key] = value
 
@@ -219,7 +229,9 @@ class Config:
         return new_dict
 
 
-def create_default_config_if_not_exists(filename: str = DEFAULT_CONFIG_FILENAME) -> bool:
+def create_default_config_if_not_exists(
+    filename: str = DEFAULT_CONFIG_FILENAME,
+) -> bool:
     """
     Creates a default 'examexam.toml' file if it doesn't already exist.
 

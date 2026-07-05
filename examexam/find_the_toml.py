@@ -23,12 +23,22 @@ def _try_parse_toml(text: str) -> dict | None:
 
 def _maybe_fix_quotes(s: str) -> str:
     """Replace common smart quotes with ASCII quotes for a second-chance parse."""
-    return s.replace("\u201c", '"').replace("\u201d", '"').replace("\u2018", "'").replace("\u2019", "'")
+    return (
+        s.replace("\u201c", '"')
+        .replace("\u201d", '"')
+        .replace("\u2018", "'")
+        .replace("\u2019", "'")
+    )
 
 
-def _valid_schema(data: dict) -> bool:
-    """
-    Validate expected schema:
+class SchemaValidationError(Exception):
+    """Raised by validate_questions_schema when parsed TOML doesn't match the expected shape."""
+
+
+def validate_questions_schema(data: dict) -> None:
+    """Validates the structure of parsed question-bank TOML data.
+
+    Expected schema:
 
     [[questions]]
     question = "..."
@@ -36,43 +46,82 @@ def _valid_schema(data: dict) -> bool:
     text = "..."
     explanation = "..."
     is_correct = true/false
+
+    Raises SchemaValidationError with a specific, actionable message on failure —
+    this is the single source of truth for the schema, used both for the cheap
+    boolean check in _valid_schema (candidate scanning) and for the detailed
+    corrective-retry-prompt errors in generate_questions.py.
     """
     if not isinstance(data, dict):
-        return False
+        raise SchemaValidationError("TOML content is not a dictionary.")
+
     questions = data.get("questions")
     if not isinstance(questions, list) or not questions:
-        return False
+        raise SchemaValidationError(
+            "TOML must contain a non-empty `[[questions]]` array of tables."
+        )
 
-    for q in questions:
+    for i, q in enumerate(questions):
         if not isinstance(q, dict):
-            return False
-        if "question" not in q or not isinstance(q["question"], str):
-            return False
+            raise SchemaValidationError(
+                f"Question {i + 1} is not a valid table/dictionary."
+            )
+        if (
+            "question" not in q
+            or not isinstance(q["question"], str)
+            or not q["question"]
+        ):
+            raise SchemaValidationError(
+                f"Question {i + 1} is missing a non-empty 'question' string."
+            )
 
         options = q.get("options")
         if not isinstance(options, list) or not options:
-            return False
+            raise SchemaValidationError(
+                f"Question {i + 1} '{q.get('question', '')[:30]}...' is missing a non-empty `[[questions.options]]` array."
+            )
 
         saw_true = False
-        for opt in options:
+        for j, opt in enumerate(options):
             if not isinstance(opt, dict):
-                return False
-            if not isinstance(opt.get("text"), str):
-                return False
-            if not isinstance(opt.get("explanation"), str):
-                return False
+                raise SchemaValidationError(
+                    f"Option {j + 1} for question {i + 1} is not a valid table/dictionary."
+                )
+            if not isinstance(opt.get("text"), str) or not opt.get("text"):
+                raise SchemaValidationError(
+                    f"Option {j + 1} for question {i + 1} is missing a 'text' string."
+                )
+            if not isinstance(opt.get("explanation"), str) or not opt.get(
+                "explanation"
+            ):
+                raise SchemaValidationError(
+                    f"Option {j + 1} for question {i + 1} is missing an 'explanation' string."
+                )
             if not isinstance(opt.get("is_correct"), bool):
-                return False
+                raise SchemaValidationError(
+                    f"Option {j + 1} for question {i + 1} is missing an 'is_correct' boolean flag."
+                )
             if opt["is_correct"]:
                 saw_true = True
-        # At least one correct per question is a reasonable sanity check
+
         if not saw_true:
-            return False
+            raise SchemaValidationError(
+                f"Question {i + 1} '{q.get('question', '')[:30]}...' must have at least one option with is_correct = true."
+            )
 
-    return True
+
+def _valid_schema(data: dict) -> bool:
+    """Cheap boolean gate used while scanning TOML candidates; see validate_questions_schema for details."""
+    try:
+        validate_questions_schema(data)
+        return True
+    except SchemaValidationError:
+        return False
 
 
-_FENCE_RE = re.compile(r"(?ms)^(?:`{3,}|~{3,})\s*([A-Za-z0-9_-]+)?\s*\n(.*?)\n(?:`{3,}|~{3,})\s*$")
+_FENCE_RE = re.compile(
+    r"(?ms)^(?:`{3,}|~{3,})\s*([A-Za-z0-9_-]+)?\s*\n(.*?)\n(?:`{3,}|~{3,})\s*$"
+)
 
 _TOML_FENCE_RE = re.compile(
     r"(?ms)^(?:`{3,}|~{3,})\s*(toml)\s*\n(.*?)\n(?:`{3,}|~{3,})\s*$",
@@ -80,7 +129,9 @@ _TOML_FENCE_RE = re.compile(
 )
 
 # Any fenced block (not just TOML) – we will attempt parsing if content looks plausible
-_ANY_FENCE_FINDALL_RE = re.compile(r"(?ms)^(?:`{3,}|~{3,})\s*([A-Za-z0-9_-]+)?\s*\n(.*?)\n(?:`{3,}|~{3,})\s*")
+_ANY_FENCE_FINDALL_RE = re.compile(
+    r"(?ms)^(?:`{3,}|~{3,})\s*([A-Za-z0-9_-]+)?\s*\n(.*?)\n(?:`{3,}|~{3,})\s*"
+)
 
 
 # Heuristic for TOML-ish line
@@ -136,13 +187,17 @@ def _gather_toml_candidates(markdown: str) -> list[str]:
 
     # 3) Unfenced heuristic extraction from first [[questions]] occurrence(s)
     lines = markdown.splitlines()
-    indices = [i for i, ln in enumerate(lines) if "[[questions]]" in ln.replace(" ", "")]
+    indices = [
+        i for i, ln in enumerate(lines) if "[[questions]]" in ln.replace(" ", "")
+    ]
     for start in indices:
         # Expand upwards slightly if we started in the middle of a TOML block
         s = start
         while s > 0 and _looks_tomlish(lines[s - 1]):
             # stop if we would cross a fence marker (we don't want to merge across markdown code fences)
-            if lines[s - 1].lstrip().startswith("```") or lines[s - 1].lstrip().startswith("~~~"):
+            if lines[s - 1].lstrip().startswith("```") or lines[
+                s - 1
+            ].lstrip().startswith("~~~"):
                 break
             s -= 1
         # Expand downwards while TOML-ish and not hitting a fence close/open
@@ -220,7 +275,10 @@ def extract_questions_toml(markdown_content: str) -> str | None:
 
     result = _first_valid_toml(candidates)
     if result is None:
-        logger.debug("No valid TOML matched expected schema among %d candidates.", len(candidates))
+        logger.debug(
+            "No valid TOML matched expected schema among %d candidates.",
+            len(candidates),
+        )
     else:
         logger.info("TOML content found and validated.")
     return result

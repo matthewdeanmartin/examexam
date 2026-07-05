@@ -45,11 +45,18 @@ class FrontendUI(Protocol):
         """Show available tests and let user pick one. Returns index or None."""
         ...
 
-    def show_session_info(self, test_name: str, completed: int, total: int, time_ago: str) -> None:
+    def show_session_info(
+        self, test_name: str, completed: int, total: int, time_ago: str
+    ) -> None:
         """Show information about an existing session."""
         ...
 
-    def show_question(self, question: Question, options: list[Option], question_number: int | None = None) -> None:
+    def show_question(
+        self,
+        question: Question,
+        options: list[Option],
+        question_number: int | None = None,
+    ) -> None:
         """Display a question and its shuffled options."""
         ...
 
@@ -79,7 +86,9 @@ class FrontendUI(Protocol):
         """Start a progress operation. Returns a task_id for updates."""
         ...
 
-    def progress_update(self, task_id: str, advance: int = 1, description: str = "") -> None:
+    def progress_update(
+        self, task_id: str, advance: int = 1, description: str = ""
+    ) -> None:
         """Update a progress operation."""
         ...
 

@@ -35,27 +35,32 @@ class TextualUI:
 ## Key Widgets to Build
 
 ### 1. TestSelectionScreen
+
 - List of available tests with highlight navigation
 - Enter to select, styled header
 
 ### 2. QuestionScreen
+
 - Panel with the question text (Markdown rendered)
 - Options displayed as selectable list items or checkboxes
 - Footer with "Submit" button/keybinding
 - Status bar showing question N/M, current score
 
 ### 3. FeedbackScreen
+
 - Green/red banner for correct/incorrect
 - Explanations list with color coding
 - "Next" and "Mark as Bad" buttons in footer
 
 ### 4. ResultsScreen
+
 - Score display with bar chart or gauge widget
 - Time statistics
 - Confidence intervals
 - Pass/fail status with color
 
 ### 5. ProgressScreen (for generate/validate)
+
 - Textual's built-in ProgressBar widget
 - Real-time log scrolling below
 
@@ -121,6 +126,7 @@ Use `app.call_from_thread()` for all UI updates from the business logic thread.
 ## Registration
 
 In `examexam/frontends/__init__.py`, the `"tui"` branch should:
+
 ```python
 if name == "tui":
     from examexam.frontends.textual_ui import TextualUI

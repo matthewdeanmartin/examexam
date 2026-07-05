@@ -48,7 +48,9 @@ class RichUI:
 
     def show_test_selection(self, tests: list[TestInfo]) -> int | None:
         if not tests:
-            self.console.print("[bold red]No test files found in /data/ folder![/bold red]")
+            self.console.print(
+                "[bold red]No test files found in /data/ folder![/bold red]"
+            )
             return None
 
         self.console.print("[bold blue]Available Tests:[/bold blue]")
@@ -67,17 +69,28 @@ class RichUI:
                 test_idx = int(choice) - 1
                 if 0 <= test_idx < len(tests):
                     return test_idx
-                self.console.print("[bold red]Invalid choice. Please try again.[/bold red]")
+                self.console.print(
+                    "[bold red]Invalid choice. Please try again.[/bold red]"
+                )
             except ValueError:
                 self.console.print("[bold red]Please enter a valid number.[/bold red]")
 
-    def show_session_info(self, test_name: str, completed: int, total: int, time_ago: str) -> None:
-        self.console.print(f"[bold yellow]Found existing session for '{test_name}'[/bold yellow]")
+    def show_session_info(
+        self, test_name: str, completed: int, total: int, time_ago: str
+    ) -> None:
+        self.console.print(
+            f"[bold yellow]Found existing session for '{test_name}'[/bold yellow]"
+        )
         self.console.print(f"Progress: {completed}/{total} questions completed")
         if time_ago:
             self.console.print(f"Started: {time_ago} ago")
 
-    def show_question(self, question: Question, options: list[Option], question_number: int | None = None) -> None:
+    def show_question(
+        self,
+        question: Question,
+        options: list[Option],
+        question_number: int | None = None,
+    ) -> None:
         self.clear_screen()
         question_text = question.question
         answer_count = question.answer_count
@@ -89,13 +102,17 @@ class RichUI:
         if pattern_match:
             correct_select = f"(Select {answer_count})"
             if correct_select not in question_text:
-                question_text = question_text.replace(pattern_match.group(0), correct_select)
+                question_text = question_text.replace(
+                    pattern_match.group(0), correct_select
+                )
 
         if "(Select" not in question_text:
             question_text = f"{question_text} (Select {answer_count})"
 
         if "(Select n)" in question_text:
-            question_text = question_text.replace("(Select n)", f"(Select {answer_count})")
+            question_text = question_text.replace(
+                "(Select n)", f"(Select {answer_count})"
+            )
 
         question_panel = Align.center(Panel(Markdown(question_text)), vertical="middle")
         self.console.print(question_panel)
@@ -124,7 +141,13 @@ class RichUI:
 
     def show_answer_feedback(self, feedback: AnswerFeedback) -> None:
         if feedback.is_correct:
-            self.console.print(Panel("[bold green]\u2713 Correct![/bold green]", title="Answer Review", style="green"))
+            self.console.print(
+                Panel(
+                    "[bold green]\u2713 Correct![/bold green]",
+                    title="Answer Review",
+                    style="green",
+                )
+            )
         else:
             self.console.print(
                 Panel(
@@ -137,9 +160,13 @@ class RichUI:
         colored_explanations: list[str] = []
         for idx, (explanation, is_correct) in enumerate(feedback.explanations, 1):
             if is_correct:
-                colored_explanations.append(f"{idx}. [bold green]{explanation}[/bold green]")
+                colored_explanations.append(
+                    f"{idx}. [bold green]{explanation}[/bold green]"
+                )
             else:
-                colored_explanations.append(f"{idx}. [bold red]{explanation}[/bold red]")
+                colored_explanations.append(
+                    f"{idx}. [bold red]{explanation}[/bold red]"
+                )
         self.console.print(Panel("\n".join(colored_explanations), title="Explanation"))
 
     def show_results(self, result: ExamResult) -> None:
@@ -155,7 +182,9 @@ class RichUI:
             time_info += f"\nEstimated Time to Complete: {humanize_timedelta(result.estimated_time_left)}"
 
         confidence_str = f"Normal 95% CI: {result.ci_lower * 100:.1f}%-{result.ci_upper * 100:.1f}% | Exact 95% CI: {result.exact_ci_lower * 100:.1f}%-{result.exact_ci_upper * 100:.1f}%"
-        pvalue_str = f"Binomial test vs 70% pass rate (one-sided): p={result.p_value:.3f}"
+        pvalue_str = (
+            f"Binomial test vs 70% pass rate (one-sided): p={result.p_value:.3f}"
+        )
 
         if result.is_final:
             passed = "Passed" if result.passed else "Failed"
@@ -176,7 +205,9 @@ class RichUI:
     def wait_for_continue(self) -> str:
         go_on: str | None = None
         while go_on not in ("", "bad"):
-            go_on = self.console.input("[bold yellow]Press Enter to continue to the next question...[/bold yellow]")
+            go_on = self.console.input(
+                "[bold yellow]Press Enter to continue to the next question...[/bold yellow]"
+            )
         return go_on or ""
 
     def clear_screen(self) -> None:
@@ -197,7 +228,9 @@ class RichUI:
             self.console.print(f"{description} (0/{total})")
         return task_id
 
-    def progress_update(self, task_id: str, advance: int = 1, description: str = "") -> None:
+    def progress_update(
+        self, task_id: str, advance: int = 1, description: str = ""
+    ) -> None:
         if description:
             self.console.print(description)
 

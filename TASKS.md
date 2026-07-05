@@ -14,16 +14,9 @@
 - md and html are always keys & show answers!
 - ugly html
 
-# Refactor generations
+## Refactor generations
 
 - Bot must indicate the explanation along with the possible answer. It too often generats the answer list and expression list in different order
-
-## Test validation
-
-- Fix answer parsing - DONE
-  - Picking 2 answers when only 1 expected- DONE
-  - Failure to parse - DONE
-    - Answers with commas!- DONE
 
 ## Test generation
 
@@ -35,8 +28,6 @@
 
 - Some way to mark question as dodgy. - 1/2 DONE
 - Some visual when there are alternate answers - 1/2 DONE
-- Grade as you go... - DONE
-- Resumable test session - 1/2 DONE
 - Option to report a question as stupid - 1/2 DONE
 
 ## Bad questions

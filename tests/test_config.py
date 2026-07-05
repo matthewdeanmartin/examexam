@@ -46,14 +46,18 @@ def test_load_from_toml_overrides_defaults(tmp_path: Path):
 
 def test_env_overrides_scalar_int(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     # Base TOML says 6, env should override to 11
-    (tmp_path / "examexam.toml").write_text(toml.dumps({"general": {"default_n": 6}}), encoding="utf-8")
+    (tmp_path / "examexam.toml").write_text(
+        toml.dumps({"general": {"default_n": 6}}), encoding="utf-8"
+    )
     monkeypatch.setenv("EXAMEXAM_GENERAL_DEFAULT_N", "11")
 
     c = cfg.reset_for_testing(tmp_path / "examexam.toml")
     assert c.get("general.default_n") == 11  # env override wins
 
 
-@pytest.mark.xfail(reason="Boolean env casting bug in _load_from_env (checks isinstance(type,bool))")
+@pytest.mark.xfail(
+    reason="Boolean env casting bug in _load_from_env (checks isinstance(type,bool))"
+)
 def test_env_overrides_boolean_flag(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     """
     This exposes a bug: _load_from_env uses:
@@ -62,7 +66,9 @@ def test_env_overrides_boolean_flag(monkeypatch: pytest.MonkeyPatch, tmp_path: P
     which is always False, so booleans from env aren't cast.
     Marked xfail to document current behavior without breaking CI.
     """
-    (tmp_path / "examexam.toml").write_text(toml.dumps({"general": {"use_frontier_model": False}}), encoding="utf-8")
+    (tmp_path / "examexam.toml").write_text(
+        toml.dumps({"general": {"use_frontier_model": False}}), encoding="utf-8"
+    )
     monkeypatch.setenv("EXAMEXAM_GENERAL_USE_FRONTIER_MODEL", "true")
 
     c = cfg.reset_for_testing(tmp_path / "examexam.toml")
@@ -83,7 +89,9 @@ def test_merge_conflict_section_vs_scalar_does_not_overwrite(tmp_path: Path):
     assert c.get("general.default_n") == 5
 
 
-def test_create_default_config_if_not_exists(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+def test_create_default_config_if_not_exists(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
     monkeypatch.chdir(tmp_path)
 
     created_1 = cfg.create_default_config_if_not_exists()  # should create
@@ -98,7 +106,9 @@ def test_create_default_config_if_not_exists(tmp_path: Path, monkeypatch: pytest
 
 def test_reset_for_testing_with_explicit_path(tmp_path: Path):
     custom = tmp_path / "custom.toml"
-    custom.write_text(toml.dumps({"general": {"override_model": "meta"}}), encoding="utf-8")
+    custom.write_text(
+        toml.dumps({"general": {"override_model": "meta"}}), encoding="utf-8"
+    )
 
     c = cfg.reset_for_testing(custom)
     assert c.get("general.override_model") == "meta"

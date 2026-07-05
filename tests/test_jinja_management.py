@@ -77,7 +77,9 @@ def test_deploy_overwrites_with_force(tmp_path: Path):
     dest = tmp_path / "prompts"
     study_file = dest / "study_guide.md.j2"
     # Modify local file
-    study_file.write_text(study_file.read_text(encoding="utf-8") + "\nLOCAL MOD\n", encoding="utf-8")
+    study_file.write_text(
+        study_file.read_text(encoding="utf-8") + "\nLOCAL MOD\n", encoding="utf-8"
+    )
 
     # Capture the authoritative source bytes from the installed package
     src_dir = importlib.resources.files("examexam") / "prompts"
@@ -89,7 +91,9 @@ def test_deploy_overwrites_with_force(tmp_path: Path):
     assert final_bytes == src_bytes
 
 
-def test_get_jinja_env_prefers_custom_prompts(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+def test_get_jinja_env_prefers_custom_prompts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
     # Create a custom ./prompts in a clean CWD
     monkeypatch.chdir(tmp_path)
     custom_prompts = tmp_path / "prompts"
@@ -112,7 +116,9 @@ def test_get_jinja_env_prefers_custom_prompts(tmp_path: Path, monkeypatch: pytes
     assert unique_marker in out
 
 
-def test_get_jinja_env_dev_prompts_render(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+def test_get_jinja_env_dev_prompts_render(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+):
     """
     With no ./prompts in CWD, the function should fall back to the repo/dev prompts.
     We don't need to assert the exact loader type—just that we can load a known template.

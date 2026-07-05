@@ -31,7 +31,9 @@ def get_frontend(name: str = "cli") -> FrontendUI:
 
         return TkinterUI()
     if name == "tui":
-        raise NotImplementedError("Textual TUI frontend is not yet implemented. See spec/tui_frontend_plan.md")
+        raise NotImplementedError(
+            "Textual TUI frontend is not yet implemented. See spec/tui_frontend_plan.md"
+        )
     if name == "web":
         try:
             from examexam.frontends.web_ui import WebUI

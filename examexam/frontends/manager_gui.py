@@ -294,7 +294,9 @@ def _output_clear(widget: scrolledtext.ScrolledText) -> None:
 
 
 def _make_label(parent, text: str, **kw) -> tk.Label:
-    return tk.Label(parent, text=text, bg=_CLR_BG, fg=_CLR_FG, font=_FONT_UI, anchor="w", **kw)
+    return tk.Label(
+        parent, text=text, bg=_CLR_BG, fg=_CLR_FG, font=_FONT_UI, anchor="w", **kw
+    )
 
 
 def _make_entry(parent, textvariable=None, width=40) -> ttk.Entry:
@@ -326,7 +328,9 @@ def _pick_file(title="Select file", filetypes=None) -> str:
 
 def _pick_save(title="Save as", defaultextension="", filetypes=None) -> str:
     filetypes = filetypes or [("All files", "*.*")]
-    path = filedialog.asksaveasfilename(title=title, defaultextension=defaultextension, filetypes=filetypes)
+    path = filedialog.asksaveasfilename(
+        title=title, defaultextension=defaultextension, filetypes=filetypes
+    )
     return path or ""
 
 
@@ -335,7 +339,11 @@ def _pick_save(title="Save as", defaultextension="", filetypes=None) -> str:
 
 class _BasePanel(tk.Frame):
     def __init__(
-        self, parent: tk.Widget, runner: _BackgroundRunner, status_var: tk.StringVar, help_key: str = "home"
+        self,
+        parent: tk.Widget,
+        runner: _BackgroundRunner,
+        status_var: tk.StringVar,
+        help_key: str = "home",
     ) -> None:
         super().__init__(parent, bg=_CLR_BG)
         self._runner = runner
@@ -378,9 +386,13 @@ class GeneratePanel(_BasePanel):
         self._build()
 
     def _build(self):
-        tk.Label(self, text="Generate Questions", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING).pack(
-            anchor="w", padx=12, pady=(12, 4)
-        )
+        tk.Label(
+            self,
+            text="Generate Questions",
+            bg=_CLR_BG,
+            fg=_CLR_ACCENT,
+            font=_FONT_HEADING,
+        ).pack(anchor="w", padx=12, pady=(12, 4))
 
         form = tk.Frame(self, bg=_CLR_BG)
         form.pack(fill=tk.X, padx=12, pady=4)
@@ -388,19 +400,27 @@ class GeneratePanel(_BasePanel):
         # TOC file
         _make_label(form, "TOC file:").grid(row=0, column=0, sticky="w", pady=3)
         self._toc_var = tk.StringVar()
-        _make_entry(form, self._toc_var, width=38).grid(row=0, column=1, sticky="ew", padx=4)
+        _make_entry(form, self._toc_var, width=38).grid(
+            row=0, column=1, sticky="ew", padx=4
+        )
         _make_btn(form, "Browse", self._browse_toc).grid(row=0, column=2, padx=2)
 
         # Output file
         _make_label(form, "Output file:").grid(row=1, column=0, sticky="w", pady=3)
         self._out_var = tk.StringVar()
-        _make_entry(form, self._out_var, width=38).grid(row=1, column=1, sticky="ew", padx=4)
+        _make_entry(form, self._out_var, width=38).grid(
+            row=1, column=1, sticky="ew", padx=4
+        )
         _make_btn(form, "Browse", self._browse_out).grid(row=1, column=2, padx=2)
 
         # N questions
-        _make_label(form, "Questions per topic:").grid(row=2, column=0, sticky="w", pady=3)
+        _make_label(form, "Questions per topic:").grid(
+            row=2, column=0, sticky="w", pady=3
+        )
         self._n_var = tk.StringVar(value="5")
-        _make_entry(form, self._n_var, width=10).grid(row=2, column=1, sticky="w", padx=4)
+        _make_entry(form, self._n_var, width=10).grid(
+            row=2, column=1, sticky="w", padx=4
+        )
 
         # Provider
         _make_label(form, "Model provider:").grid(row=3, column=0, sticky="w", pady=3)
@@ -417,7 +437,9 @@ class GeneratePanel(_BasePanel):
 
         btn_row = tk.Frame(self, bg=_CLR_BG)
         btn_row.pack(anchor="w", padx=12, pady=8)
-        _make_btn(btn_row, "Generate", self._run, bg=_CLR_ACCENT, fg=_CLR_BG).pack(side=tk.LEFT, padx=4)
+        _make_btn(btn_row, "Generate", self._run, bg=_CLR_ACCENT, fg=_CLR_BG).pack(
+            side=tk.LEFT, padx=4
+        )
 
         self._out_widget = _make_output(self)
         self._out_widget.pack(fill=tk.BOTH, expand=True, padx=12, pady=4)
@@ -446,7 +468,9 @@ class GeneratePanel(_BasePanel):
         try:
             n = int(n_str)
         except ValueError:
-            messagebox.showwarning("Bad value", "Questions per topic must be an integer.")
+            messagebox.showwarning(
+                "Bad value", "Questions per topic must be an integer."
+            )
             return
 
         if not out:
@@ -494,15 +518,21 @@ class ValidatePanel(_BasePanel):
         self._build()
 
     def _build(self):
-        tk.Label(self, text="Validate Questions", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING).pack(
-            anchor="w", padx=12, pady=(12, 4)
-        )
+        tk.Label(
+            self,
+            text="Validate Questions",
+            bg=_CLR_BG,
+            fg=_CLR_ACCENT,
+            font=_FONT_HEADING,
+        ).pack(anchor="w", padx=12, pady=(12, 4))
         form = tk.Frame(self, bg=_CLR_BG)
         form.pack(fill=tk.X, padx=12, pady=4)
 
         _make_label(form, "Question file:").grid(row=0, column=0, sticky="w", pady=3)
         self._file_var = tk.StringVar()
-        _make_entry(form, self._file_var, width=40).grid(row=0, column=1, sticky="ew", padx=4)
+        _make_entry(form, self._file_var, width=40).grid(
+            row=0, column=1, sticky="ew", padx=4
+        )
         _make_btn(form, "Browse", self._browse).grid(row=0, column=2, padx=2)
 
         _make_label(form, "Model provider:").grid(row=1, column=0, sticky="w", pady=3)
@@ -519,13 +549,17 @@ class ValidatePanel(_BasePanel):
 
         btn_row = tk.Frame(self, bg=_CLR_BG)
         btn_row.pack(anchor="w", padx=12, pady=8)
-        _make_btn(btn_row, "Validate", self._run, bg=_CLR_ACCENT, fg=_CLR_BG).pack(side=tk.LEFT, padx=4)
+        _make_btn(btn_row, "Validate", self._run, bg=_CLR_ACCENT, fg=_CLR_BG).pack(
+            side=tk.LEFT, padx=4
+        )
 
         self._out_widget = _make_output(self)
         self._out_widget.pack(fill=tk.BOTH, expand=True, padx=12, pady=4)
 
     def _browse(self):
-        path = _pick_file("Select question file", [("TOML files", "*.toml"), ("All", "*.*")])
+        path = _pick_file(
+            "Select question file", [("TOML files", "*.toml"), ("All", "*.*")]
+        )
         if path:
             self._file_var.set(path)
 
@@ -545,7 +579,9 @@ class ValidatePanel(_BasePanel):
 
             q: queue.Queue[str] = queue.Queue()
             ui = _QueueUI(q)
-            validate_questions_now(file_name=qfile, model=pick_model("", provider, "fast"), ui=ui)
+            validate_questions_now(
+                file_name=qfile, model=pick_model("", provider, "fast"), ui=ui
+            )
             return q
 
         def _success(q):
@@ -570,15 +606,21 @@ class ResearchPanel(_BasePanel):
         self._build()
 
     def _build(self):
-        tk.Label(self, text="Research / Study Guide", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING).pack(
-            anchor="w", padx=12, pady=(12, 4)
-        )
+        tk.Label(
+            self,
+            text="Research / Study Guide",
+            bg=_CLR_BG,
+            fg=_CLR_ACCENT,
+            font=_FONT_HEADING,
+        ).pack(anchor="w", padx=12, pady=(12, 4))
         form = tk.Frame(self, bg=_CLR_BG)
         form.pack(fill=tk.X, padx=12, pady=4)
 
         _make_label(form, "Topic:").grid(row=0, column=0, sticky="w", pady=3)
         self._topic_var = tk.StringVar()
-        _make_entry(form, self._topic_var, width=50).grid(row=0, column=1, sticky="ew", padx=4)
+        _make_entry(form, self._topic_var, width=50).grid(
+            row=0, column=1, sticky="ew", padx=4
+        )
 
         _make_label(form, "Model provider:").grid(row=1, column=0, sticky="w", pady=3)
         self._provider_var = tk.StringVar(value="openai")
@@ -594,7 +636,9 @@ class ResearchPanel(_BasePanel):
 
         btn_row = tk.Frame(self, bg=_CLR_BG)
         btn_row.pack(anchor="w", padx=12, pady=8)
-        _make_btn(btn_row, "Research", self._run, bg=_CLR_ACCENT, fg=_CLR_BG).pack(side=tk.LEFT, padx=4)
+        _make_btn(btn_row, "Research", self._run, bg=_CLR_ACCENT, fg=_CLR_BG).pack(
+            side=tk.LEFT, padx=4
+        )
 
         self._out_widget = _make_output(self)
         self._out_widget.pack(fill=tk.BOTH, expand=True, padx=12, pady=4)
@@ -614,7 +658,9 @@ class ResearchPanel(_BasePanel):
 
             q: queue.Queue[str] = queue.Queue()
             ui = _QueueUI(q)
-            generate_topic_research_now(topic=topic, model=pick_model("", provider, "fast"), ui=ui)
+            generate_topic_research_now(
+                topic=topic, model=pick_model("", provider, "fast"), ui=ui
+            )
             return q
 
         def _success(q):
@@ -638,15 +684,17 @@ class StudyPlanPanel(_BasePanel):
         self._build()
 
     def _build(self):
-        tk.Label(self, text="Study Plan", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING).pack(
-            anchor="w", padx=12, pady=(12, 4)
-        )
+        tk.Label(
+            self, text="Study Plan", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING
+        ).pack(anchor="w", padx=12, pady=(12, 4))
         form = tk.Frame(self, bg=_CLR_BG)
         form.pack(fill=tk.X, padx=12, pady=4)
 
         _make_label(form, "TOC file:").grid(row=0, column=0, sticky="w", pady=3)
         self._toc_var = tk.StringVar()
-        _make_entry(form, self._toc_var, width=40).grid(row=0, column=1, sticky="ew", padx=4)
+        _make_entry(form, self._toc_var, width=40).grid(
+            row=0, column=1, sticky="ew", padx=4
+        )
         _make_btn(form, "Browse", self._browse).grid(row=0, column=2, padx=2)
 
         _make_label(form, "Model provider:").grid(row=1, column=0, sticky="w", pady=3)
@@ -663,7 +711,9 @@ class StudyPlanPanel(_BasePanel):
 
         btn_row = tk.Frame(self, bg=_CLR_BG)
         btn_row.pack(anchor="w", padx=12, pady=8)
-        _make_btn(btn_row, "Generate Study Plan", self._run, bg=_CLR_ACCENT, fg=_CLR_BG).pack(side=tk.LEFT, padx=4)
+        _make_btn(
+            btn_row, "Generate Study Plan", self._run, bg=_CLR_ACCENT, fg=_CLR_BG
+        ).pack(side=tk.LEFT, padx=4)
 
         self._out_widget = _make_output(self)
         self._out_widget.pack(fill=tk.BOTH, expand=True, padx=12, pady=4)
@@ -688,7 +738,9 @@ class StudyPlanPanel(_BasePanel):
 
             q: queue.Queue[str] = queue.Queue()
             ui = _QueueUI(q)
-            generate_study_plan_now(toc_file=toc, model=pick_model("", provider, "fast"), ui=ui)
+            generate_study_plan_now(
+                toc_file=toc, model=pick_model("", provider, "fast"), ui=ui
+            )
             return q
 
         def _success(q):
@@ -712,32 +764,44 @@ class ConvertPanel(_BasePanel):
         self._build()
 
     def _build(self):
-        tk.Label(self, text="Convert Questions", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING).pack(
-            anchor="w", padx=12, pady=(12, 4)
-        )
+        tk.Label(
+            self,
+            text="Convert Questions",
+            bg=_CLR_BG,
+            fg=_CLR_ACCENT,
+            font=_FONT_HEADING,
+        ).pack(anchor="w", padx=12, pady=(12, 4))
         form = tk.Frame(self, bg=_CLR_BG)
         form.pack(fill=tk.X, padx=12, pady=4)
 
         _make_label(form, "Input TOML:").grid(row=0, column=0, sticky="w", pady=3)
         self._in_var = tk.StringVar()
-        _make_entry(form, self._in_var, width=40).grid(row=0, column=1, sticky="ew", padx=4)
+        _make_entry(form, self._in_var, width=40).grid(
+            row=0, column=1, sticky="ew", padx=4
+        )
         _make_btn(form, "Browse", self._browse_in).grid(row=0, column=2, padx=2)
 
         _make_label(form, "Output base name:").grid(row=1, column=0, sticky="w", pady=3)
         self._base_var = tk.StringVar()
-        _make_entry(form, self._base_var, width=40).grid(row=1, column=1, sticky="ew", padx=4)
+        _make_entry(form, self._base_var, width=40).grid(
+            row=1, column=1, sticky="ew", padx=4
+        )
 
         form.columnconfigure(1, weight=1)
 
         btn_row = tk.Frame(self, bg=_CLR_BG)
         btn_row.pack(anchor="w", padx=12, pady=8)
-        _make_btn(btn_row, "Convert", self._run, bg=_CLR_ACCENT, fg=_CLR_BG).pack(side=tk.LEFT, padx=4)
+        _make_btn(btn_row, "Convert", self._run, bg=_CLR_ACCENT, fg=_CLR_BG).pack(
+            side=tk.LEFT, padx=4
+        )
 
         self._out_widget = _make_output(self, height=10)
         self._out_widget.pack(fill=tk.BOTH, expand=True, padx=12, pady=4)
 
     def _browse_in(self):
-        path = _pick_file("Select question TOML", [("TOML files", "*.toml"), ("All", "*.*")])
+        path = _pick_file(
+            "Select question TOML", [("TOML files", "*.toml"), ("All", "*.*")]
+        )
         if path:
             self._in_var.set(path)
             if not self._base_var.get():
@@ -747,7 +811,9 @@ class ConvertPanel(_BasePanel):
         infile = self._in_var.get().strip()
         base = self._base_var.get().strip()
         if not infile or not base:
-            messagebox.showwarning("Missing input", "Please fill in input file and output base name.")
+            messagebox.showwarning(
+                "Missing input", "Please fill in input file and output base name."
+            )
             return
         _output_clear(self._out_widget)
         self._status.set("Converting...")
@@ -782,15 +848,19 @@ class ConfigPanel(_BasePanel):
         self._build()
 
     def _build(self):
-        tk.Label(self, text="Configuration", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING).pack(
-            anchor="w", padx=12, pady=(12, 4)
-        )
+        tk.Label(
+            self, text="Configuration", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING
+        ).pack(anchor="w", padx=12, pady=(12, 4))
 
         btn_row = tk.Frame(self, bg=_CLR_BG)
         btn_row.pack(anchor="w", padx=12, pady=4)
         _make_btn(btn_row, "Show Config", self._show_config).pack(side=tk.LEFT, padx=4)
-        _make_btn(btn_row, "Create Default Config", self._create_default).pack(side=tk.LEFT, padx=4)
-        _make_btn(btn_row, "Open in Editor", self._open_editor).pack(side=tk.LEFT, padx=4)
+        _make_btn(btn_row, "Create Default Config", self._create_default).pack(
+            side=tk.LEFT, padx=4
+        )
+        _make_btn(btn_row, "Open in Editor", self._open_editor).pack(
+            side=tk.LEFT, padx=4
+        )
 
         self._out_widget = _make_output(self)
         self._out_widget.pack(fill=tk.BOTH, expand=True, padx=12, pady=4)
@@ -826,20 +896,28 @@ class ConfigPanel(_BasePanel):
         self._runner.run(_fetch, on_success=_success, on_error=_error)
 
     def _create_default(self):
-        from examexam.config import DEFAULT_CONFIG_FILENAME, create_default_config_if_not_exists
+        from examexam.config import (
+            DEFAULT_CONFIG_FILENAME,
+            create_default_config_if_not_exists,
+        )
 
         created = create_default_config_if_not_exists()
         if created:
             _output_append(self._out_widget, f"Created {DEFAULT_CONFIG_FILENAME}\n")
         else:
-            _output_append(self._out_widget, f"{DEFAULT_CONFIG_FILENAME} already exists.\n")
+            _output_append(
+                self._out_widget, f"{DEFAULT_CONFIG_FILENAME} already exists.\n"
+            )
 
     def _open_editor(self):
         from examexam.config import DEFAULT_CONFIG_FILENAME
 
         cfg_path = Path(DEFAULT_CONFIG_FILENAME)
         if not cfg_path.exists():
-            messagebox.showinfo("Not found", f"{DEFAULT_CONFIG_FILENAME} does not exist. Create it first.")
+            messagebox.showinfo(
+                "Not found",
+                f"{DEFAULT_CONFIG_FILENAME} does not exist. Create it first.",
+            )
             return
         import subprocess  # nosec B404
         import sys
@@ -847,9 +925,13 @@ class ConfigPanel(_BasePanel):
         if sys.platform == "win32":
             os.startfile(str(cfg_path.resolve()))  # nosec B606
         elif sys.platform == "darwin":
-            subprocess.Popen(["open", str(cfg_path.resolve())])  # nosec B603 B607  # pylint: disable=consider-using-with
+            subprocess.Popen(
+                ["open", str(cfg_path.resolve())]
+            )  # nosec B603 B607  # pylint: disable=consider-using-with
         else:
-            subprocess.Popen(["xdg-open", str(cfg_path.resolve())])  # nosec B603 B607  # pylint: disable=consider-using-with
+            subprocess.Popen(
+                ["xdg-open", str(cfg_path.resolve())]
+            )  # nosec B603 B607  # pylint: disable=consider-using-with
 
 
 # ── API Keys panel ─────────────────────────────────────────────────────────
@@ -861,9 +943,9 @@ class ApiKeysPanel(_BasePanel):
         self._build()
 
     def _build(self):
-        tk.Label(self, text="API Keys", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING).pack(
-            anchor="w", padx=12, pady=(12, 4)
-        )
+        tk.Label(
+            self, text="API Keys", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING
+        ).pack(anchor="w", padx=12, pady=(12, 4))
         tk.Label(
             self,
             text="Keys are masked for security. Values from environment and .env file.",
@@ -896,7 +978,9 @@ class ApiKeysPanel(_BasePanel):
 
         # .env file presence
         env_path = Path(".env")
-        lines.append(f"\n.env file: {env_path.resolve()} ({'exists' if env_path.exists() else 'not found'})\n")
+        lines.append(
+            f"\n.env file: {env_path.resolve()} ({'exists' if env_path.exists() else 'not found'})\n"
+        )
 
         for line in lines:
             _output_append(self._out_widget, line)
@@ -912,9 +996,9 @@ class DoctorPanel(_BasePanel):
         self._build()
 
     def _build(self):
-        tk.Label(self, text="Doctor", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING).pack(
-            anchor="w", padx=12, pady=(12, 4)
-        )
+        tk.Label(
+            self, text="Doctor", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING
+        ).pack(anchor="w", padx=12, pady=(12, 4))
         tk.Label(
             self,
             text="Diagnostic report for tech support.",
@@ -970,9 +1054,9 @@ class TakeExamPanel(_BasePanel):
         self._build()
 
     def _build(self):
-        tk.Label(self, text="Take Exam", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING).pack(
-            anchor="w", padx=12, pady=(12, 4)
-        )
+        tk.Label(
+            self, text="Take Exam", bg=_CLR_BG, fg=_CLR_ACCENT, font=_FONT_HEADING
+        ).pack(anchor="w", padx=12, pady=(12, 4))
         tk.Label(
             self,
             text="Select a question file and launch the exam.",
@@ -986,26 +1070,40 @@ class TakeExamPanel(_BasePanel):
 
         _make_label(form, "Question file:").grid(row=0, column=0, sticky="w", pady=3)
         self._file_var = tk.StringVar()
-        _make_entry(form, self._file_var, width=42).grid(row=0, column=1, sticky="ew", padx=4)
+        _make_entry(form, self._file_var, width=42).grid(
+            row=0, column=1, sticky="ew", padx=4
+        )
         _make_btn(form, "Browse", self._browse).grid(row=0, column=2, padx=2)
         form.columnconfigure(1, weight=1)
 
-        tk.Label(self, text="Frontend:", bg=_CLR_BG, fg=_CLR_FG, font=_FONT_UI).pack(anchor="w", padx=12, pady=(8, 0))
+        tk.Label(self, text="Frontend:", bg=_CLR_BG, fg=_CLR_FG, font=_FONT_UI).pack(
+            anchor="w", padx=12, pady=(8, 0)
+        )
         self._frontend_var = tk.StringVar(value="gui")
         frontend_row = tk.Frame(self, bg=_CLR_BG)
         frontend_row.pack(anchor="w", padx=24, pady=4)
-        for val, label in [("cli", "CLI (terminal)"), ("gui", "GUI (Tkinter)"), ("web", "Web (browser)")]:
-            ttk.Radiobutton(frontend_row, text=label, variable=self._frontend_var, value=val).pack(side=tk.LEFT, padx=8)
+        for val, label in [
+            ("cli", "CLI (terminal)"),
+            ("gui", "GUI (Tkinter)"),
+            ("web", "Web (browser)"),
+        ]:
+            ttk.Radiobutton(
+                frontend_row, text=label, variable=self._frontend_var, value=val
+            ).pack(side=tk.LEFT, padx=8)
 
         btn_row = tk.Frame(self, bg=_CLR_BG)
         btn_row.pack(anchor="w", padx=12, pady=12)
-        _make_btn(btn_row, "Launch Exam", self._launch, bg=_CLR_OK, fg="#000000").pack(side=tk.LEFT, padx=4)
+        _make_btn(btn_row, "Launch Exam", self._launch, bg=_CLR_OK, fg="#000000").pack(
+            side=tk.LEFT, padx=4
+        )
 
         self._out_widget = _make_output(self, height=8)
         self._out_widget.pack(fill=tk.BOTH, expand=True, padx=12, pady=4)
 
     def _browse(self):
-        path = _pick_file("Select question TOML", [("TOML files", "*.toml"), ("All", "*.*")])
+        path = _pick_file(
+            "Select question TOML", [("TOML files", "*.toml"), ("All", "*.*")]
+        )
         if path:
             self._file_var.set(path)
 
@@ -1024,7 +1122,9 @@ class TakeExamPanel(_BasePanel):
             if qfile:
                 cmd += ["--question-file", qfile]
             try:
-                subprocess.Popen(cmd)  # nosec B603  # pylint: disable=consider-using-with
+                subprocess.Popen(
+                    cmd
+                )  # nosec B603  # pylint: disable=consider-using-with
                 _output_append(self._out_widget, "Exam GUI launched in new window.\n")
             except Exception as exc:
                 _output_append(self._out_widget, f"Error: {exc}\n")
@@ -1035,8 +1135,13 @@ class TakeExamPanel(_BasePanel):
             if qfile:
                 cmd += ["--question-file", qfile]
             try:
-                subprocess.Popen(cmd)  # nosec B603  # pylint: disable=consider-using-with
-                _output_append(self._out_widget, "Web exam launched. Open http://localhost:8000 in your browser.\n")
+                subprocess.Popen(
+                    cmd
+                )  # nosec B603  # pylint: disable=consider-using-with
+                _output_append(
+                    self._out_widget,
+                    "Web exam launched. Open http://localhost:8000 in your browser.\n",
+                )
             except Exception as exc:
                 _output_append(self._out_widget, f"Error: {exc}\n")
             self._status.set("Web exam launched.")
@@ -1047,8 +1152,13 @@ class TakeExamPanel(_BasePanel):
             if qfile:
                 cmd += ["--question-file", qfile]
             _output_append(self._out_widget, f"Launching: {' '.join(cmd)}\n")
-            _output_append(self._out_widget, "CLI exam runs in terminal. Check your terminal window.\n")
-            subprocess.Popen(cmd, creationflags=0x10 if sys.platform == "win32" else 0)  # nosec B603  # pylint: disable=consider-using-with
+            _output_append(
+                self._out_widget,
+                "CLI exam runs in terminal. Check your terminal window.\n",
+            )
+            subprocess.Popen(
+                cmd, creationflags=0x10 if sys.platform == "win32" else 0
+            )  # nosec B603  # pylint: disable=consider-using-with
             self._status.set("CLI exam launched.")
 
 
@@ -1101,7 +1211,9 @@ class _QueueUI:
         self._q.put(f"{description} (0/{total})\n")
         return "task"
 
-    def progress_update(self, task_id: str, advance: int = 1, description: str = "") -> None:
+    def progress_update(
+        self, task_id: str, advance: int = 1, description: str = ""
+    ) -> None:
         if description:
             self._q.put(description + "\n")
 
@@ -1179,7 +1291,12 @@ class ManagerApp:
     def _apply_styles(self) -> None:
         style = ttk.Style(self._root)
         style.theme_use("clam")
-        style.configure("TEntry", fieldbackground=_CLR_BG_ALT, foreground=_CLR_FG, insertcolor=_CLR_FG)
+        style.configure(
+            "TEntry",
+            fieldbackground=_CLR_BG_ALT,
+            foreground=_CLR_FG,
+            insertcolor=_CLR_FG,
+        )
         style.configure("TCombobox", fieldbackground=_CLR_BG_ALT, foreground=_CLR_FG)
         style.configure("TRadiobutton", background=_CLR_BG, foreground=_CLR_FG)
         style.configure("TSeparator", background=_CLR_BORDER)
@@ -1203,7 +1320,9 @@ class ManagerApp:
         self._sidebar_buttons: dict[str, tk.Button] = {}
         for item in self._BUTTONS:
             if item is None:
-                ttk.Separator(sidebar, orient="horizontal").pack(fill=tk.X, padx=8, pady=8)
+                ttk.Separator(sidebar, orient="horizontal").pack(
+                    fill=tk.X, padx=8, pady=8
+                )
                 continue
             key, label = item
 
@@ -1237,9 +1356,9 @@ class ManagerApp:
         right.pack(side=tk.RIGHT, fill=tk.Y)
         right.pack_propagate(False)
 
-        tk.Label(right, text="Help", bg=_CLR_BG_ALT, fg=_CLR_ACCENT, font=_FONT_HEADING).pack(
-            anchor="w", padx=10, pady=(12, 4)
-        )
+        tk.Label(
+            right, text="Help", bg=_CLR_BG_ALT, fg=_CLR_ACCENT, font=_FONT_HEADING
+        ).pack(anchor="w", padx=10, pady=(12, 4))
 
         self._help_text = scrolledtext.ScrolledText(
             right,
@@ -1254,9 +1373,13 @@ class ManagerApp:
 
         ttk.Separator(right, orient="horizontal").pack(fill=tk.X, padx=6, pady=4)
 
-        tk.Label(right, text="Cheat Sheet", bg=_CLR_BG_ALT, fg=_CLR_ACCENT, font=_FONT_HEADING).pack(
-            anchor="w", padx=10, pady=4
-        )
+        tk.Label(
+            right,
+            text="Cheat Sheet",
+            bg=_CLR_BG_ALT,
+            fg=_CLR_ACCENT,
+            font=_FONT_HEADING,
+        ).pack(anchor="w", padx=10, pady=4)
 
         cheat = scrolledtext.ScrolledText(
             right,

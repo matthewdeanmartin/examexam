@@ -89,8 +89,12 @@ def _launch_interactive_tk() -> int:
 
     choice = tk.StringVar(value="")
 
-    tk.Label(root, text="ExamExam", bg=_BG, fg=_ACCENT, font=("Segoe UI", 22, "bold")).pack(pady=(28, 4))
-    tk.Label(root, text="What would you like to do?", bg=_BG, fg=_FG, font=("Segoe UI", 11)).pack(pady=(0, 18))
+    tk.Label(
+        root, text="ExamExam", bg=_BG, fg=_ACCENT, font=("Segoe UI", 22, "bold")
+    ).pack(pady=(28, 4))
+    tk.Label(
+        root, text="What would you like to do?", bg=_BG, fg=_FG, font=("Segoe UI", 11)
+    ).pack(pady=(0, 18))
 
     def _pick(value: str) -> None:
         choice.set(value)
@@ -183,7 +187,9 @@ def _launch_interactive_cli() -> int:
 def main(argv: Sequence[str] | None = None) -> int:
     """Main function for the command-line interface."""
     # Startup: read cached update report and schedule a background PyPI refresh.
-    startup_notice = upgrade_integration.render_notice(upgrade_integration.startup_report())
+    startup_notice = upgrade_integration.render_notice(
+        upgrade_integration.startup_report()
+    )
     if startup_notice:
         print(startup_notice, file=sys.stderr)
     parser = SmartParser(
@@ -192,9 +198,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         formatter_class=argparse.RawTextHelpFormatter,
         allow_abbrev=False,
     )
-    parser.add_argument("--version", action="version", version=f"%(prog)s {__about__.__version__}")
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {__about__.__version__}"
+    )
 
-    parser.add_argument("--verbose", action="store_true", required=False, help="Enable detailed logging.")
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        required=False,
+        help="Enable detailed logging.",
+    )
 
     parser.add_argument(
         "--frontend",
@@ -209,11 +222,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     # --- Take Command ---
     take_parser = subparsers.add_parser("take", help="Take an exam from a TOML file.")
     take_parser.add_argument(
-        "--question-file", type=str, default="", required=False, help="Path to the TOML question file."
+        "--question-file",
+        type=str,
+        default="",
+        required=False,
+        help="Path to the TOML question file.",
     )
 
     # --- Generate Command ---
-    generate_parser = subparsers.add_parser("generate", help="Generate new exam questions using an LLM.")
+    generate_parser = subparsers.add_parser(
+        "generate", help="Generate new exam questions using an LLM."
+    )
 
     generate_parser.add_argument(
         "--toc-file",
@@ -237,7 +256,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     add_model_args(generate_parser)
 
     # --- Validate Command ---
-    validate_parser = subparsers.add_parser("validate", help="Validate exam questions using an LLM.")
+    validate_parser = subparsers.add_parser(
+        "validate", help="Validate exam questions using an LLM."
+    )
     validate_parser.add_argument(
         "--question-file",
         type=str,
@@ -247,7 +268,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     add_model_args(validate_parser)
 
     # --- Convert Command ---
-    convert_parser = subparsers.add_parser("convert", help="Convert a TOML question file to Markdown and HTML formats.")
+    convert_parser = subparsers.add_parser(
+        "convert", help="Convert a TOML question file to Markdown and HTML formats."
+    )
     convert_parser.add_argument(
         "--input-file",
         type=str,
@@ -262,7 +285,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
 
     # --- Research Command ---
-    research_parser = subparsers.add_parser("research", help="Generate a study guide for a specific topic.")
+    research_parser = subparsers.add_parser(
+        "research", help="Generate a study guide for a specific topic."
+    )
     research_parser.add_argument(
         "--topic",
         type=str,
@@ -285,7 +310,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     # --- Customize Command ---
     customize_parser = subparsers.add_parser(
-        "customize", help="Deploy Jinja2 templates to a local directory for customization."
+        "customize",
+        help="Deploy Jinja2 templates to a local directory for customization.",
     )
     customize_parser.add_argument(
         "--target-dir",
@@ -300,7 +326,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
 
     # --- Doctor Command ---
-    subparsers.add_parser("doctor", help="Print diagnostic information for tech support.")
+    subparsers.add_parser(
+        "doctor", help="Print diagnostic information for tech support."
+    )
 
     # --- Manager Command ---
     subparsers.add_parser("manager", help="Launch the exam management GUI.")
@@ -350,7 +378,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             parser.error("The web frontend currently supports only the 'take' command.")
         configure_exam = getattr(ui, "configure_take_exam", None)
         if configure_exam is None:
-            raise RuntimeError("Selected web frontend cannot be configured for exam taking.")
+            raise RuntimeError(
+                "Selected web frontend cannot be configured for exam taking."
+            )
         configure_exam(args.question_file or None)
         ui.run()
         return 0

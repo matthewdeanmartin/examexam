@@ -45,7 +45,9 @@ class OpenAICaller(BaseLLMCaller):
     def __init__(self, model: str, conversation: Conversation):
         super().__init__(model, conversation)
         if OpenAICaller._client is None:
-            OpenAICaller._client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+            OpenAICaller._client = openai.OpenAI(
+                api_key=os.environ.get("OPENAI_API_KEY")
+            )
         self.client = OpenAICaller._client
         self.supported_models = ["gpt-5", "gpt-4o-mini"]
 
@@ -113,7 +115,14 @@ class AnthropicCaller(BaseLLMCaller):
             "claude-instant-1.2",
         ]
 
-    @retry(exceptions=anthropic.RateLimitError, tries=3, delay=5, jitter=(0.15, 0.23), backoff=1.5, logger=LOGGER)
+    @retry(
+        exceptions=anthropic.RateLimitError,
+        tries=3,
+        delay=5,
+        jitter=(0.15, 0.23),
+        backoff=1.5,
+        logger=LOGGER,
+    )
     def completion(self, prompt: str) -> str:
         self.conversation.prompt(prompt)
         try:
@@ -144,7 +153,9 @@ class GoogleCaller(BaseLLMCaller):
     def __init__(self, model: str, conversation: Conversation):
         super().__init__(model, conversation)
         self._initialize_google()
-        self.client = genai.GenerativeModel(model_name=self.model, system_instruction=conversation.system)
+        self.client = genai.GenerativeModel(
+            model_name=self.model, system_instruction=conversation.system
+        )
         self.chat: ChatSession | None = None
         self.supported_models = ["gemini-1.0-pro-001"]
 
@@ -178,20 +189,30 @@ class GoogleCaller(BaseLLMCaller):
 class FakeBotCaller(BaseLLMCaller):
     """A fake bot for integration tests and dry runs."""
 
-    def __init__(self, model: str, conversation: Conversation, data: list[str] | None = None, reliable: bool = False):
+    def __init__(
+        self,
+        model: str,
+        conversation: Conversation,
+        data: list[str] | None = None,
+        reliable: bool = False,
+    ):
         super().__init__(model, conversation)
         self.data = data or ["Answers: [1,2]\n---Blah blah. Bad."]
         self.reliable = reliable
         self.invocation_count = 0
         if self.model not in ["fakebot"]:
-            raise ExamExamTypeError(f"FakeBotCaller doesn't support model: {self.model}")
+            raise ExamExamTypeError(
+                f"FakeBotCaller doesn't support model: {self.model}"
+            )
 
     def completion(self, prompt: str) -> str:
         self.invocation_count += 1
         self.conversation.prompt(prompt)
 
         if not self.reliable and random.random() < 0.1:  # nosec
-            raise FakeBotException("Fakebot has failed to return an answer, just like a real API.")
+            raise FakeBotException(
+                "Fakebot has failed to return an answer, just like a real API."
+            )
 
         core_response = random.choice(self.data)  # nosec
         LOGGER.info(f"FakeBot Response: {core_response.replace(chr(10), r' ')}")

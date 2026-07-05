@@ -31,7 +31,9 @@ def call_limit(limit: int) -> Callable:
             name = func.__name__
             LOGGER.info(f"{name} called {func.call_count} times")  # type: ignore[attr-defined]
             if func.call_count > limit:  # type: ignore[attr-defined]
-                raise FailureToHaltError(f"{name} has been called more than {limit} times")
+                raise FailureToHaltError(
+                    f"{name} has been called more than {limit} times"
+                )
             return func(*args, **kwargs)
 
         return wrapper
@@ -47,7 +49,9 @@ def log_duration(func: Callable) -> Callable:
         start_time = time.time()
         result = func(*args, **kwargs)
         end_time = time.time()
-        LOGGER.info(f"Function {func.__name__} executed in {end_time - start_time:.4f} seconds.")
+        LOGGER.info(
+            f"Function {func.__name__} executed in {end_time - start_time:.4f} seconds."
+        )
         return result
 
     return wrapper
@@ -57,17 +61,16 @@ def log_duration(func: Callable) -> Callable:
 
 
 def load_env() -> None:
-    """
-    Loads environment variables from a .env file.
-    Placeholder for dotenv.load_dotenv().
-    """
-    # In a real app, you would use:
-    # from dotenv import load_dotenv
-    # load_dotenv()
+    """Loads environment variables from a .env file."""
+    import dotenv
+
+    dotenv.load_dotenv()
 
 
 def format_conversation_to_markdown(
-    conversation: list[dict[str, str]], user_label: str = "User", assistant_label: str = "Assistant"
+    conversation: list[dict[str, str]],
+    user_label: str = "User",
+    assistant_label: str = "Assistant",
 ) -> str:
     """
     Formats a conversation history into a Markdown string.
@@ -97,7 +100,9 @@ def format_conversation_to_markdown(
     return "\n".join(markdown_lines)
 
 
-def log_conversation_to_file(conversation: Conversation, model_name: str, request: str) -> None:
+def log_conversation_to_file(
+    conversation: Conversation, model_name: str, request: str
+) -> None:
     """Logs the full conversation history to a timestamped markdown file."""
     log_dir = Path("conversations")
     try:

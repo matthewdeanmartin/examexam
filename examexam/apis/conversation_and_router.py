@@ -91,7 +91,9 @@ class Router:
                     model=model_id, conversation=self.standard_conversation, tokens=4096
                 )
             else:
-                self.callers[caller_key] = caller_class(model=model_id, conversation=self.standard_conversation)
+                self.callers[caller_key] = caller_class(
+                    model=model_id, conversation=self.standard_conversation
+                )
 
         # For callers like Bedrock that handle multiple models, update the model ID
         caller_instance = self.callers[caller_key]
@@ -113,11 +115,15 @@ class Router:
             The model's string response, or None if an error occurred.
         """
         if self.conversation_cannot_continue:
-            raise ExamExamValueError("Conversation cannot continue, an essential exchange previously failed.")
+            raise ExamExamValueError(
+                "Conversation cannot continue, an essential exchange previously failed."
+            )
         if not request:
             raise ExamExamValueError("Request cannot be empty")
         if len(request) < 5:
-            LOGGER.warning(f"Request ('{request}') is short, which may be inappropriate for non-interactive use.")
+            LOGGER.warning(
+                f"Request ('{request}') is short, which may be inappropriate for non-interactive use."
+            )
 
         self.reset()
         LOGGER.info(f"Calling {model} with request of length {len(request)}")
@@ -165,7 +171,9 @@ class Router:
             return None
         finally:
             if caller:
-                log_conversation_to_file(self.standard_conversation, caller.model, request)
+                log_conversation_to_file(
+                    self.standard_conversation, caller.model, request
+                )
 
         self.most_recent_answer = answer
         return answer

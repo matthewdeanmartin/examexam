@@ -1,3 +1,12 @@
-Answer the following question in the format 'Answers: [option1 | option2 | ...]'.
+Answer the following question by selecting the option(s) you believe are correct.
+
 Question: {{ question }}
 Options: {{ options }}
+
+Respond with ONLY a TOML code block, nothing else:
+
+```toml
+answers = ["option text 1", "option text 2"]
+```
+
+List the exact text of each option you believe is correct, one string per array entry.

@@ -11,12 +11,14 @@ both the API and static HTML/JS/CSS.
 Two viable approaches:
 
 ### Option A: FastAPI + Jinja2 server-rendered pages (recommended for simplicity)
+
 - Each page is a server-rendered HTML template
 - Form submissions via POST, redirects via PRG pattern
 - Minimal JavaScript needed
 - Consistent with the project's existing Jinja2 usage
 
 ### Option B: FastAPI API + Separate SPA
+
 - FastAPI serves a JSON REST API
 - Frontend is a standalone React/Vue/Svelte app
 - More complex but more interactive
@@ -89,13 +91,13 @@ and request-driven. The adaptation strategy:
 1. **State machine**: Store exam state (current question, session, score) in a
    server-side dict keyed by browser session cookie.
 
-2. **Blocking methods become endpoints**: Methods like `show_question()` + `get_answer()`
+1. **Blocking methods become endpoints**: Methods like `show_question()` + `get_answer()`
    become a GET (render question) + POST (process answer) pair.
 
-3. **Progress uses SSE**: `progress_start/update/finish` map to Server-Sent Events
+1. **Progress uses SSE**: `progress_start/update/finish` map to Server-Sent Events
    that the browser consumes with EventSource.
 
-4. **The `run()` method starts uvicorn**.
+1. **The `run()` method starts uvicorn**.
 
 ### Synchronization Approach
 
@@ -194,6 +196,7 @@ async def progress_stream():
 ```
 
 Browser-side:
+
 ```javascript
 const source = new EventSource("/progress-stream");
 source.onmessage = (e) => {
@@ -205,6 +208,7 @@ source.onmessage = (e) => {
 ## Registration
 
 In `examexam/frontends/__init__.py`:
+
 ```python
 if name == "web":
     from examexam.frontends.web_ui import WebUI

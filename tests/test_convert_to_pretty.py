@@ -6,7 +6,13 @@ from pathlib import Path
 
 import pytest
 
-from examexam.convert_to_pretty import convert_markdown_to_html, generate_markdown, read_toml_file, run, write_to_file
+from examexam.convert_to_pretty import (
+    convert_markdown_to_html,
+    generate_markdown,
+    read_toml_file,
+    run,
+    write_to_file,
+)
 
 SAMPLE_TOML = textwrap.dedent("""
     [[questions]]
@@ -122,7 +128,9 @@ def test_write_to_file_round_trip(tmp_path: Path) -> None:
     assert out_path.read_text(encoding="utf-8") == payload
 
 
-def test_run_end_to_end_creates_files_and_prints(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
+def test_run_end_to_end_creates_files_and_prints(
+    capsys: pytest.CaptureFixture[str], tmp_path: Path
+) -> None:
     toml_path = write(tmp_path, "q.toml", SAMPLE_TOML)
     md_path = tmp_path / "questions.md"
     html_path = tmp_path / "questions.html"

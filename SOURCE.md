@@ -1,4 +1,5 @@
 ## Tree for examexam
+
 ```
 ├── apis/
 │   ├── conversation_and_router.py
@@ -24,6 +25,7 @@
 ```
 
 ## File: config.py
+
 ```python
 """
 Manages configuration for the Examexam application.
@@ -297,11 +299,15 @@ def reset_for_testing(config_path_override: Path | None = None) -> Config:
     config.load(config_path_override)
     return config
 ```
+
 ## File: constants.py
+
 ```python
 BAD_QUESTION_TEXT = "This is a bad question and is not answerable as posed."
 ```
+
 ## File: convert_to_pretty.py
+
 ```python
 from __future__ import annotations
 
@@ -392,8 +398,10 @@ def run(toml_file_path: str, markdown_file_path: str, html_file_path: str) -> No
 
     print(f"Successfully created '{markdown_file_path}' and '{html_file_path}'.")
 ```
+
 ## File: find_the_toml.py
-```python
+
+````python
 from __future__ import annotations
 
 import logging
@@ -638,9 +646,11 @@ def extract_questions_toml(markdown_content: str) -> str | None:
     else:
         logger.info("TOML content found and validated.")
     return result
-```
+````
+
 ## File: generate_questions.py
-```python
+
+````python
 from __future__ import annotations
 
 import logging
@@ -983,8 +993,10 @@ if __name__ == "__main__":
         model="openai",
         system_prompt="We are writing multiple choice tests.",
     )
-```
+````
+
 ## File: generate_study_plan.py
+
 ```python
 from __future__ import annotations
 
@@ -1139,7 +1151,9 @@ if __name__ == "__main__":
     # You would need an 'example_toc.txt' file for this to work
     generate_study_plan_now(toc_file="example_toc.txt", model="openai")
 ```
+
 ## File: generate_topic_research.py
+
 ```python
 """
 Call a bot to create study guide
@@ -1302,7 +1316,9 @@ if __name__ == "__main__":
     example_topic = "Python decorators"
     generate_topic_research_now(topic=example_topic, model="openai")
 ```
+
 ## File: jinja_management.py
+
 ```python
 from __future__ import annotations
 
@@ -1480,7 +1496,9 @@ def get_jinja_env() -> Environment:
 # Create a single environment instance to be used by the module
 jinja_env = get_jinja_env()
 ```
+
 ## File: take_exam.py
+
 ```python
 """
 Example toml
@@ -2361,7 +2379,9 @@ def take_exam_machine(
 if __name__ == "__main__":
     take_exam_now()
 ```
+
 ## File: validate_questions.py
+
 ```python
 """
 Example toml
@@ -2814,7 +2834,9 @@ if __name__ == "__main__":
         model="claude",
     )
 ```
+
 ## File: __main__.py
+
 ```python
 from __future__ import annotations
 
@@ -3058,7 +3080,9 @@ def main(argv: Sequence[str] | None = None) -> int:
 if __name__ == "__main__":
     sys.exit(main())
 ```
-## File: apis\conversation_and_router.py
+
+## File: apis\\conversation_and_router.py
+
 ```python
 # conversation_and_router.py
 from __future__ import annotations
@@ -3271,7 +3295,9 @@ class Router:
             answer = self.call(request, model)
         return answer
 ```
-## File: apis\third_party_apis.py
+
+## File: apis\\third_party_apis.py
+
 ```python
 # third_party_apis.py
 from __future__ import annotations
@@ -3487,7 +3513,9 @@ class FakeBotCaller(BaseLLMCaller):
         self.conversation.response(core_response)
         return core_response
 ```
-## File: apis\types.py
+
+## File: apis\\types.py
+
 ```python
 # --- Custom Exceptions ---
 from __future__ import annotations
@@ -3558,8 +3586,10 @@ class Conversation:
         """Returns the conversation history without the system message."""
         return [_ for _ in self.conversation if _["role"] != "system"]
 ```
-## File: apis\utilities.py
-```python
+
+## File: apis\\utilities.py
+
+````python
 # utilities.py
 from __future__ import annotations
 
@@ -3696,14 +3726,18 @@ def log_conversation_to_file(
         LOGGER.debug(f"Conversation logged to {filename}")
     except OSError as e:
         LOGGER.error(f"Could not write to conversation log file {filename}: {e}")
-```
-## File: prompts\answer_question.md.j2
+````
+
+## File: prompts\\answer_question.md.j2
+
 ```
 Answer the following question in the format 'Answers: [option1 | option2 | ...]'.
 Question: {{ question }}
 Options: {{ options }}
 ```
-## File: prompts\evaluate_question.md.j2
+
+## File: prompts\\evaluate_question.md.j2
+
 ```
 Tell me if the following question is Good or Bad, e.g. would it be unfair to ask this on a test.
 It is good if it has an answer, if it not every single option is an answer, if it is not opinion based, if it does not have weasel words such as best, optimal, primary which would make many of the answers arguably true on some continuum of truth or opinion, or if the question is about numerical ephemeral truths, such as system limitations (max GB, etc) and UI defaults.
@@ -3716,8 +3750,10 @@ Think about the answer then write `---
 Good` or `---
 Bad`
 ```
-## File: prompts\generate.md.j2
-```
+
+## File: prompts\\generate.md.j2
+
+````
 Generate {{ n }} medium difficulty certification exam questions. {{ prompt }}.
 Follow the following TOML format:
 
@@ -3734,70 +3770,90 @@ is_correct = true
 text = "Wrong Answer. Must be first."
 explanation = "Explanation. Must be before is_correct. Incorrect."
 is_correct = false
-```
+````
+
 One or more can be correct!
 Five options.
-Each explanation must end in  "Correct" or "Incorrect", e.g. "Instance storage is ephemeral. Correct".
+Each explanation must end in "Correct" or "Incorrect", e.g. "Instance storage is ephemeral. Correct".
 Do not use numbers or letters to represent the answers.
-   [[questions.options]]
-   text = "A. Answer"  # never do this.
-   [[questions.options]]
-   text = "1. Answer"  # never do this.
+\[[questions.options]\]
+text = "A. Answer" # never do this.
+\[[questions.options]\]
+text = "1. Answer" # never do this.
 Do not use "All of the above" or the like as an answer.
+
 ```
 ## File: prompts\study_guide.md.j2
 ```
+
 Create a comprehensive study guide for the following topic: {{ topic }}.
 
 The study guide should be in Markdown format and include the following sections:
 
----
+______________________________________________________________________
+
 ## Core Concepts:
+
 A clear explanation of the fundamental ideas.
 
 ## Key Terminology:
+
 Definitions of important terms.
 
 ## Code Examples:
+
 Practical, well-commented code snippets (if applicable).
 
 ## Common Pitfalls:
+
 Mistakes or misunderstandings to avoid.
 
 ## Further Research:
+
 A list of suggested search engine queries to deepen understanding.
 
----
+______________________________________________________________________
+
 Structure the "Further Research" section like this, providing varied and useful queries (with hyperlinks!):
 
 ## Further Research
+
 Google:
+
 - {{ topic }} tutorial for beginners
 - advanced {{ topic }} techniques
 - {{ topic }} real-world examples
 
 Google (with operators):
+
 - site:stackoverflow.com {{ topic }} "common error"
 - filetype:pdf {{ topic }} cheat sheet
 
 Bing:
+
 - {{ topic }} practical applications
 - compare {{ topic }} with [related concept]
 
 Bing (with operators):
+
 - {{ topic }} inurl:blog
 - {{ topic }} -"getting started"
 
 Kagi:
+
 - How does {{ topic }} work internally?
 - Best practices for using {{ topic }}
 
 Kagi (with operators):
+
 - {{ topic }} !pinterest !shopping
 - {{ topic }} discussion lang:en
 
----
+______________________________________________________________________
+
 Use additional operators as appropriate
 
 Please generate the complete study guide now.
+
+```
 ```

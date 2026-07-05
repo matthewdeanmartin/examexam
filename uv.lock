@@ -884,8 +884,6 @@ dependencies = [
     { name = "rtoml" },
     { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "scipy", version = "1.18.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "textual" },
-    { name = "toml" },
 ]
 
 [package.optional-dependencies]
@@ -965,8 +963,6 @@ requires-dist = [
     { name = "retry", specifier = ">=0.9.2" },
     { name = "rtoml", specifier = ">=0.1.0" },
     { name = "scipy" },
-    { name = "textual", specifier = ">=1.0.0" },
-    { name = "toml", specifier = ">=0.10.2" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'web'", specifier = ">=0.30.0" },
 ]
 provides-extras = ["web"]

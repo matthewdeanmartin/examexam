@@ -51,21 +51,26 @@ and each frontend (CLI/Rich, Tkinter GUI, Textual TUI, Web) provides its own imp
 ## Key Design Decisions
 
 ### 1. Protocol-based UI abstraction
+
 We use `typing.Protocol` (structural subtyping) rather than ABC. This means frontend
 implementations don't need to inherit from anything — they just need to have the right methods.
 
 ### 2. FrontendUI is split into capability groups
+
 Not every command needs every UI method. The protocol has method groups:
+
 - **Core**: `show_message()`, `show_error()`, `confirm()`
 - **Exam**: `show_question()`, `get_answer()`, `show_answer_feedback()`, `show_results()`
 - **Progress**: `create_progress()`, `update_progress()`, `complete_progress()`
 - **Display**: `show_panel()`, `show_table()`, `show_markdown()`
 
 ### 3. Business logic accepts `ui: FrontendUI` parameter
+
 All `*_now()` entry functions accept a `ui` parameter. `__main__.py` instantiates the
 appropriate frontend and passes it down.
 
 ### 4. Data models replace raw dicts
+
 `examexam/models.py` defines dataclasses for `Question`, `Option`, `ExamSession`, `ExamResult`.
 These provide type safety and make the protocol methods well-typed.
 
@@ -75,8 +80,8 @@ These provide type safety and make the protocol methods well-typed.
 |----------|--------|--------|
 | CLI (Rich) | `examexam/frontends/rich_ui.py` | Implemented |
 | GUI (Tkinter) | `examexam/frontends/tkinter_ui.py` | Implemented |
-| TUI (Textual) | `examexam/frontends/textual_ui.py` | Planned |
-| Web (Flask/FastAPI) | `examexam/frontends/web_ui.py` | Planned |
+| Web (FastAPI) | `examexam/frontends/web_ui.py` | Implemented |
+| TUI (Textual) | `examexam/frontends/textual_ui.py` | Planned (not yet started; `textual` dependency removed until work begins) |
 
 ## File Structure
 

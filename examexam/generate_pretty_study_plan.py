@@ -271,7 +271,9 @@ class RenderOptions:
     extension_configs: dict | None = None
 
 
-def _make_markdown(extensions: Iterable[str] | None = None, extension_configs: dict | None = None):
+def _make_markdown(
+    extensions: Iterable[str] | None = None, extension_configs: dict | None = None
+):
     exts = [
         "toc",
         "tables",
@@ -295,7 +297,9 @@ def _make_markdown(extensions: Iterable[str] | None = None, extension_configs: d
     except ImportError:
         pass
 
-    return _markdown.Markdown(extensions=exts, extension_configs=extension_configs or {})
+    return _markdown.Markdown(
+        extensions=exts, extension_configs=extension_configs or {}
+    )
 
 
 def render_markdown_to_html(md_text: str, options: RenderOptions | None = None) -> str:
@@ -338,7 +342,9 @@ def render_markdown_to_html(md_text: str, options: RenderOptions | None = None) 
     return html
 
 
-def render_file_to_html(path: Path, *, options: RenderOptions | None = None, encoding: str = "utf-8") -> str:
+def render_file_to_html(
+    path: Path, *, options: RenderOptions | None = None, encoding: str = "utf-8"
+) -> str:
     """Render a Markdown file to an HTML string.
 
     Parameters
@@ -353,7 +359,12 @@ def render_file_to_html(path: Path, *, options: RenderOptions | None = None, enc
     md_text = path.read_text(encoding=encoding)
     opts = options or RenderOptions()
     if not opts.title:
-        opts = RenderOptions(**{**opts.__dict__, "title": path.stem.replace("-", " ").replace("_", " ").title()})
+        opts = RenderOptions(
+            **{
+                **opts.__dict__,
+                "title": path.stem.replace("-", " ").replace("_", " ").title(),
+            }
+        )
     return render_markdown_to_html(md_text, opts)
 
 
@@ -378,7 +389,11 @@ def _cli(argv: list[str] | None = None) -> int:
     parser.add_argument("input", type=Path, help="Input Markdown file")
     parser.add_argument("-o", "--output", type=Path, help="Output HTML file")
     parser.add_argument("--dark", action="store_true", help="Start in dark mode")
-    parser.add_argument("--template", type=Path, help="Path to custom Jinja2 template (overrides built-in)")
+    parser.add_argument(
+        "--template",
+        type=Path,
+        help="Path to custom Jinja2 template (overrides built-in)",
+    )
     parser.add_argument(
         "--assets-json",
         type=Path,

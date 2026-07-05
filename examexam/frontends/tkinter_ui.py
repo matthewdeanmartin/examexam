@@ -44,11 +44,20 @@ class TkinterUI:
             # Style
             style = ttk.Style()
             style.theme_use("clam")
-            style.configure("Title.TLabel", font=("Segoe UI", 16, "bold"), background="#f0f0f0")
-            style.configure("Question.TLabel", font=("Segoe UI", 12), background="#f0f0f0", wraplength=800)
+            style.configure(
+                "Title.TLabel", font=("Segoe UI", 16, "bold"), background="#f0f0f0"
+            )
+            style.configure(
+                "Question.TLabel",
+                font=("Segoe UI", 12),
+                background="#f0f0f0",
+                wraplength=800,
+            )
             style.configure("Correct.TLabel", foreground="green", font=("Segoe UI", 11))
             style.configure("Incorrect.TLabel", foreground="red", font=("Segoe UI", 11))
-            style.configure("Score.TLabel", font=("Segoe UI", 14, "bold"), background="#f0f0f0")
+            style.configure(
+                "Score.TLabel", font=("Segoe UI", 14, "bold"), background="#f0f0f0"
+            )
 
             self._main_frame = ttk.Frame(self._root, padding=20)
             self._main_frame.pack(fill=tk.BOTH, expand=True)
@@ -122,9 +131,13 @@ class TkinterUI:
             self._clear_main_frame()
             frame = self._main_frame
 
-            ttk.Label(frame, text="Select a Test", style="Title.TLabel").pack(pady=(0, 15))
+            ttk.Label(frame, text="Select a Test", style="Title.TLabel").pack(
+                pady=(0, 15)
+            )
 
-            listbox = tk.Listbox(frame, font=("Segoe UI", 12), height=min(len(tests), 15), width=60)
+            listbox = tk.Listbox(
+                frame, font=("Segoe UI", 12), height=min(len(tests), 15), width=60
+            )
             for test in tests:
                 listbox.insert(tk.END, f"  {test.index}. {test.name}")
             listbox.pack(pady=10)
@@ -144,11 +157,20 @@ class TkinterUI:
         self._selection_event.wait()
         return self._selection_result
 
-    def show_session_info(self, test_name: str, completed: int, total: int, time_ago: str) -> None:
+    def show_session_info(
+        self, test_name: str, completed: int, total: int, time_ago: str
+    ) -> None:
         # This will be followed by a confirm() call, so just show info
-        self.show_message(f"Session found for '{test_name}': {completed}/{total} completed ({time_ago} ago)")
+        self.show_message(
+            f"Session found for '{test_name}': {completed}/{total} completed ({time_ago} ago)"
+        )
 
-    def show_question(self, question: Question, options: list[Option], question_number: int | None = None) -> None:
+    def show_question(
+        self,
+        question: Question,
+        options: list[Option],
+        question_number: int | None = None,
+    ) -> None:
         self._answer_event.clear()
 
         def _show():
@@ -161,7 +183,9 @@ class TkinterUI:
             if "(Select" not in q_text:
                 q_text = f"{q_text} (Select {answer_count})"
 
-            ttk.Label(frame, text=q_text, style="Question.TLabel").pack(pady=(0, 15), anchor="w")
+            ttk.Label(frame, text=q_text, style="Question.TLabel").pack(
+                pady=(0, 15), anchor="w"
+            )
 
             ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=5)
 
@@ -176,13 +200,17 @@ class TkinterUI:
             # Bad question option
             bad_var = tk.BooleanVar(value=False)
             self._option_vars.append(bad_var)
-            cb = ttk.Checkbutton(frame, text=f"{len(options) + 1}. {BAD_QUESTION_TEXT}", variable=bad_var)
+            cb = ttk.Checkbutton(
+                frame, text=f"{len(options) + 1}. {BAD_QUESTION_TEXT}", variable=bad_var
+            )
             cb.pack(anchor="w", pady=2, padx=20)
 
             ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
 
             def on_submit():
-                selected = [str(i + 1) for i, var in enumerate(self._option_vars) if var.get()]
+                selected = [
+                    str(i + 1) for i, var in enumerate(self._option_vars) if var.get()
+                ]
                 self._input_result = ",".join(selected) if selected else ""
                 self._answer_event.set()
 
@@ -217,28 +245,44 @@ class TkinterUI:
             frame = self._main_frame
 
             if feedback.is_correct:
-                ttk.Label(frame, text="\u2713 Correct!", style="Correct.TLabel", font=("Segoe UI", 16, "bold")).pack(
-                    pady=(0, 10)
-                )
+                ttk.Label(
+                    frame,
+                    text="\u2713 Correct!",
+                    style="Correct.TLabel",
+                    font=("Segoe UI", 16, "bold"),
+                ).pack(pady=(0, 10))
             else:
-                ttk.Label(frame, text="\u2717 Incorrect", style="Incorrect.TLabel", font=("Segoe UI", 16, "bold")).pack(
-                    pady=(0, 10)
-                )
-                ttk.Label(frame, text=f"Correct: {', '.join(feedback.correct_answers)}", wraplength=800).pack(
-                    anchor="w", padx=20
-                )
-                ttk.Label(frame, text=f"Your answer: {', '.join(feedback.user_answers)}", wraplength=800).pack(
-                    anchor="w", padx=20
-                )
+                ttk.Label(
+                    frame,
+                    text="\u2717 Incorrect",
+                    style="Incorrect.TLabel",
+                    font=("Segoe UI", 16, "bold"),
+                ).pack(pady=(0, 10))
+                ttk.Label(
+                    frame,
+                    text=f"Correct: {', '.join(feedback.correct_answers)}",
+                    wraplength=800,
+                ).pack(anchor="w", padx=20)
+                ttk.Label(
+                    frame,
+                    text=f"Your answer: {', '.join(feedback.user_answers)}",
+                    wraplength=800,
+                ).pack(anchor="w", padx=20)
 
             ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
 
             # Explanations
-            ttk.Label(frame, text="Explanations:", font=("Segoe UI", 12, "bold")).pack(anchor="w", padx=10, pady=(5, 5))
+            ttk.Label(frame, text="Explanations:", font=("Segoe UI", 12, "bold")).pack(
+                anchor="w", padx=10, pady=(5, 5)
+            )
             for idx, (explanation, is_correct) in enumerate(feedback.explanations, 1):
                 color = "green" if is_correct else "red"
                 lbl = ttk.Label(
-                    frame, text=f"{idx}. {explanation}", wraplength=780, foreground=color, font=("Segoe UI", 10)
+                    frame,
+                    text=f"{idx}. {explanation}",
+                    wraplength=780,
+                    foreground=color,
+                    font=("Segoe UI", 10),
                 )
                 lbl.pack(anchor="w", padx=30, pady=2)
 
@@ -261,11 +305,17 @@ class TkinterUI:
             if result.is_final:
                 status = "PASSED" if result.passed else "FAILED"
                 color = "green" if result.passed else "red"
-                ttk.Label(frame, text=status, foreground=color, font=("Segoe UI", 18, "bold")).pack(pady=5)
+                ttk.Label(
+                    frame, text=status, foreground=color, font=("Segoe UI", 18, "bold")
+                ).pack(pady=5)
 
             # Progress bar
             progress_bar = ttk.Progressbar(
-                frame, length=400, mode="determinate", maximum=result.total, value=result.score
+                frame,
+                length=400,
+                mode="determinate",
+                maximum=result.total,
+                value=result.score,
             )
             progress_bar.pack(pady=10)
 
@@ -274,22 +324,28 @@ class TkinterUI:
             ttk.Label(frame, text=time_str).pack(anchor="w", padx=20)
 
             if result.avg_time_per_question:
-                ttk.Label(frame, text=f"Avg per question: {humanize_timedelta(result.avg_time_per_question)}").pack(
-                    anchor="w", padx=20
-                )
+                ttk.Label(
+                    frame,
+                    text=f"Avg per question: {humanize_timedelta(result.avg_time_per_question)}",
+                ).pack(anchor="w", padx=20)
 
             if result.estimated_time_left and not result.is_final:
-                ttk.Label(frame, text=f"Est. remaining: {humanize_timedelta(result.estimated_time_left)}").pack(
-                    anchor="w", padx=20
-                )
+                ttk.Label(
+                    frame,
+                    text=f"Est. remaining: {humanize_timedelta(result.estimated_time_left)}",
+                ).pack(anchor="w", padx=20)
 
             # CI info
             ttk.Separator(frame, orient="horizontal").pack(fill="x", pady=10)
             ci_text = f"95% CI: {result.ci_lower * 100:.1f}%-{result.ci_upper * 100:.1f}% (normal) | {result.exact_ci_lower * 100:.1f}%-{result.exact_ci_upper * 100:.1f}% (exact)"
-            ttk.Label(frame, text=ci_text, font=("Segoe UI", 9)).pack(anchor="w", padx=20)
-            ttk.Label(frame, text=f"Binomial test vs 70%: p={result.p_value:.3f}", font=("Segoe UI", 9)).pack(
+            ttk.Label(frame, text=ci_text, font=("Segoe UI", 9)).pack(
                 anchor="w", padx=20
             )
+            ttk.Label(
+                frame,
+                text=f"Binomial test vs 70%: p={result.p_value:.3f}",
+                font=("Segoe UI", 9),
+            ).pack(anchor="w", padx=20)
 
         self._schedule(_show)
 
@@ -309,8 +365,12 @@ class TkinterUI:
                     self._continue_result = "bad"
                     self._continue_event.set()
 
-                ttk.Button(btn_frame, text="Next Question", command=on_continue).pack(side=tk.LEFT, padx=5)
-                ttk.Button(btn_frame, text="Mark as Bad Question", command=on_bad).pack(side=tk.LEFT, padx=5)
+                ttk.Button(btn_frame, text="Next Question", command=on_continue).pack(
+                    side=tk.LEFT, padx=5
+                )
+                ttk.Button(btn_frame, text="Mark as Bad Question", command=on_bad).pack(
+                    side=tk.LEFT, padx=5
+                )
 
         self._schedule(_show)
         self._continue_event.wait()
@@ -326,10 +386,14 @@ class TkinterUI:
         import uuid
 
         task_id = str(uuid.uuid4())[:8]
-        self.show_message(f"{description} (0/{total})" if description else f"Progress: 0/{total}")
+        self.show_message(
+            f"{description} (0/{total})" if description else f"Progress: 0/{total}"
+        )
         return task_id
 
-    def progress_update(self, task_id: str, advance: int = 1, description: str = "") -> None:
+    def progress_update(
+        self, task_id: str, advance: int = 1, description: str = ""
+    ) -> None:
         if description:
             self.show_message(description)
 
@@ -350,7 +414,9 @@ class TkinterUI:
         def _show():
             self._clear_main_frame()
             frame = self._main_frame
-            text_widget = scrolledtext.ScrolledText(frame, wrap=tk.WORD, font=("Segoe UI", 11), width=90, height=30)
+            text_widget = scrolledtext.ScrolledText(
+                frame, wrap=tk.WORD, font=("Segoe UI", 11), width=90, height=30
+            )
             text_widget.insert(tk.END, content)
             text_widget.configure(state="disabled")
             text_widget.pack(fill=tk.BOTH, expand=True)
@@ -395,12 +461,18 @@ class TkinterUI:
                 except Exception as e:
                     _ = e  # something keeps removing this, ruff?
                     if self._root:
-                        self._schedule(lambda: messagebox.showerror("Error", str(e), parent=self._root))  # noqa
+                        self._schedule(
+                            lambda: messagebox.showerror(
+                                "Error", str(e), parent=self._root  # noqa
+                            )
+                        )  # noqa
                 finally:
                     # When done, add a "Close" button so user can review final results
                     def _add_close_button():
                         if self._main_frame and self._root:
-                            ttk.Button(self._main_frame, text="Close", command=self._root.quit).pack(pady=15)
+                            ttk.Button(
+                                self._main_frame, text="Close", command=self._root.quit
+                            ).pack(pady=15)
 
                     if self._root:
                         self._schedule(_add_close_button)

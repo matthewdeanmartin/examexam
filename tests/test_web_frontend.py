@@ -52,8 +52,14 @@ def test_index_lists_exam_with_accessible_navigation(web_client: TestClient) -> 
     assert "Start exam" in response.text
 
 
-def test_web_exam_flow_records_result_and_renders_feedback(web_client: TestClient, tmp_path: Path) -> None:
-    start = web_client.post("/start", data={"test_name": "sample_exam", "resume": "false"}, follow_redirects=False)
+def test_web_exam_flow_records_result_and_renders_feedback(
+    web_client: TestClient, tmp_path: Path
+) -> None:
+    start = web_client.post(
+        "/start",
+        data={"test_name": "sample_exam", "resume": "false"},
+        follow_redirects=False,
+    )
     assert start.status_code == 303
     assert start.headers["location"] == "/question/1"
 
@@ -84,7 +90,9 @@ def test_web_exam_flow_records_result_and_renders_feedback(web_client: TestClien
     assert session_data["questions"][0]["user_score"] == 1
 
 
-def test_index_offers_resume_when_saved_session_exists(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_index_offers_resume_when_saved_session_exists(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.chdir(tmp_path)
     write(tmp_path, "data/sample_exam.toml", SAMPLE_WEB_TOML)
 
@@ -96,8 +104,16 @@ def test_index_offers_resume_when_saved_session_exists(tmp_path: Path, monkeypat
                 "id": "q-1",
                 "question": "What is 2 + 2?",
                 "options": [
-                    {"text": "4", "explanation": "Basic arithmetic.", "is_correct": True},
-                    {"text": "5", "explanation": "That is too high.", "is_correct": False},
+                    {
+                        "text": "4",
+                        "explanation": "Basic arithmetic.",
+                        "is_correct": True,
+                    },
+                    {
+                        "text": "5",
+                        "explanation": "That is too high.",
+                        "is_correct": False,
+                    },
                 ],
                 "user_answers": ["4"],
                 "user_score": 1,

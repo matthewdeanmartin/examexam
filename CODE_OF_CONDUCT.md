@@ -1,4 +1,5 @@
 ## examexam - Code of Conduct
+
 As contributors and maintainers of this project, we are dedicated to providing a respectful and harassment-free
 experience for everyone. We are committed to fostering an open and welcoming environment.
 
@@ -18,10 +19,10 @@ relevant.
 
 **No Harassment**: Harassment and exclusionary behavior are not acceptable. This includes, but is not limited to:
 
- - Offensive comments related to any personal characteristic.
- - Threats of violence. 
- - Deliberate intimidation. 
- - Unwelcome attention.
+- Offensive comments related to any personal characteristic.
+- Threats of violence.
+- Deliberate intimidation.
+- Unwelcome attention.
 
 ## Enforcement
 

@@ -34,11 +34,17 @@ if not logger.handlers:
         level=os.environ.get("LOG_LEVEL", "INFO"),
         format="%(message)s",
         datefmt="%H:%M:%S",
-        handlers=[RichHandler(rich_tracebacks=True, markup=True, show_time=False, show_level=True)],
+        handlers=[
+            RichHandler(
+                rich_tracebacks=True, markup=True, show_time=False, show_level=True
+            )
+        ],
     )
 
 
-def generate_study_plan_now(toc_file: str, model: str = "openai", ui: FrontendUI | None = None) -> None:
+def generate_study_plan_now(
+    toc_file: str, model: str = "openai", ui: FrontendUI | None = None
+) -> None:
     """Generates a consolidated study guide for all topics in a TOC file."""
     # Default to Rich CLI if no UI provided
     if ui is None:
@@ -60,7 +66,9 @@ def generate_study_plan_now(toc_file: str, model: str = "openai", ui: FrontendUI
         return
 
     ui.show_rule("Study Plan Generation")
-    ui.show_message(f"Generating study guides for {total_topics} topics using model {model}...")
+    ui.show_message(
+        f"Generating study guides for {total_topics} topics using model {model}..."
+    )
 
     all_guides_content = [f"# Study Plan for {toc_path.stem}\n\n"]
     failures = 0
@@ -84,7 +92,9 @@ def generate_study_plan_now(toc_file: str, model: str = "openai", ui: FrontendUI
         overall_task = progress.add_task("Overall", total=total_topics)
 
         for idx, topic in enumerate(topics, start=1):
-            topic_task_desc = f"{idx}/{total_topics} {topic[:40]}{'...' if len(topic) > 40 else ''}"
+            topic_task_desc = (
+                f"{idx}/{total_topics} {topic[:40]}{'...' if len(topic) > 40 else ''}"
+            )
             topic_task = progress.add_task(topic_task_desc, total=1)
 
             t0 = perf_counter()
@@ -92,14 +102,18 @@ def generate_study_plan_now(toc_file: str, model: str = "openai", ui: FrontendUI
             dt = perf_counter() - t0
 
             if guide_content:
-                all_guides_content.append(f"## Topic: {topic}\n\n{guide_content}\n\n---\n\n")
+                all_guides_content.append(
+                    f"## Topic: {topic}\n\n{guide_content}\n\n---\n\n"
+                )
                 progress.update(
                     topic_task,
                     description=f"{topic_task_desc} [green](ok in {dt:.2f}s)[/]",
                 )
             else:
                 failures += 1
-                progress.update(topic_task, description=f"{topic_task_desc} [red](failed)[/]")
+                progress.update(
+                    topic_task, description=f"{topic_task_desc} [red](failed)[/]"
+                )
 
             progress.advance(topic_task)
             progress.advance(overall_task)
@@ -107,7 +121,11 @@ def generate_study_plan_now(toc_file: str, model: str = "openai", ui: FrontendUI
     ui.show_rule()
 
     if not all_guides_content or len(all_guides_content) == 1:
-        ui.show_panel("Failed to generate any study guides.", title="Complete Failure", style="red")
+        ui.show_panel(
+            "Failed to generate any study guides.",
+            title="Complete Failure",
+            style="red",
+        )
         return
 
     # Save the consolidated file

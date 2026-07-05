@@ -11,7 +11,9 @@ class SmartParser(argparse.ArgumentParser):
         if "invalid choice" in message and "choose from" in message:
             bad = message.split("invalid choice:")[1].split("(")[0].strip().strip("'\"")
             choices_str = message.split("choose from")[1]
-            choices = [c.strip().strip(",)'") for c in choices_str.split() if c.strip(",)")]
+            choices = [
+                c.strip().strip(",)'") for c in choices_str.split() if c.strip(",)")
+            ]
 
             tips = get_close_matches(bad, choices, n=3, cutoff=0.6)
             if tips:

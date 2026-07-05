@@ -26,6 +26,7 @@ from __future__ import annotations
 import csv
 import logging
 import os
+import re
 from io import StringIO
 from pathlib import Path
 from time import perf_counter, sleep
@@ -46,8 +47,8 @@ from rich.progress import (
 )
 
 from examexam.apis.conversation_and_router import Conversation, Router
+from examexam.apis.fatal_errors import fatal_if_misconfigured, is_fatal_message
 from examexam.jinja_management import jinja_env
-from examexam.utils.custom_exceptions import ExamExamTypeError
 
 if TYPE_CHECKING:
     from examexam.ui_protocol import FrontendUI
@@ -63,40 +64,18 @@ if not logger.handlers:
     logging.basicConfig(
         level=os.environ.get("LOG_LEVEL", "INFO"),
         format="%(message)s",
-        handlers=[RichHandler(rich_tracebacks=True, markup=True, show_time=False, show_level=True)],
+        handlers=[
+            RichHandler(
+                rich_tracebacks=True, markup=True, show_time=False, show_level=True
+            )
+        ],
     )
 
 
 # ----------------------------------------------------------------------------
-# Fatal error detection & LLM helpers
+# LLM helpers (fatal-error detection shared with generate_questions.py via
+# examexam.apis.fatal_errors)
 # ----------------------------------------------------------------------------
-class FatalLLMError(Exception):
-    """Raised for obviously fatal misconfigurations (missing API keys, etc.)."""
-
-
-def _fatal_precheck(model: str) -> None:
-    """Detect common fatal cases before calling the LLM so we don't loop."""
-    m = model.lower()
-    if m in {"fakebot", "none", "noop"}:
-        return
-    if "gpt" in m and not os.getenv("OPENAI_API_KEY"):
-        raise FatalLLMError("OPENAI_API_KEY is not set for OpenAI model.")
-    if "claude" in m and not os.getenv("ANTHROPIC_API_KEY"):
-        raise FatalLLMError("ANTHROPIC_API_KEY is not set for Claude model.")
-
-
-def _is_fatal_message(msg: str) -> bool:
-    msg = msg.lower()
-    markers = [
-        "api_key client option must be set",
-        "no api key",
-        "invalid api key",
-        "unauthorized",
-        "model not found",
-        "does not exist or you do not have access",
-        "access denied",
-    ]
-    return any(k in msg for k in markers)
 
 
 def _llm_call(
@@ -108,7 +87,7 @@ def _llm_call(
     retry_delay_seconds: float = 1.25,
 ) -> str | None:
     """Make a guarded LLM call with minimal retries and fatal detection."""
-    _fatal_precheck(model)
+    fatal_if_misconfigured(model)
 
     conversation = Conversation(system=system)
     router = Router(conversation)
@@ -125,7 +104,7 @@ def _llm_call(
         except Exception as e:  # noqa: BLE001
             msg = str(e)
             logger.error("Error calling %s: %s", model, msg)
-            if _is_fatal_message(msg):
+            if is_fatal_message(msg):
                 logger.error("Fatal error detected; will not retry.")
                 return None
             if attempts > max_retries:
@@ -137,6 +116,105 @@ def _llm_call(
 # ----------------------------------------------------------------------------
 # Core utilities (unchanged logic, richer logs)
 # ----------------------------------------------------------------------------
+
+
+BANNED_OPTION_PATTERNS = (
+    "all of the above",
+    "none of the above",
+)
+
+
+def check_question_form(question: dict[str, Any]) -> list[str]:
+    """Deterministic, non-LLM structural checks on a single question.
+
+    Returns a list of problem descriptions; an empty list means the question
+    passed every check. These run before any LLM call so obviously malformed
+    questions are caught for free.
+    """
+    problems: list[str] = []
+    text = question.get("question", "")
+    options = question.get("options", [])
+
+    if not text or not str(text).strip():
+        problems.append("Question text is empty.")
+
+    if len(options) < 2:
+        problems.append(f"Question has fewer than 2 options ({len(options)}).")
+
+    correct_options = [opt for opt in options if opt.get("is_correct")]
+    incorrect_options = [opt for opt in options if not opt.get("is_correct")]
+
+    if not correct_options:
+        problems.append("Question has no option marked is_correct.")
+    if not incorrect_options:
+        problems.append(
+            "Question has no incorrect options (every option is marked is_correct)."
+        )
+
+    # "Select N" phrasing in the stem should match the actual count of correct options.
+    match = re.search(r"select\s+(\d+|one|two|three|four|five)", text, re.IGNORECASE)
+    if match:
+        word_to_num = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5}
+        raw = match.group(1).lower()
+        expected_count = word_to_num.get(raw, int(raw) if raw.isdigit() else None)
+        if expected_count is not None and expected_count != len(correct_options):
+            problems.append(
+                f"Stem says 'select {raw}' but {len(correct_options)} option(s) are marked is_correct."
+            )
+
+    option_texts = [str(opt.get("text", "")).strip().lower() for opt in options]
+    for pattern in BANNED_OPTION_PATTERNS:
+        if any(pattern in text_ for text_ in option_texts):
+            problems.append(f"Option text contains banned pattern: {pattern!r}.")
+
+    seen: set[str] = set()
+    for text_ in option_texts:
+        if text_ and text_ in seen:
+            problems.append(f"Duplicate option text within question: {text_!r}.")
+        seen.add(text_)
+
+    return problems
+
+
+def _normalize_for_dedupe(text: str) -> str:
+    """Lowercase and strip punctuation/whitespace for a cheap duplicate check."""
+    return re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
+
+
+def find_duplicate_questions(questions: list[dict[str, Any]]) -> list[tuple[int, int]]:
+    """Finds pairs of questions with identical normalized text, across the whole bank.
+
+    This is intentionally a simple exact-match-after-normalization check, not
+    fuzzy/embedding similarity — cheap, deterministic, and catches the common
+    case of the LLM regenerating a near-verbatim question for another topic.
+    """
+    normalized: dict[str, int] = {}
+    duplicates: list[tuple[int, int]] = []
+    for idx, question in enumerate(questions):
+        key = _normalize_for_dedupe(str(question.get("question", "")))
+        if not key:
+            continue
+        if key in normalized:
+            duplicates.append((normalized[key], idx))
+        else:
+            normalized[key] = idx
+    return duplicates
+
+
+def run_deterministic_checks(questions: list[dict[str, Any]]) -> dict[int, list[str]]:
+    """Runs all deterministic (non-LLM) checks and returns problems keyed by question index."""
+    problems_by_index: dict[int, list[str]] = {}
+    for idx, question in enumerate(questions):
+        problems = check_question_form(question)
+        if problems:
+            problems_by_index[idx] = problems
+
+    for first_idx, second_idx in find_duplicate_questions(questions):
+        problems_by_index.setdefault(second_idx, []).append(
+            f"Duplicate of question at index {first_idx} (near-identical text)."
+        )
+
+    return problems_by_index
 
 
 def read_questions(file_path: Path) -> list[dict[str, Any]]:
@@ -153,7 +231,9 @@ def parse_answer(answer: str) -> list[str]:
     """Parses the string response from the LLM to extract the answers."""
     if answer.startswith("Answers:"):
         answer = answer[8:]
-        if ("','" in answer or "', '" in answer or '","' in answer or '", "' in answer) and "|" not in answer:
+        if (
+            "','" in answer or "', '" in answer or '","' in answer or '", "' in answer
+        ) and "|" not in answer:
             return parse_quote_lists(answer)
 
         if "[" in answer and "]" in answer:
@@ -186,51 +266,138 @@ def parse_quote_lists(answer: str) -> list[str]:
     return []
 
 
-def ask_llm(question: str, options: list[str], answers: list[str], model: str, system: str) -> list[str]:
-    """Asks the LLM to answer a given question."""
+_TOML_FENCE_RE = re.compile(
+    r"(?ms)^(?:`{3,}|~{3,})\s*(?:toml)?\s*\n(.*?)\n(?:`{3,}|~{3,})\s*$"
+)
+
+
+def _extract_toml_block(content: str) -> dict[str, Any] | None:
+    """Extract and parse the first fenced (or bare) TOML block in a response."""
+    candidates: list[str] = []
+    match = _TOML_FENCE_RE.search(content)
+    if match:
+        candidates.append(match.group(1))
+    candidates.append(content)  # fall back to treating the whole response as TOML
+
+    for candidate in candidates:
+        try:
+            return toml.loads(candidate)
+        except Exception as e:  # noqa: BLE001
+            logger.debug("Structured parse candidate failed: %s", e)
+    return None
+
+
+class ValidationInconclusive(Exception):
+    """Raised when an LLM validation response could not be parsed after retries."""
+
+
+def ask_llm(
+    question: str,
+    options: list[str],
+    answers: list[str],
+    model: str,
+    system: str,
+    *,
+    max_retries: int = 2,
+) -> list[str]:
+    """Asks the LLM to answer a given question, expecting a structured TOML response.
+
+    Retries with a corrective prompt on parse failure (mirrors the pattern used
+    in generate_questions.py) instead of silently returning an empty answer set.
+    """
     if "(Select" not in question:
         question = f"{question} (Select {len(answers)})"
 
     try:
         template = jinja_env.get_template("answer_question.md.j2")
-        prompt = template.render(question=question, options=options)
+        original_prompt = template.render(question=question, options=options)
     except Exception as e:
-        logger.error("Failed to load or render Jinja2 template 'answer_question.md.j2': %s", e)
+        logger.error(
+            "Failed to load or render Jinja2 template 'answer_question.md.j2': %s", e
+        )
         raise
 
-    content = _llm_call(prompt, model=model, system=system)
-    if content is None:
-        logger.debug("ask_llm returned None content; treating as no answer")
-        return []
+    prompt = original_prompt
+    last_content = ""
+    for attempt in range(max_retries + 1):
+        content = _llm_call(prompt, model=model, system=system)
+        if content is None:
+            raise ValidationInconclusive("LLM call returned no content after retries.")
 
-    content = content.strip()
-    logger.debug("ask_llm raw content: %r", content[:200])
-    if content.startswith("Answers:"):
-        parsed = parse_answer(content)
-        logger.debug("ask_llm parsed answers: %s", parsed)
-        return parsed
-    raise ExamExamTypeError(f"Unexpected response format, didn't start with Answers:, got {content[:120]!r}")
+        last_content = content.strip()
+        logger.debug(
+            "ask_llm raw content (attempt %d): %r", attempt + 1, last_content[:200]
+        )
+        parsed = _extract_toml_block(last_content)
+        if parsed is not None and isinstance(parsed.get("answers"), list):
+            return [str(a) for a in parsed["answers"]]
+
+        logger.warning(
+            "Attempt %d: could not parse structured answer from response.", attempt + 1
+        )
+        prompt = (
+            "Your previous response was not a valid TOML block with an `answers` array. "
+            'Respond with ONLY a TOML code block like ```toml\\nanswers = ["..."]\\n``` and nothing else.\n\n'
+            + original_prompt
+        )
+
+    raise ValidationInconclusive(
+        f"Could not parse a structured answer after {max_retries + 1} attempts, last content: {last_content[:120]!r}"
+    )
 
 
-def ask_if_bad_question(question: str, options: list[str], answers: list[str], model: str) -> tuple[str, str]:
-    """Asks the LLM to evaluate if a question is Good or Bad."""
+def ask_if_bad_question(
+    question: str,
+    options: list[str],
+    answers: list[str],
+    model: str,
+    *,
+    max_retries: int = 2,
+) -> tuple[str, str]:
+    """Asks the LLM to evaluate if a question is Good or Bad, expecting structured TOML."""
     try:
         template = jinja_env.get_template("evaluate_question.md.j2")
-        prompt = template.render(question=question, options=options, answers=answers)
+        original_prompt = template.render(
+            question=question, options=options, answers=answers
+        )
     except Exception as e:
-        logger.error("Failed to load or render Jinja2 template 'evaluate_question.md.j2': %s", e)
+        logger.error(
+            "Failed to load or render Jinja2 template 'evaluate_question.md.j2': %s", e
+        )
         raise
 
     system = "You are a test reviewer and are validating questions."
-    content = _llm_call(prompt, model=model, system=system)
-    if content is None:
-        return "bad", "**** Bot returned None, maybe API failed ****"
+    prompt = original_prompt
+    last_content = ""
+    for attempt in range(max_retries + 1):
+        content = _llm_call(prompt, model=model, system=system)
+        if content is None:
+            raise ValidationInconclusive("LLM call returned no content after retries.")
 
-    content = content.strip()
-    logger.debug("ask_if_bad_question raw content: %r", content[:200])
-    if "---" in content:
-        return parse_good_bad(content)
-    raise ExamExamTypeError(f"Unexpected response format, didn't contain '---'. got {content[:120]!r}")
+        last_content = content.strip()
+        logger.debug(
+            "ask_if_bad_question raw content (attempt %d): %r",
+            attempt + 1,
+            last_content[:200],
+        )
+        parsed = _extract_toml_block(last_content)
+        if parsed is not None and isinstance(parsed.get("verdict"), str):
+            verdict = parsed["verdict"].strip().lower()
+            if verdict in ("good", "bad"):
+                return verdict, str(parsed.get("reason", ""))
+
+        logger.warning(
+            "Attempt %d: could not parse structured verdict from response.", attempt + 1
+        )
+        prompt = (
+            'Your previous response was not a valid TOML block with a `verdict` of "good" or "bad". '
+            'Respond with ONLY a TOML code block like ```toml\\nverdict = "good"\\nreason = "..."\\n``` and nothing else.\n\n'
+            + original_prompt
+        )
+
+    raise ValidationInconclusive(
+        f"Could not parse a structured verdict after {max_retries + 1} attempts, last content: {last_content[:120]!r}"
+    )
 
 
 def parse_good_bad(answer: str) -> tuple[str, str]:
@@ -257,38 +424,65 @@ def _is_array_of_tables(val: Any) -> bool:
 
 def grade_test(
     questions: list[dict[str, Any]],
-    responses: list[list[str]],
-    good_bad: list[tuple[str, str]],
+    responses: list[list[str] | None],
+    good_bad: list[tuple[str, str] | None],
     file_path: Path,
     model: str,
     ui: FrontendUI,
+    form_problems: dict[int, list[str]] | None = None,
 ) -> float:
-    """Grades the LLM's performance and writes results to a TOML file."""
+    """Grades the LLM's performance and writes results to a TOML file.
+
+    A `None` entry in `responses`/`good_bad` means that question's validation
+    was inconclusive (the LLM response couldn't be parsed even after retries) —
+    it is recorded distinctly and excluded from the score, rather than being
+    counted as simply "wrong".
+    """
+    form_problems = form_problems or {}
     score = 0
+    scored_total = 0
     total = len(questions)
     questions_to_write: list[dict[str, Any]] = []
-    failures: list[tuple[str, str, set[str], set[str]]] = []  # (id, question, correct, given)
+    failures: list[tuple[str, str, set[str], set[str]]] = (
+        []
+    )  # (id, question, correct, given)
+    inconclusive: list[str] = []
 
-    for question, response, opinion in zip(questions, responses, good_bad, strict=True):
-        correct_answers = {opt["text"] for opt in question.get("options", []) if opt.get("is_correct")}
-        given_answers = set(response)
+    for idx, (question, response, opinion) in enumerate(
+        zip(questions, responses, good_bad, strict=True)
+    ):
+        correct_answers = {
+            opt["text"] for opt in question.get("options", []) if opt.get("is_correct")
+        }
+        new_question_data = {
+            k: v for k, v in question.items() if not _is_array_of_tables(v)
+        }
 
-        if correct_answers == given_answers:
-            score += 1
-        else:
-            failures.append(
-                (
-                    question.get("id", "<no-id>"),
-                    question.get("question", "<no-question>"),
-                    correct_answers,
-                    given_answers,
-                )
+        if response is None or opinion is None:
+            inconclusive.append(question.get("id", "<no-id>"))
+            new_question_data[f"{model}_answers"] = None
+            new_question_data["good_bad"] = "inconclusive"
+            new_question_data["good_bad_why"] = (
+                "Validation LLM response could not be parsed after retries."
             )
+        else:
+            given_answers = set(response)
+            scored_total += 1
+            if correct_answers == given_answers:
+                score += 1
+            else:
+                failures.append(
+                    (
+                        question.get("id", "<no-id>"),
+                        question.get("question", "<no-question>"),
+                        correct_answers,
+                        given_answers,
+                    )
+                )
+            new_question_data[f"{model}_answers"] = sorted(given_answers)
+            new_question_data["good_bad"], new_question_data["good_bad_why"] = opinion
 
-        # Build new question dict without mutating original, scalars first.
-        new_question_data = {k: v for k, v in question.items() if not _is_array_of_tables(v)}
-        new_question_data[f"{model}_answers"] = sorted(list(given_answers))
-        new_question_data["good_bad"], new_question_data["good_bad_why"] = opinion
+        new_question_data["form_problems"] = form_problems.get(idx, [])
 
         for k, v in question.items():
             if _is_array_of_tables(v):
@@ -302,7 +496,25 @@ def grade_test(
         toml.dump({"questions": questions_to_write}, file)
 
     # Pretty print summary
-    ui.show_panel(f"Final Score: {score} / {total}", title="Grading Summary")
+    ui.show_panel(
+        f"Final Score: {score} / {scored_total} (of {total} total)",
+        title="Grading Summary",
+    )
+
+    if inconclusive:
+        ui.show_message(
+            f"Inconclusive ({len(inconclusive)}, excluded from score): {', '.join(inconclusive[:25])}"
+            + (f" (+{len(inconclusive) - 25} more)" if len(inconclusive) > 25 else "")
+        )
+
+    if form_problems:
+        form_lines = [f"Deterministic form issues ({len(form_problems)} question(s)):"]
+        for idx, problems in list(form_problems.items())[:25]:
+            qid = questions[idx].get("id", "<no-id>")
+            form_lines.append(f"  {qid}: {'; '.join(problems)}")
+        if len(form_problems) > 25:
+            form_lines.append(f"  (+{len(form_problems) - 25} more not shown)")
+        ui.show_message("\n".join(form_lines))
 
     if failures:
         # For non-Rich UIs, show as simple text; Rich UI will still get nice output
@@ -315,7 +527,7 @@ def grade_test(
             failure_lines.append(f"  (+{len(failures) - 25} more not shown)")
         ui.show_message("\n".join(failure_lines))
 
-    return 0 if total == 0 else score / total
+    return 0 if scored_total == 0 else score / scored_total
 
 
 def validate_questions_now(
@@ -338,14 +550,23 @@ def validate_questions_now(
     questions = read_questions(file_path)
     total = len(questions)
     if total == 0:
-        ui.show_panel("No questions found in TOML.", title="Nothing to validate", style="yellow")
+        ui.show_panel(
+            "No questions found in TOML.", title="Nothing to validate", style="yellow"
+        )
         return 0.0
 
     ui.show_rule("Exam Question Validation")
     ui.show_message(f"Validating {total} questions using model {model}...")
 
-    responses: list[list[str]] = []
-    opinions: list[tuple[str, str]] = []
+    form_problems = run_deterministic_checks(questions)
+    if form_problems:
+        ui.show_message(
+            f"Deterministic form checks flagged {len(form_problems)}/{total} question(s) "
+            "(see form_problems in output file)."
+        )
+
+    responses: list[list[str] | None] = []
+    opinions: list[tuple[str, str] | None] = []
 
     console = Console()
     progress = Progress(
@@ -369,33 +590,49 @@ def validate_questions_now(
             q = question_data.get("question", "<no-question>")
             opts = question_data.get("options", [])
             option_texts = [opt.get("text", "") for opt in opts]
-            correct_answer_texts = [opt.get("text", "") for opt in opts if opt.get("is_correct")]
+            correct_answer_texts = [
+                opt.get("text", "") for opt in opts if opt.get("is_correct")
+            ]
 
             # Show per-question task
             desc = f"{idx}/{total} answering"
             q_task = progress.add_task(desc, total=2)  # step 1: answer, step 2: review
 
             try:
-                resp = ask_llm(q, option_texts, correct_answer_texts, model, system="You are test evaluator.")
+                resp = ask_llm(
+                    q,
+                    option_texts,
+                    correct_answer_texts,
+                    model,
+                    system="You are test evaluator.",
+                )
                 responses.append(resp)
-            except ExamExamTypeError as e:
-                logger.error("ask_llm parse error: %s", e)
-                responses.append([])
+            except ValidationInconclusive as e:
+                logger.error("ask_llm inconclusive: %s", e)
+                responses.append(None)
             finally:
                 progress.advance(q_task)
 
             try:
                 op = ask_if_bad_question(q, option_texts, correct_answer_texts, model)
                 opinions.append(op)
-            except ExamExamTypeError as e:
-                logger.error("ask_if_bad_question parse error: %s", e)
-                opinions.append(("bad", "**** parse error ****"))
+            except ValidationInconclusive as e:
+                logger.error("ask_if_bad_question inconclusive: %s", e)
+                opinions.append(None)
             finally:
                 progress.update(q_task, description=f"{idx}/{total} reviewed")
                 progress.advance(q_task)
                 progress.advance(overall_task)
 
-    score = grade_test(questions, responses, opinions, file_path, model, ui)
+    score = grade_test(
+        questions,
+        responses,
+        opinions,
+        file_path,
+        model,
+        ui,
+        form_problems=form_problems,
+    )
     ui.show_rule()
     return score
 

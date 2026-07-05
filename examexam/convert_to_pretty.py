@@ -37,7 +37,11 @@ def generate_markdown(questions: list[dict[str, Any]]) -> str:
 
         # Find and display the correct answers by checking the 'is_correct' flag
         markdown_content += "\n#### Correct Answers:\n"
-        correct_answers = [opt.get("text") for opt in question.get("options", []) if opt.get("is_correct")]
+        correct_answers = [
+            opt.get("text")
+            for opt in question.get("options", [])
+            if opt.get("is_correct")
+        ]
         if not correct_answers:
             markdown_content += "- *No correct answer marked in source file.*\n"
         else:

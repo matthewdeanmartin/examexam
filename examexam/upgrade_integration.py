@@ -124,8 +124,12 @@ def add_commands(subparsers: argparse._SubParsersAction) -> None:  # type: ignor
     active_settings = settings()
     assert add_upgrade_command is not None
     assert add_check_command is not None
-    add_upgrade_command(subparsers, DIST_NAME, command=UPGRADE_COMMAND, settings=active_settings)
-    add_check_command(subparsers, DIST_NAME, command=CHECK_UPDATES_COMMAND, settings=active_settings)
+    add_upgrade_command(
+        subparsers, DIST_NAME, command=UPGRADE_COMMAND, settings=active_settings
+    )
+    add_check_command(
+        subparsers, DIST_NAME, command=CHECK_UPDATES_COMMAND, settings=active_settings
+    )
 
 
 def startup_report() -> Report | None:
@@ -142,7 +146,9 @@ def exit_report() -> Report | None:
     if not HAS_UPGRADE_SUPPORT:
         return None
     assert check_for_updates is not None
-    report = check_for_updates(settings=settings().replace(allow_network=False, notify="return-only"))
+    report = check_for_updates(
+        settings=settings().replace(allow_network=False, notify="return-only")
+    )
     return report if report.is_empty is False else None
 
 

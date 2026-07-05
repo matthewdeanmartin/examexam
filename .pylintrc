@@ -176,7 +176,12 @@ disable=raw-checker-failed,
         missing-function-docstring,
         too-many-positional-arguments,
         import-outside-toplevel,
-        unnecessary-ellipsis
+        unnecessary-ellipsis,
+        too-many-ancestors,
+        global-statement,
+        broad-exception-caught,
+        unused-argument
+
 
 
 # Enable the message, report, category or checker with the given id(s). You can
