@@ -27,7 +27,7 @@ dotenv.load_dotenv()
 
 
 def add_model_args(parser) -> None:
-    models = list(_ for _ in FRONTIER_MODELS.keys())
+    models = list(FRONTIER_MODELS)
     models_string = ", ".join(models)
     parser.add_argument(
         "--model",

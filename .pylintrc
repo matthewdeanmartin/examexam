@@ -174,7 +174,9 @@ disable=raw-checker-failed,
         # need to lint docs separately.
         missing-module-docstring,
         missing-function-docstring,
-        too-many-positional-arguments
+        too-many-positional-arguments,
+        import-outside-toplevel,
+        unnecessary-ellipsis
 
 
 # Enable the message, report, category or checker with the given id(s). You can

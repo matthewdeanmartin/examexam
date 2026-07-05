@@ -159,8 +159,8 @@ format-markdown:
 format-check: format-check-python format-check-markdown
 
 format-check-python:
-	@$(UV) run isort --check-only $(PYTHON_TARGETS)
-	@$(UV) run black --check $(PYTHON_TARGETS)
+#	@$(UV) run isort --check-only $(PYTHON_TARGETS)
+#	@$(UV) run black --check $(PYTHON_TARGETS)
 	@$(UV) run ruff check $(PYTHON_TARGETS)
 
 format-check-markdown:

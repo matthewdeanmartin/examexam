@@ -92,7 +92,7 @@ def collect_diagnostics() -> dict:
 
     # tkinter availability
     try:
-        import tkinter  # noqa: F401
+        import tkinter  # noqa: F401  # pylint: disable=unused-import
 
         diag["tkinter"] = "available"
     except ImportError:

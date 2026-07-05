@@ -190,7 +190,7 @@ class Config:
                                 casted_value = env_value.lower() in ("true", "1", "yes")
                             else:
                                 casted_value = original_type(env_value)
-                            self._config_data[section][key] = casted_value
+                            settings[key] = casted_value
                             logger.debug(f"Overrode '{section}.{key}' with env var '{env_var_name}'.")
                         except (ValueError, TypeError) as e:
                             logger.warning(

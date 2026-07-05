@@ -49,7 +49,7 @@ def get_http_pool():
 
 def fetch_json(
     url: str,
-    timeout: float,  # noqa
+    timeout: float,
 ) -> dict[str, Any]:
     """
     Fetch JSON metadata from PyPI (or any HTTPS JSON endpoint) using urllib3.
@@ -70,9 +70,9 @@ def fetch_json(
     if not url.lower().startswith("https://"):
         raise ValueError("Refusing to fetch non-HTTPS URL for security.")
 
-    # # Split timeout into connect/read parts. Adjust to your latency profile.
-    # connect_to = min(max(timeout * 0.3, 0.5), 5.0)  # 30% of total, clamped 0.5..5s
-    # read_to = timeout
+    # Split timeout into connect/read parts. Adjust to your latency profile.
+    connect_to = min(max(timeout * 0.3, 0.5), 5.0)  # 30% of total, clamped 0.5..5s
+    read_to = timeout
 
     # Stream then read so the connection is safely returned to the pool.
     # decode_content=True lets urllib3 transparently decompress gzip/deflate/br.
@@ -80,8 +80,7 @@ def fetch_json(
     with _HTTP.request(
         "GET",
         url,
-        # timeout=urllib3.Timeout(connect=connect_to, read=read_to),
-        timeout=urllib3.Timeout(connect=0.5, read=0.5),
+        timeout=urllib3.Timeout(connect=connect_to, read=read_to),
         preload_content=False,
         decode_content=True,
     ) as r:
@@ -93,4 +92,4 @@ def fetch_json(
 
         # JSON is UTF-8 by spec; if you want to honor charset, parse r.headers.
         raw = r.read()
-        return orjson.loads(raw.decode("utf-8"))
+        return orjson.loads(raw.decode("utf-8"))  # pylint: disable=no-member

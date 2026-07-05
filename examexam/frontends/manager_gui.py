@@ -304,17 +304,17 @@ def _make_entry(parent, textvariable=None, width=40) -> ttk.Entry:
 
 
 def _make_btn(parent, text: str, command, **kw) -> tk.Button:
-    defaults: dict[str, Any] = dict(
-        bg=_CLR_BTN,
-        fg=_CLR_FG,
-        activebackground=_CLR_BTN_ACTIVE,
-        activeforeground=_CLR_FG,
-        font=_FONT_BTN,
-        relief=tk.FLAT,
-        padx=8,
-        pady=4,
-        cursor="hand2",
-    )
+    defaults: dict[str, Any] = {
+        "bg": _CLR_BTN,
+        "fg": _CLR_FG,
+        "activebackground": _CLR_BTN_ACTIVE,
+        "activeforeground": _CLR_FG,
+        "font": _FONT_BTN,
+        "relief": tk.FLAT,
+        "padx": 8,
+        "pady": 4,
+        "cursor": "hand2",
+    }
     defaults.update(kw)
     return tk.Button(parent, text=text, command=command, **defaults)
 
@@ -459,7 +459,6 @@ class GeneratePanel(_BasePanel):
 
         def _fetch():
             from examexam.apis.conversation_and_router import pick_model
-            from examexam.frontends.manager_gui import _QueueUI
             from examexam.generate_questions import generate_questions_now
 
             q: queue.Queue[str] = queue.Queue()
@@ -543,7 +542,6 @@ class ValidatePanel(_BasePanel):
 
         def _fetch():
             from examexam.apis.conversation_and_router import pick_model
-            from examexam.frontends.manager_gui import _QueueUI
             from examexam.validate_questions import validate_questions_now
 
             q: queue.Queue[str] = queue.Queue()
@@ -613,7 +611,6 @@ class ResearchPanel(_BasePanel):
 
         def _fetch():
             from examexam.apis.conversation_and_router import pick_model
-            from examexam.frontends.manager_gui import _QueueUI
             from examexam.generate_topic_research import generate_topic_research_now
 
             q: queue.Queue[str] = queue.Queue()
@@ -688,7 +685,6 @@ class StudyPlanPanel(_BasePanel):
 
         def _fetch():
             from examexam.apis.conversation_and_router import pick_model
-            from examexam.frontends.manager_gui import _QueueUI
             from examexam.generate_study_plan import generate_study_plan_now
 
             q: queue.Queue[str] = queue.Queue()
@@ -852,9 +848,9 @@ class ConfigPanel(_BasePanel):
         if sys.platform == "win32":
             os.startfile(str(cfg_path.resolve()))  # nosec B606
         elif sys.platform == "darwin":
-            subprocess.Popen(["open", str(cfg_path.resolve())])  # nosec B603 B607
+            subprocess.Popen(["open", str(cfg_path.resolve())])  # nosec B603 B607  # pylint: disable=consider-using-with
         else:
-            subprocess.Popen(["xdg-open", str(cfg_path.resolve())])  # nosec B603 B607
+            subprocess.Popen(["xdg-open", str(cfg_path.resolve())])  # nosec B603 B607  # pylint: disable=consider-using-with
 
 
 # ── API Keys panel ─────────────────────────────────────────────────────────
@@ -1034,7 +1030,7 @@ class TakeExamPanel(_BasePanel):
             if qfile:
                 cmd += ["--question-file", qfile]
             try:
-                subprocess.Popen(cmd)  # nosec B603
+                subprocess.Popen(cmd)  # nosec B603  # pylint: disable=consider-using-with
                 _output_append(self._out_widget, "Exam GUI launched in new window.\n")
             except Exception as exc:
                 _output_append(self._out_widget, f"Error: {exc}\n")
@@ -1045,7 +1041,7 @@ class TakeExamPanel(_BasePanel):
             if qfile:
                 cmd += ["--question-file", qfile]
             try:
-                subprocess.Popen(cmd)  # nosec B603
+                subprocess.Popen(cmd)  # nosec B603  # pylint: disable=consider-using-with
                 _output_append(self._out_widget, "Web exam launched. Open http://localhost:8000 in your browser.\n")
             except Exception as exc:
                 _output_append(self._out_widget, f"Error: {exc}\n")
@@ -1058,7 +1054,7 @@ class TakeExamPanel(_BasePanel):
                 cmd += ["--question-file", qfile]
             _output_append(self._out_widget, f"Launching: {' '.join(cmd)}\n")
             _output_append(self._out_widget, "CLI exam runs in terminal. Check your terminal window.\n")
-            subprocess.Popen(cmd, creationflags=0x10 if sys.platform == "win32" else 0)  # nosec B603
+            subprocess.Popen(cmd, creationflags=0x10 if sys.platform == "win32" else 0)  # nosec B603  # pylint: disable=consider-using-with
             self._status.set("CLI exam launched.")
 
 

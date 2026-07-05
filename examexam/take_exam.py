@@ -578,7 +578,8 @@ def interactive_question_and_answer(
 
         session_question["user_answers"] = list(user_answers)
         if user_answers == correct:
-            play_sound("correct.mp3") if not quiet else None
+            if not quiet:
+                play_sound("correct.mp3")
             score += 1
             session_question["user_score"] = 1
         else:

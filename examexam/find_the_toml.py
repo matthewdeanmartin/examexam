@@ -159,8 +159,7 @@ def _gather_toml_candidates(markdown: str) -> list[str]:
                 if e + 1 < len(lines) and _looks_tomlish(lines[e + 1]):
                     e += 1
                     continue
-                else:
-                    break
+                break
             e += 1
         block = "\n".join(lines[s:e]).strip()
         if block and "[[questions]]" in block:

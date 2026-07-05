@@ -43,7 +43,7 @@ class AddCommand(Protocol):
         dist_name: str,
         *,
         command: str = ...,
-        settings: Settings | None = ...,
+        settings: Settings | None = ...,  # pylint: disable=redefined-outer-name
     ) -> None: ...
 
 
@@ -63,7 +63,7 @@ class CheckForUpdates(Protocol):
         background: bool = ...,
         force: bool = ...,
         spawn: bool = ...,
-        settings: Settings | None = ...,
+        settings: Settings | None = ...,  # pylint: disable=redefined-outer-name
     ) -> Report: ...
 
 
