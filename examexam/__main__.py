@@ -10,7 +10,7 @@ from pathlib import Path
 import argcomplete
 import dotenv
 
-from examexam import __about__, logging_config
+from examexam import __about__, logging_config, upgrade_integration
 from examexam.apis.conversation_and_router import FRONTIER_MODELS, pick_model
 from examexam.convert_to_pretty import run as convert_questions_run
 from examexam.frontends import FRONTEND_CHOICES, get_frontend
@@ -19,7 +19,6 @@ from examexam.generate_study_plan import generate_study_plan_now
 from examexam.generate_topic_research import generate_topic_research_now
 from examexam.jinja_management import deploy_for_customization
 from examexam.take_exam import take_exam_now
-from examexam import upgrade_integration
 from examexam.utils.cli_suggestions import SmartParser
 from examexam.validate_questions import validate_questions_now
 
