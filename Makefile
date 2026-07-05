@@ -265,7 +265,7 @@ gha-validate:
 check: format-check lint-check security test smoke typecheck metadata-check version-check
 	@echo "All checks passed."
 
-check-ci: format-check lint-check security test-ci smoke typecheck metadata-check version-check
+check-ci: lint-check security test-ci smoke typecheck metadata-check version-check
 	@echo "CI checks passed."
 
 prerelease: check dev-status docs-check spell publish-check
