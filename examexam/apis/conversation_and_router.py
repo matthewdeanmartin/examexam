@@ -8,11 +8,11 @@ from typing import Any
 
 from examexam.apis.third_party_apis import (
     AnthropicCaller,
-    BedrockCaller,
     FakeBotCaller,
     FakeBotException,
     GoogleCaller,
     OpenAICaller,
+    OpenRouterCaller,
 )
 from examexam.apis.types import Conversation, ExamExamValueError, FatalConversationError
 from examexam.apis.utilities import log_conversation_to_file, log_duration
@@ -25,21 +25,13 @@ FRONTIER_MODELS = {
     "openai": "gpt-5",  # Aug 2025, current flagship
     "anthropic": "claude-opus-4-1-20250805",  # Aug 2025, strongest Claude
     "google": "gemini-2.5-pro",  # June 2025, top Gemini
-    "meta": "llama-3.1-405b-instruct",  # July 2025, Meta’s largest model
-    "mistral": "mixtral-8x22b-instruct-v0.1",  # 2025 frontier release
-    "cohere": "command-r-plus-08-2025",  # Cohere’s reasoning-tuned flagship
-    "ai21": "jamba-1.5-large",  # AI21’s strongest hybrid model
-    "amazon": "amazon.nova-pro-v1",  # Amazon’s own top Bedrock model
+    "openrouter": "openrouter/auto",  # OpenRouter's auto-routed best model
 }
 GOOD_FAST_CHEAP_MODELS = {
     "openai": "gpt-4.1-mini",  # lightweight, fast, inexpensive
     "anthropic": "claude-3.7-sonnet",  # Feb 2025, balance of speed/cost
     "google": "gemini-2.5-flash",  # optimized for speed/cheap inference
-    "meta": "llama-3.1-8b-instruct",  # small open-source Llama
-    "mistral": "mistral-7b-instruct-v0.3",  # efficient small model
-    "cohere": "command-r-08-2025",  # cheaper sibling to “plus”
-    "ai21": "jamba-1.5-mini",  # fast, smaller Jamba
-    "amazon": "amazon.nova-lite-v1",  # Amazon’s cost-optimized Bedrock model
+    "openrouter": "openai/gpt-4o-mini",  # cheap default via OpenRouter
 }
 
 
@@ -73,11 +65,7 @@ class Router:
             "anthropic": AnthropicCaller,
             "google": GoogleCaller,
             "fakebot": FakeBotCaller,
-            "mistral": BedrockCaller,
-            "cohere": BedrockCaller,
-            "meta": BedrockCaller,
-            "ai21": BedrockCaller,
-            "amazon": BedrockCaller,
+            "openrouter": OpenRouterCaller,
         }
 
     def reset(self) -> None:
@@ -92,9 +80,7 @@ class Router:
         """Lazily initializes and returns the appropriate API caller."""
         caller_class = self._caller_map.get(model_provider)
         if not caller_class:
-            print(f"unkown model provider {model_provider}")
-            sys.exit(-100)
-            # raise FatalConversationError(f"Unknown model {model_key}")
+            raise FatalConversationError(f"Unknown model provider: {model_provider}")
 
         # Use the class name as the key to store only one instance per caller type
         caller_key = caller_class.__name__
@@ -163,7 +149,7 @@ class Router:
             LOGGER.error(f"Error calling {model}: {e}")
             self.most_recent_answer = ""
             if isinstance(e, FatalConversationError):
-                sys.exit(100)
+                raise
             return None
         except Exception as e:
             self.most_recent_exception = e

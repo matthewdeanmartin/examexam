@@ -4,20 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="added: upgrade checker">
+    <list default="true" id="d681e613-0d27-4201-81aa-e2a961c47f5a" name="Changes" comment="chore: linting">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.pylintrc" beforeDir="false" afterPath="$PROJECT_DIR$/.pylintrc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examexam/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/__main__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/apis/conversation_and_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/apis/conversation_and_router.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/apis/third_party_apis.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/apis/third_party_apis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examexam/doctor.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/doctor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/find_the_toml.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/find_the_toml.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examexam/frontends/manager_gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/frontends/manager_gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/generate_pretty_study_plan.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/generate_pretty_study_plan.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examexam/generate_questions.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/generate_questions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examexam/take_exam.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/take_exam.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/upgrade_integration.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/upgrade_integration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/utils/toml_reader.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/utils/toml_reader.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examexam/utils/urllib3_helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/examexam/utils/urllib3_helper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -311,7 +308,7 @@
       <workItem from="1774744283836" duration="525000" />
       <workItem from="1774803354105" duration="562000" />
       <workItem from="1778188093488" duration="95000" />
-      <workItem from="1783196634109" duration="3256000" />
+      <workItem from="1783196634109" duration="5062000" />
     </task>
     <task id="LOCAL-00001" summary="Get ready for publication">
       <option name="closed" value="true" />
@@ -577,7 +574,15 @@
       <option name="project" value="LOCAL" />
       <updated>1783222699245</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="chore: linting">
+      <option name="closed" value="true" />
+      <created>1783253639868</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1783253639868</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -595,7 +600,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="just runner" />
     <MESSAGE value="reduce coverage" />
     <MESSAGE value="relax lint" />
     <MESSAGE value="no pydantic plugin" />
@@ -620,7 +624,8 @@
     <MESSAGE value="0.1.9: passing build" />
     <MESSAGE value="0.1.9: gha [skip-ci]" />
     <MESSAGE value="added: upgrade checker" />
-    <option name="LAST_COMMIT_MESSAGE" value="added: upgrade checker" />
+    <MESSAGE value="chore: linting" />
+    <option name="LAST_COMMIT_MESSAGE" value="chore: linting" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/examexam$.coverage" NAME=" Coverage Results" MODIFIED="1756044671211" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />

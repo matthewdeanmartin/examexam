@@ -66,6 +66,37 @@ class OpenAICaller(BaseLLMCaller):
         return core_response
 
 
+class OpenRouterCaller(BaseLLMCaller):
+    """Handles API calls to OpenRouter (OpenAI-compatible API, many providers/models)."""
+
+    _client = None
+
+    def __init__(self, model: str, conversation: Conversation):
+        super().__init__(model, conversation)
+        if OpenRouterCaller._client is None:
+            OpenRouterCaller._client = openai.OpenAI(
+                api_key=os.environ.get("OPENROUTER_API_KEY"),
+                base_url="https://openrouter.ai/api/v1",
+            )
+        self.client = OpenRouterCaller._client
+
+    @call_limit(500)
+    def completion(self, prompt: str) -> str:
+        self.conversation.prompt(prompt)
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=self.conversation.conversation,  # type: ignore[arg-type]
+        )
+        if response.usage:
+            LOGGER.info(
+                f"Tokens used (prompt/completion/total): {response.usage.prompt_tokens}/{response.usage.completion_tokens}/{response.usage.total_tokens}"
+            )
+        core_response = response.choices[0].message.content or ""
+        role = response.choices[0].message.role or ""
+        self.conversation.response(core_response, role)
+        return core_response
+
+
 class AnthropicCaller(BaseLLMCaller):
     """Handles API calls to Anthropic models."""
 
@@ -142,27 +173,6 @@ class GoogleCaller(BaseLLMCaller):
         core_response = response.text
         self.conversation.response(core_response)
         return core_response
-
-
-class BedrockCaller(BaseLLMCaller):
-    """Handles API calls to AWS Bedrock models (Placeholder)."""
-
-    def __init__(self, model: str, conversation: Conversation):
-        super().__init__(model, conversation)
-        # In a real implementation, the boto3 client would be initialized here.
-        # self.client = boto3.client(service_name='bedrock-runtime')
-        LOGGER.warning("BedrockCaller is a placeholder and does not make real API calls.")
-
-    def completion(self, prompt: str) -> str:
-        self.conversation.prompt(prompt)
-        # This would contain logic to invoke the correct model on Bedrock
-        # using self.model (e.g., 'amazon.titan-text-express-v1')
-        # For example: body = json.dumps({"inputText": prompt})
-        # response = self.client.invoke_model(body=body, modelId=self.model)
-        LOGGER.info(f"Pretending to call Bedrock model: {self.model}")
-        response_text = f"This is a mocked response from Bedrock model {self.model}."
-        self.conversation.response(response_text)
-        return response_text
 
 
 class FakeBotCaller(BaseLLMCaller):

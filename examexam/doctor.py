@@ -48,11 +48,8 @@ def collect_diagnostics() -> dict:
         "openai",
         "anthropic",
         "google-generativeai",
-        "mistralai",
-        "boto3",
         "rich",
         "rtoml",
-        "toml",
         "Jinja2",
         "python-dotenv",
         "argcomplete",
@@ -67,12 +64,7 @@ def collect_diagnostics() -> dict:
         "OPENAI_API_KEY",
         "ANTHROPIC_API_KEY",
         "GOOGLE_API_KEY",
-        "MISTRAL_API_KEY",
-        "AWS_ACCESS_KEY_ID",
-        "AWS_SECRET_ACCESS_KEY",
-        "AWS_DEFAULT_REGION",
-        "COHERE_API_KEY",
-        "AI21_API_KEY",
+        "OPENROUTER_API_KEY",
     ]
     diag["api_keys"] = {key: _env_key_status(key) for key in api_keys}
 

@@ -149,8 +149,7 @@ Supported providers:
   OPENAI_API_KEY
   ANTHROPIC_API_KEY
   GOOGLE_API_KEY
-  MISTRAL_API_KEY
-  AWS_ACCESS_KEY_ID
+  OPENROUTER_API_KEY
 """,
     "doctor": """\
 Doctor
@@ -207,7 +206,7 @@ examexam doctor
 
 ─── Model flags ────────────────
 --model-provider  openai|anthropic
-                  |google|mistral
+                  |google|openrouter
 --model-class     fast|frontier
 
 ─── Global flags ───────────────
@@ -409,7 +408,7 @@ class GeneratePanel(_BasePanel):
         ttk.Combobox(
             form,
             textvariable=self._provider_var,
-            values=["openai", "anthropic", "google", "mistral"],
+            values=["openai", "anthropic", "google", "openrouter"],
             width=15,
             state="readonly",
         ).grid(row=3, column=1, sticky="w", padx=4)
@@ -511,7 +510,7 @@ class ValidatePanel(_BasePanel):
         ttk.Combobox(
             form,
             textvariable=self._provider_var,
-            values=["openai", "anthropic", "google", "mistral"],
+            values=["openai", "anthropic", "google", "openrouter"],
             width=15,
             state="readonly",
         ).grid(row=1, column=1, sticky="w", padx=4)
@@ -586,7 +585,7 @@ class ResearchPanel(_BasePanel):
         ttk.Combobox(
             form,
             textvariable=self._provider_var,
-            values=["openai", "anthropic", "google", "mistral"],
+            values=["openai", "anthropic", "google", "openrouter"],
             width=15,
             state="readonly",
         ).grid(row=1, column=1, sticky="w", padx=4)
@@ -655,7 +654,7 @@ class StudyPlanPanel(_BasePanel):
         ttk.Combobox(
             form,
             textvariable=self._provider_var,
-            values=["openai", "anthropic", "google", "mistral"],
+            values=["openai", "anthropic", "google", "openrouter"],
             width=15,
             state="readonly",
         ).grid(row=1, column=1, sticky="w", padx=4)
@@ -889,12 +888,7 @@ class ApiKeysPanel(_BasePanel):
             "OPENAI_API_KEY",
             "ANTHROPIC_API_KEY",
             "GOOGLE_API_KEY",
-            "MISTRAL_API_KEY",
-            "AWS_ACCESS_KEY_ID",
-            "AWS_SECRET_ACCESS_KEY",
-            "AWS_DEFAULT_REGION",
-            "COHERE_API_KEY",
-            "AI21_API_KEY",
+            "OPENROUTER_API_KEY",
         ]
         lines = [f"{'Key':<32} {'Status'}\n", "-" * 60 + "\n"]
         for key in keys:

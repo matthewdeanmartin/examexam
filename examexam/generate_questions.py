@@ -242,7 +242,12 @@ def generate_questions(
 
 
 def save_toml_to_file(toml_content: str, file_name: str, ui: FrontendUI) -> None:
-    """Save TOML to file, appending to existing [[questions]]."""
+    """Save TOML to file, appending to existing [[questions]].
+
+    Writes to a temp file and renames into place so a crash mid-write can never
+    corrupt the existing output file (the previous read-then-overwrite approach
+    could leave a truncated/partial file if interrupted).
+    """
     path = Path(file_name)
     logger.debug("Saving TOML to %s (exists=%s)", path, path.exists())
     try:
@@ -257,11 +262,15 @@ def save_toml_to_file(toml_content: str, file_name: str, ui: FrontendUI) -> None
                 len(new_questions),
             )
             existing_content["questions"].extend(new_questions)
-            with path.open("w", encoding="utf-8") as file:
+            tmp_path = path.with_suffix(path.suffix + ".tmp")
+            with tmp_path.open("w", encoding="utf-8") as file:
                 toml.dump(existing_content, file)
+            os.replace(tmp_path, path)
         else:
-            with path.open("w", encoding="utf-8") as file:
+            tmp_path = path.with_suffix(path.suffix + ".tmp")
+            with tmp_path.open("w", encoding="utf-8") as file:
                 file.write(toml_content)
+            os.replace(tmp_path, path)
         ui.show_message(f"TOML content saved to {file_name}", style="bold green")
     except (toml.TomlParsingError, OSError) as e:
         logger.error(f"Failed to save TOML to {file_name}: {e}")

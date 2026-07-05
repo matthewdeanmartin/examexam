@@ -439,12 +439,19 @@ def _build_exam_result(
 
 
 def build_answer_feedback(options_list: list[dict[str, Any]], selected: list[dict[str, Any]]) -> AnswerFeedback:
-    """Build answer feedback for a displayed option list and the user's selection."""
-    correct = {o["text"] for o in options_list if o.get("is_correct", False)}
+    """Build answer feedback for a displayed option list and the user's selection.
+
+    Options are compared by object identity (not text) since two options in a
+    question can legitimately share identical text; `selected` always holds the
+    same dict objects as `options_list` (see ask_question_interactive/machine).
+    """
+    correct_ids = {id(o) for o in options_list if o.get("is_correct", False)}
+    selected_ids = {id(o) for o in selected}
+    correct = {o["text"] for o in options_list if id(o) in correct_ids}
     user_answers = {o["text"] for o in selected}
     explanations = [(o.get("explanation", ""), o.get("is_correct", False)) for o in options_list]
     return AnswerFeedback(
-        is_correct=user_answers == correct,
+        is_correct=selected_ids == correct_ids,
         correct_answers=correct,
         user_answers=user_answers,
         explanations=explanations,

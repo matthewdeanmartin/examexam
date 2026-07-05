@@ -12,6 +12,7 @@ import dotenv
 
 from examexam import __about__, logging_config, upgrade_integration
 from examexam.apis.conversation_and_router import FRONTIER_MODELS, pick_model
+from examexam.apis.types import FatalConversationError
 from examexam.convert_to_pretty import run as convert_questions_run
 from examexam.frontends import FRONTEND_CHOICES, get_frontend
 from examexam.generate_questions import generate_questions_now
@@ -401,13 +402,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             parser.print_help()
 
-    if needs_event_loop:
-        # GUI/TUI frontends need the main thread for their event loop.
-        # Business logic runs in a background worker thread via ui.run(callback=...).
-        ui.run(callback=_run_command)
-    else:
-        # CLI runs synchronously on the main thread.
-        _run_command()
+    try:
+        if needs_event_loop:
+            # GUI/TUI frontends need the main thread for their event loop.
+            # Business logic runs in a background worker thread via ui.run(callback=...).
+            ui.run(callback=_run_command)
+        else:
+            # CLI runs synchronously on the main thread.
+            _run_command()
+    except FatalConversationError as e:
+        print(f"Fatal error: {e}", file=sys.stderr)
+        return 1
 
     # Exit: reread the (possibly refreshed) cache and show a notice if it differs.
     exit_notice = upgrade_integration.render_notice(upgrade_integration.exit_report())
