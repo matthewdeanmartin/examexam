@@ -188,10 +188,11 @@ class Config:
                         # Attempt to cast env var to the original type
                         original_type = type(value)
                         try:
-                            if isinstance(original_type, bool):
-                                casted_value = env_value.lower() in ("true", "1", "yes")
-                            else:
-                                casted_value = original_type(env_value)
+                            casted_value = (
+                                env_value.lower() in ("true", "1", "yes")
+                                if isinstance(original_type, bool)
+                                else original_type(env_value)
+                            )
                             settings[key] = casted_value
                             logger.debug(
                                 f"Overrode '{section}.{key}' with env var '{env_var_name}'."

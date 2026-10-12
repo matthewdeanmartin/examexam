@@ -9,7 +9,6 @@ from time import perf_counter, sleep
 from typing import TYPE_CHECKING, Any
 
 import dotenv
-from examexam.utils import toml_compat as toml
 
 # --- Rich UI for progress (kept for backward compat in CLI mode) ---
 from rich.console import Console
@@ -30,6 +29,7 @@ from examexam.find_the_toml import SchemaValidationError
 from examexam.find_the_toml import extract_questions_toml as extract_toml
 from examexam.find_the_toml import validate_questions_schema
 from examexam.jinja_management import jinja_env
+from examexam.utils import toml_compat as toml
 
 if TYPE_CHECKING:
     from examexam.ui_protocol import FrontendUI

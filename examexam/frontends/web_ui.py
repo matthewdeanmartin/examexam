@@ -13,7 +13,6 @@ from pathlib import Path
 from threading import Thread, Timer
 from typing import Any
 
-from examexam.utils import toml_compat as toml
 from fastapi import Cookie, FastAPI, HTTPException, Request, Response, status
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -39,6 +38,7 @@ from examexam.take_exam import (
     load_questions,
     save_session_file,
 )
+from examexam.utils import toml_compat as toml
 
 COOKIE_NAME = "examexam_session_id"
 

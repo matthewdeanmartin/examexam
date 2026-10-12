@@ -4,11 +4,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
-from examexam.utils import toml_compat as toml
 from fastapi.testclient import TestClient
 
 from examexam.frontends.web_ui import WebUI
 from examexam.take_exam import get_session_path, save_session_file
+from examexam.utils import toml_compat as toml
 
 SAMPLE_WEB_TOML = """
 [[questions]]

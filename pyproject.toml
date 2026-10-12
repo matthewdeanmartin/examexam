@@ -169,7 +169,7 @@ lint.select = ["E", "F",
     "UP", # pyupgrade
     "B", # bugbear
 ]
-lint.ignore = [
+lint.ignore = ["RUF100", 
     "D402",
     "D301", # messes with doctests
     "E722",

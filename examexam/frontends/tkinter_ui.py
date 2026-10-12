@@ -459,11 +459,14 @@ class TkinterUI:
                 except KeyboardInterrupt:
                     pass
                 except Exception as e:
-                    _ = e  # something keeps removing this, ruff?
+                    # `e` is unbound once the except block ends; capture the text for the deferred dialog
+                    message = str(e)
                     if self._root:
                         self._schedule(
                             lambda: messagebox.showerror(
-                                "Error", str(e), parent=self._root  # noqa
+                                "Error",
+                                message,
+                                parent=self._root,  # noqa
                             )
                         )  # noqa
                 finally:

@@ -33,7 +33,6 @@ from time import perf_counter, sleep
 from typing import TYPE_CHECKING, Any
 
 import dotenv
-from examexam.utils import toml_compat as toml
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.progress import (
@@ -49,6 +48,7 @@ from rich.progress import (
 from examexam.apis.conversation_and_router import Conversation, Router
 from examexam.apis.fatal_errors import fatal_if_misconfigured, is_fatal_message
 from examexam.jinja_management import jinja_env
+from examexam.utils import toml_compat as toml
 
 if TYPE_CHECKING:
     from examexam.ui_protocol import FrontendUI
@@ -336,8 +336,7 @@ def ask_llm(
             "Attempt %d: could not parse structured answer from response.", attempt + 1
         )
         prompt = (
-            "Your previous response was not a valid TOML block with an `answers` array. "
-            'Respond with ONLY a TOML code block like ```toml\\nanswers = ["..."]\\n``` and nothing else.\n\n'
+            'Your previous response was not a valid TOML block with an `answers` array. Respond with ONLY a TOML code block like ```toml\\nanswers = ["..."]\\n``` and nothing else.\n\n'
             + original_prompt
         )
 
@@ -390,8 +389,7 @@ def ask_if_bad_question(
             "Attempt %d: could not parse structured verdict from response.", attempt + 1
         )
         prompt = (
-            'Your previous response was not a valid TOML block with a `verdict` of "good" or "bad". '
-            'Respond with ONLY a TOML code block like ```toml\\nverdict = "good"\\nreason = "..."\\n``` and nothing else.\n\n'
+            'Your previous response was not a valid TOML block with a `verdict` of "good" or "bad". Respond with ONLY a TOML code block like ```toml\\nverdict = "good"\\nreason = "..."\\n``` and nothing else.\n\n'
             + original_prompt
         )
 
@@ -561,8 +559,7 @@ def validate_questions_now(
     form_problems = run_deterministic_checks(questions)
     if form_problems:
         ui.show_message(
-            f"Deterministic form checks flagged {len(form_problems)}/{total} question(s) "
-            "(see form_problems in output file)."
+            f"Deterministic form checks flagged {len(form_problems)}/{total} question(s) (see form_problems in output file)."
         )
 
     responses: list[list[str] | None] = []

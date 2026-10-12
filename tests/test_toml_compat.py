@@ -1,8 +1,8 @@
 """Verify exam TOML remains readable across native and pure-Python backends."""
 
-from datetime import datetime, UTC
-from io import BytesIO, StringIO
 import tomllib
+from datetime import UTC, datetime
+from io import BytesIO, StringIO
 
 import pytest
 
@@ -13,11 +13,13 @@ from examexam.utils.toml_reader import loads_from_string
 def test_exam_and_session_roundtrip(tmp_path):
     data = {
         "started_at": datetime(2026, 10, 4, tzinfo=UTC),
-        "questions": [{
-            "id": "q1",
-            "question": "Unicode café and a newline\nsecond line",
-            "options": [{"text": "Yes", "is_correct": True}],
-        }],
+        "questions": [
+            {
+                "id": "q1",
+                "question": "Unicode café and a newline\nsecond line",
+                "options": [{"text": "Yes", "is_correct": True}],
+            }
+        ],
     }
     content = toml.dumps(data)
     # Validate with an independent stdlib parser, not only the writer's backend.
@@ -42,7 +44,8 @@ def test_decode_error_contract():
 def test_unanswered_session_preserves_rtoml_null_convention():
     data = {"values": [None, 1], "questions": [{"id": "q2", "user_score": None}]}
     assert tomllib.loads(toml.dumps(data)) == {
-        "questions": [{"id": "q2", "user_score": "null"}], "values": ["null", 1]
+        "questions": [{"id": "q2", "user_score": "null"}],
+        "values": ["null", 1],
     }
     assert data["questions"][0]["user_score"] is None
 

@@ -13,6 +13,7 @@ except ImportError:
 
 if _backend is None:
     import tomllib
+
     import tomli_w
 
     TomlParsingError = tomllib.TOMLDecodeError
@@ -39,6 +40,7 @@ def dumps(data: Mapping[str, Any]) -> str:
     """Write values as TOML, including nested exam questions and sessions."""
     if _backend is not None:
         return _backend.dumps(data)
+
     # rtoml writes None as the string "null"; preserve existing session files.
     def normalize(value: Any) -> Any:
         if value is None:

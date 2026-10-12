@@ -41,10 +41,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 
 import dotenv
-from examexam.utils import toml_compat as toml
 from scipy import stats
 
 from examexam.models import AnswerFeedback, ExamResult, Option, Question, TestInfo
+from examexam.utils import toml_compat as toml
 from examexam.utils.secure_random import SecureRandom
 from examexam.utils.toml_normalize import normalize_exam_for_toml
 
@@ -616,10 +616,11 @@ def interactive_question_and_answer(
         random.shuffle(options_list)
 
         try:
-            if answer_provider is None:
-                selected = ask_question_interactive(ui, question, options_list)
-            else:
-                selected = ask_question_machine(answer_provider, question, options_list)
+            selected = (
+                ask_question_interactive(ui, question, options_list)
+                if answer_provider is None
+                else ask_question_machine(answer_provider, question, options_list)
+            )
         except KeyboardInterrupt:
             if not quiet:
                 result = _build_exam_result(

@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from examexam.utils import toml_compat as toml
 from markdown import markdown
+
+from examexam.utils import toml_compat as toml
 
 
 def read_toml_file(file_path: str) -> list[dict[str, Any]]:

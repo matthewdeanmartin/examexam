@@ -141,8 +141,7 @@ def _launch_interactive_tk() -> int:
         from rich.console import Console
 
         Console().print(
-            "[bold cyan]ExamExam CLI[/bold cyan]\n\n"
-            "Run [yellow]examexam --help[/yellow] to see all commands, or use the manager GUI."
+            "[bold cyan]ExamExam CLI[/bold cyan]\n\nRun [yellow]examexam --help[/yellow] to see all commands, or use the manager GUI."
         )
         return 0
     elif action == "doctor":
@@ -394,10 +393,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 take_exam_now(ui=ui)
         elif args.command == "generate":
             toc_file = args.toc_file
-            if not toc_file.endswith(".txt"):
-                toc_file_base = toc_file + ".txt"
-            else:
-                toc_file_base = toc_file
+            toc_file_base = (
+                toc_file + ".txt" if not toc_file.endswith(".txt") else toc_file
+            )
             model = pick_model(args.model, args.model_provider, args.model_class)
 
             generate_questions_now(
