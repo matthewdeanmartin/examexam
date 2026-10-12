@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-import rtoml as toml
+from examexam.utils import toml_compat as toml
 from markdown import markdown
 
 

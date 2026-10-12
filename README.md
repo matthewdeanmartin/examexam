@@ -225,3 +225,9 @@ MIT License
 - [PyPI](https://pypi.org/project/examexam/)
 - [Bug Tracker](https://github.com/matthewdeanmartin/examexam/issues)
 - [Change Log](https://github.com/matthewdeanmartin/examexam/blob/main/CHANGELOG.md)
+
+## Python 3.15 and portable fallbacks
+
+On Python 3.15 and later, TOML uses stdlib tomllib plus tomli-w instead of requiring the native rtoml accelerator. Exam/session values keep their existing serialization semantics, including None written as the string "null". The web extra uses plain Uvicorn on these versions; older Python retains the standard acceleration bundle. Other mandatory native libraries still need compatible wheels.
+
+Windows 3.15.0rc3 was tested with published dependency wheels and Pydantic 2.14.0b2: 114 tests passed, two skipped, one XPASS. Stable Pydantic's native core lacks a compatible wheel in the tested resolution. Enable dependency prereleases explicitly for this preview; do not compile missing dependencies. These changes are not yet in the published 0.1.8 release.

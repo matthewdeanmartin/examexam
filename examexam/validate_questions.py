@@ -33,7 +33,7 @@ from time import perf_counter, sleep
 from typing import TYPE_CHECKING, Any
 
 import dotenv
-import rtoml as toml
+from examexam.utils import toml_compat as toml
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.progress import (

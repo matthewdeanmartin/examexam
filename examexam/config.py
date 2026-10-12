@@ -20,7 +20,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-import rtoml as toml
+from examexam.utils import toml_compat as toml
 
 # --- Constants ---
 DEFAULT_CONFIG_FILENAME = "examexam.toml"

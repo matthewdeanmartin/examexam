@@ -9,7 +9,7 @@ from time import perf_counter, sleep
 from typing import TYPE_CHECKING, Any
 
 import dotenv
-import rtoml as toml
+from examexam.utils import toml_compat as toml
 
 # --- Rich UI for progress (kept for backward compat in CLI mode) ---
 from rich.console import Console

@@ -2,7 +2,7 @@ import importlib
 from unittest.mock import MagicMock
 
 import pytest
-import rtoml as toml
+from examexam.utils import toml_compat as toml
 
 mod = importlib.import_module("examexam.validate_questions")
 

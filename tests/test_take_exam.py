@@ -6,7 +6,7 @@ from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
-import rtoml as toml
+from examexam.utils import toml_compat as toml
 
 from examexam import take_exam
 from examexam.take_exam import take_exam_machine

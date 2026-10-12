@@ -13,7 +13,7 @@ from pathlib import Path
 from threading import Thread, Timer
 from typing import Any
 
-import rtoml as toml
+from examexam.utils import toml_compat as toml
 from fastapi import Cookie, FastAPI, HTTPException, Request, Response, status
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles

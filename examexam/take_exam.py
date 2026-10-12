@@ -41,7 +41,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 
 import dotenv
-import rtoml as toml
+from examexam.utils import toml_compat as toml
 from scipy import stats
 
 from examexam.models import AnswerFeedback, ExamResult, Option, Question, TestInfo

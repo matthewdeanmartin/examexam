@@ -4,7 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-import rtoml as toml
+from examexam.utils import toml_compat as toml
 
 import examexam.config as cfg
 
