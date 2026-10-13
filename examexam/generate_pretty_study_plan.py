@@ -291,7 +291,7 @@ def _make_markdown(
                 exts.append(e)
     # Try enabling codehilite if pygments is installed
     try:
-        import pygments  # noqa: F401  # pylint: disable=unused-import
+        import pygments  # type: ignore[import-untyped,unused-ignore]  # noqa: F401  # pylint: disable=unused-import
 
         exts.append("codehilite")
     except ImportError:

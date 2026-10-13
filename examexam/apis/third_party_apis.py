@@ -165,7 +165,9 @@ class GoogleCaller(BaseLLMCaller):
         api_key = os.environ.get("GOOGLE_API_KEY")
         if not api_key:
             try:
-                from google.colab import userdata
+                from google.colab import (
+                    userdata,
+                )  # type: ignore[import-untyped,import-not-found,unused-ignore]
 
                 api_key = userdata.get("GOOGLE_API_KEY")
             except ImportError:

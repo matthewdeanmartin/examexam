@@ -2,19 +2,25 @@
 
 from __future__ import annotations
 
+import importlib
+import types
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, BinaryIO, TextIO
 
+# importlib keeps the type the same whether or not the optional rtoml wheel is installed.
+_backend: types.ModuleType | None
 try:
-    import rtoml as _backend
+    _backend = importlib.import_module("rtoml")
 except ImportError:
     _backend = None
 
+TomlParsingError: type[Exception]
 if _backend is None:
     import tomllib
 
-    import tomli_w
+    # only declared where rtoml may be missing, so the stub is absent on some interpreters
+    import tomli_w  # type: ignore[import-not-found,unused-ignore]
 
     TomlParsingError = tomllib.TOMLDecodeError
 else:
