@@ -100,7 +100,9 @@ UPGRADE_COMMANDS = frozenset({CHECK_UPDATES_COMMAND, UPGRADE_COMMAND})
 
 def settings() -> Settings:
     """Return examexam's embedded update-check settings."""
-    assert SettingsClass is not None
+    assert (
+        SettingsClass is not None
+    )  # nosec B101 - type narrowing after the availability check
     return SettingsClass(dist_name=DIST_NAME, position="start", notify="return-only")
 
 
@@ -122,8 +124,12 @@ def add_commands(subparsers: argparse._SubParsersAction) -> None:  # type: ignor
     if not HAS_UPGRADE_SUPPORT:
         return
     active_settings = settings()
-    assert add_upgrade_command is not None
-    assert add_check_command is not None
+    assert (
+        add_upgrade_command is not None
+    )  # nosec B101 - type narrowing after the availability check
+    assert (
+        add_check_command is not None
+    )  # nosec B101 - type narrowing after the availability check
     add_upgrade_command(
         subparsers, DIST_NAME, command=UPGRADE_COMMAND, settings=active_settings
     )
@@ -136,7 +142,9 @@ def startup_report() -> Report | None:
     """Kick off the background refresh and return the current cache-backed report."""
     if not HAS_UPGRADE_SUPPORT:
         return None
-    assert check_for_updates is not None
+    assert (
+        check_for_updates is not None
+    )  # nosec B101 - type narrowing after the availability check
     report = check_for_updates(settings=settings())
     return report if report.is_empty is False else None
 
@@ -145,7 +153,9 @@ def exit_report() -> Report | None:
     """Read the refreshed cache on exit without doing more network I/O."""
     if not HAS_UPGRADE_SUPPORT:
         return None
-    assert check_for_updates is not None
+    assert (
+        check_for_updates is not None
+    )  # nosec B101 - type narrowing after the availability check
     report = check_for_updates(
         settings=settings().replace(allow_network=False, notify="return-only")
     )
@@ -163,7 +173,9 @@ def run_command(args: argparse.Namespace) -> int:
     """Dispatch an already-parsed integrated update-related subcommand."""
     if not HAS_UPGRADE_SUPPORT:
         return 0
-    assert run_if_upgrade_command is not None
+    assert (
+        run_if_upgrade_command is not None
+    )  # nosec B101 - type narrowing after the availability check
     result = run_if_upgrade_command(args)
     return 0 if result is None else result
 
