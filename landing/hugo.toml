@@ -1,0 +1,4 @@
+baseURL = 'https://matthewdeanmartin.github.io/examexam/'
+locale = 'en-us'
+title = 'examexam — build a better practice loop'
+disableKinds = ['taxonomy', 'term', 'RSS', 'sitemap']

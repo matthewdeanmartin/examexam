@@ -43,6 +43,10 @@ classifiers = [
 ]
 
 
+[project.urls]
+Homepage = "https://matthewdeanmartin.github.io/examexam/"
+Documentation = "https://examexam.readthedocs.io/en/latest/"
+
 [project.scripts]
 examexam = "examexam.__main__:main"
 
@@ -141,7 +145,6 @@ dev = [
     "pydoctest==0.2.1; python_version >= '3.8'",
     "pdoc3>=0.5.0; python_version >= '3.8'",
     "mdformat>=0.5.0; python_version >= '3.8'",
-    "linkcheckmd>=1.4.0; python_version >= '3.8'",
     "codespell>=2.2.6; python_version >= '3.8'",
     "pyenchant>=3.2.2; python_version >= '3.8'",
 ]
